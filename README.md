@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# ♟️ Checkmate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- react 기반으로 구현한 출결 관리 시스템
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📌 프로젝트 소개
 
-## React Compiler
+- 프로젝트명: 체크메이트 (Checkmate)
+- 구성: 학생용 / 관리자용
+- 개발 기간: 2026.04.16 ~ 2026.05.19
+- 소개:
+  React를 기반으로 학생과 관리자가 각각의 역할에 맞게
+  출결 확인, 휴가 신청, 공지사항 관리, 학생 및 강의 관리 기능을 사용할 수 있도록 설계된 출결 관리 시스템입니다.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 기술 스택
 
-## Expanding the ESLint configuration
+| 구분          | 기술                           |
+| ------------- | ------------------------------ |
+| Frontend      | React, TypeScript, Vite, CSS   |
+| 상태관리      | Zustand                        |
+| 데이터 통신   | Axios                          |
+| 폼/검증       | React Hook Form, Zod           |
+| 데이터 시각화 | Recharts                       |
+| 코드 품질     | ESLint, Prettier               |
+| 협업 도구     | GitHub, Notion, Figma, Discord |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 👥 팀원 소개
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| 이름   | GitHub                            |
+| ------ | --------------------------------- |
+| 김한결 | https://github.com/developer-kyul |
+| 백희연 | https://github.com/HeeYeonBaek    |
+| 이주연 | https://github.com/jyeonleee      |
+| 정인우 | https://github.com/baakainu       |
+| 윤유영 | https://github.com/yuyeongE       |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📂 폴더 구조
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```text
+/
+final-project-team1
+ ┣ frontend
+ ┃ ┗ src
+ ┃   ┣ assets          # 이미지, 아이콘, 폰트 등 정적 파일
+ ┃   ┣ components      # 전역에서 공통으로 쓰는 UI 컴포넌트 (버튼, 인풋, 모달 등)
+ ┃   ┃ ┣ common
+ ┃   ┃ ┗ ui            # (예: Table, Pagination, DatePicker)
+ ┃   ┣ features        # 도메인(기능)별 핵심 로직 모음
+ ┃   ┃ ┣ auth          # 로그인, 인증, 비밀번호 찾기 관련
+ ┃   ┃ ┃ ┣ api         # auth 관련 API 호출 함수
+ ┃   ┃ ┃ ┣ components  # auth 도메인 전용 UI (LoginForm 등)
+ ┃   ┃ ┃ ┗ hooks       # auth 전용 커스텀 훅 (useLogin 등)
+ ┃   ┃ ┣ attendance    # 출결 조회 및 출결 관리 기능
+ ┃   ┃ ┃ ┣ api
+ ┃   ┃ ┃ ┣ components
+ ┃   ┃ ┃ ┗ hooks
+ ┃   ┃ ┣ notice        # 공지사항(게시판) 조회 및 관리 기능
+ ┃   ┃ ┃ ┣ api
+ ┃   ┃ ┃ ┣ components
+ ┃   ┃ ┃ ┗ hooks
+ ┃   ┃ ┣ leave         # 휴가 신청 및 처리(승인/반려)
+ ┃   ┃ ┃ ┣ api
+ ┃   ┃ ┃ ┣ components
+ ┃   ┃ ┃ ┗ hooks
+ ┃   ┃ ┗ user          # 사용자 정보 조회, 프로필, 비밀번호 변경 등 사용자 관련 기능
+ ┃   ┃   ┣ api
+ ┃   ┃   ┣ components
+ ┃   ┃   ┗ hooks
+ ┃   ┣ hooks           # 도메인에 종속되지 않은 전역 커스텀 훅 (useCurrentTime 등)
+ ┃   ┣ layouts         # 페이지 레이아웃 (Header, Sidebar, StudentLayout, AdminLayout 등)
+ ┃   ┣ pages           # 실제 라우팅 되는 페이지 컴포넌트 (Features의 컴포넌트를 조립)
+ ┃   ┃ ┣ auth
+ ┃   ┃ ┣ student
+ ┃   ┃ ┗ admin
+ ┃   ┣ routes          # React Router 설정 파일 (권한별 라우팅 분기)
+ ┃   ┣ store           # Zustand 전역 상태 저장소 (useAuthStore 등)
+ ┃   ┣ styles          # global.css , reset.css 등 공통 스타일
+ ┃   ┣ types           # 전역 TypeScript 타입 정의 (User, Attendance 등)
+ ┃   ┗ utils           # 유틸리티 함수 (날짜 포맷팅, 데이터 파싱 등)
+ ┣ backend
+ ┗ README.md
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- 각 도메인(auth, attendance, notice, leave, user) 내부에 페이지별 CSS를 함께 관리
 ```
