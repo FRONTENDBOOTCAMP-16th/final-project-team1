@@ -1,0 +1,57 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
+:root {
+  /* font */
+  --font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+
+  /* color */
+  --default-orange: #ff6000;
+  --default-black: #111111;
+  --white: #fff;
+  --login-bg: #FFF2E3;
+  --success-green: #00A63E;
+  --danger-red: #df0000;
+  --wait-yellow: #ffc527;
+  --deep-yellow: #B28200;
+  --finish-blue: #12a3e2;
+  --error-gray: #aaaaaa;
+  --border-gray: #dddddd;
+  --grad-orange: linear-gradient(135deg, #ff6000 0%, #FFBB28 100%);
+
+  /* text size */
+  --big-title: 30px;
+  --side-title: 22px;
+  --sub-title: 16px;
+  --md-text: 14px;
+  --sm-title: 12px;
+
+  /* font weight */
+  --Bk: 900;
+  --Exbd: 800;
+  --Bd: 700;
+  --SBd:600;
+  --Md: 500;
+  --Rg: 400;
+  --Lg: 300;
+  --Exlg: 200;
+  --Th: 100;
+
+  /* bolder */
+  --default-line: 2px;
+
+  /* padding */
+  --basic-pd: 30px;
+  --semi-pd: 15px
+  --smail-pd: 8px;
+  --thin-pd: 4px
+
+  /* margin */
+  --basic-mg: 30px;
+  --semi-mg: 15px
+  --smail-mg: 8px;
+  --thin-mg: 4px;
+
+  /* radius */
+  --lg-round: 16px;
+  --sm-round: 8px;
+}
