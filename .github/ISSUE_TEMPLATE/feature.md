@@ -1,6 +1,6 @@
 ---
-name: "[Feat] "
-about: Suggest an idea for this project
+name: Feature
+about: 새로운 기능 구현
 title: ''
 labels: feature
 assignees: ''
