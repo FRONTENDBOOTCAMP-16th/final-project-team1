@@ -2,7 +2,7 @@
 name: Fix
 about: 버그 및 오류 수정
 title: "[Fix] "
-labels: bug
+labels: fix
 assignees: ''
 type: Bug
 
