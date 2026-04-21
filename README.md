@@ -50,33 +50,27 @@ final-project-team1
  ┃   ┣ components      # 전역에서 공통으로 쓰는 UI 컴포넌트 (버튼, 인풋, 모달 등)
  ┃   ┃ ┣ common
  ┃   ┃ ┗ ui            # (예: Table, Pagination, DatePicker)
- ┃   ┣ features        # 도메인(기능)별 핵심 로직 모음
- ┃   ┃ ┣ auth          # 로그인, 인증, 비밀번호 찾기 관련
- ┃   ┃ ┃ ┣ api         # auth 관련 API 호출 함수
- ┃   ┃ ┃ ┣ components  # auth 도메인 전용 UI (LoginForm 등)
- ┃   ┃ ┃ ┗ hooks       # auth 전용 커스텀 훅 (useLogin 등)
- ┃   ┃ ┣ attendance    # 출결 조회 및 출결 관리 기능
- ┃   ┃ ┃ ┣ api
- ┃   ┃ ┃ ┣ components
- ┃   ┃ ┃ ┗ hooks
- ┃   ┃ ┣ notice        # 공지사항(게시판) 조회 및 관리 기능
- ┃   ┃ ┃ ┣ api
- ┃   ┃ ┃ ┣ components
- ┃   ┃ ┃ ┗ hooks
- ┃   ┃ ┣ leave         # 휴가 신청 및 처리(승인/반려)
- ┃   ┃ ┃ ┣ api
- ┃   ┃ ┃ ┣ components
- ┃   ┃ ┃ ┗ hooks
- ┃   ┃ ┗ user          # 사용자 정보 조회, 프로필, 비밀번호 변경 등 사용자 관련 기능
- ┃   ┃   ┣ api
- ┃   ┃   ┣ components
- ┃   ┃   ┗ hooks
  ┃   ┣ hooks           # 도메인에 종속되지 않은 전역 커스텀 훅 (useCurrentTime 등)
  ┃   ┣ layouts         # 페이지 레이아웃 (Header, Sidebar, StudentLayout, AdminLayout 등)
- ┃   ┣ pages           # 실제 라우팅 되는 페이지 컴포넌트 (Features의 컴포넌트를 조립)
- ┃   ┃ ┣ auth
- ┃   ┃ ┣ student
- ┃   ┃ ┗ admin
+ ┃   ┣ pages           # 실제 라우팅 되는 페이지 + 도메인별 구조
+ ┃   ┃ ┣ auth          # 로그인 관련
+ ┃   ┃ ┃ ┣ LoginPage.tsx
+ ┃   ┃ ┃ ┣ api         # login 관련 API 호출 함수
+ ┃   ┃ ┃ ┣ hooks       # login 전용 커스텀 훅
+ ┃   ┃ ┃ ┗ styles      # login 관련 스타일
+ ┃   ┃ ┣ student       # 학생 페이지
+ ┃   ┃ ┃ ┣ dashboard   # 대시보드
+ ┃   ┃ ┃ ┣ leave       # 휴가 신청 및 조회
+ ┃   ┃ ┃ ┣ notice      # 공지사항 조회
+ ┃   ┃ ┃ ┗ settings    # 설정
+ ┃   ┃ ┗ admin         # 관리자 페이지
+ ┃   ┃   ┣ dashboard   # 관리자 대시보드
+ ┃   ┃   ┣ lecture     # 강의 관리
+ ┃   ┃   ┣ student     # 학생 관리
+ ┃   ┃   ┣ attendance  # 출결 관리
+ ┃   ┃   ┣ leave       # 휴가 승인/반려
+ ┃   ┃   ┣ notice      # 공지사항 관리
+ ┃   ┃   ┗ settings    # 관리자 설정
  ┃   ┣ routes          # React Router 설정 파일 (권한별 라우팅 분기)
  ┃   ┣ store           # Zustand 전역 상태 저장소 (useAuthStore 등)
  ┃   ┣ styles          # global.css , reset.css 등 공통 스타일
