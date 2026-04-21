@@ -1,7 +1,7 @@
 ---
 name: Feature
 about: 새로운 기능 구현
-title: ''
+title: "[Feat]"
 labels: feature
 assignees: ''
 type: Feature
