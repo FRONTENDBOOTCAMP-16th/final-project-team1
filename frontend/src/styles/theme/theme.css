@@ -1,0 +1,88 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
+/* 폰트 */
+:root{
+  --font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+
+   /* text size */
+  --big-title: 30px;
+  --side-title: 22px;
+  --sub-title: 16px;
+  --md-text: 14px;
+  --sm-title: 12px;
+
+  /* font weight */
+  --Bk: 900;
+  --Exbd: 800;
+  --Bd: 700;
+  --SBd:600;
+  --Md: 500;
+  --Rg: 400;
+  --Lg: 300;
+  --Exlg: 200;
+  --Th: 100;
+}
+
+/* default 색상표 */
+:root {
+  /* color */
+  --default-orange: #ff6000;
+  --default-black: #111111;
+  --white: #fff;
+  --login-bg: #FFF2E3;
+  --success-green: #00A63E;
+  --danger-red: #df0000;
+  --wait-yellow: #ffc527;
+  --deep-yellow: #B28200;
+  --finish-blue: #12a3e2;
+  --error-gray: #aaaaaa;
+  --border-gray: #dddddd;
+  --grad-orange: linear-gradient(135deg, #ff6000 0%, #FFBB28 100%);
+}
+
+/* margin, padding*/
+
+:root{
+  /* padding */
+  --basic-pd: 30px;
+  --semi-pd: 15px
+  --smail-pd: 8px;
+  --thin-pd: 4px
+
+  /* margin */
+  --basic-mg: 30px;
+  --semi-mg: 15px
+  --smail-mg: 8px;
+  --thin-mg: 4px;
+}
+
+
+/* 테두리 및 그림자 */
+:root {
+  --border-radius-xs: 2px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-pill: 9999px;
+  
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 4px;
+  
+  --shadow-sm: light-dark(0 1px 3px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.4));
+  --shadow-md: light-dark(0 4px 6px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.5));
+  --shadow-lg: light-dark(0 10px 15px rgba(0,0,0,0.5), 0 10px 15px rgba(0,0,0,0.6));
+  --shadow-xl: light-dark(0 20px 25px rgba(0,0,0,0.15), 0 20px 25px rgba(0,0,0,0.7));
+}
+
+
+
+/* 시스템 설정 대응 - 다크모드 */
+@media (prefers-color-scheme: dark) {
+  img { 
+    opacity: 0.8; 
+    transition: opacity var(--transition-normal); 
+  }
+  img:hover { opacity: 1; }
+}
