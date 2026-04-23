@@ -38,6 +38,7 @@
   --error-gray: #aaaaaa;
   --border-gray: #dddddd;
   --grad-orange: linear-gradient(135deg, #ff6000 0%, #FFBB28 100%);
+  --focus : #cccccc;
 }
 
 /* margin, padding*/

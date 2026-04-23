@@ -1,7 +1,7 @@
 // import { RouterProvider } from 'react-router-dom'
 // import { router } from './routes'
 
-import { Header } from "./components"
+import { Header, Button } from "./components"
 
 function App() {
   // return <RouterProvider router={router} />
@@ -10,6 +10,8 @@ function App() {
   return (
     <div>
       <Header />
+      <Button>클릭</Button>
+
     </div>
   )
 }
