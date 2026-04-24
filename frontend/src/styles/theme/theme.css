@@ -38,6 +38,14 @@
   --error-gray: #aaaaaa;
   --border-gray: #dddddd;
   --grad-orange: linear-gradient(135deg, #ff6000 0%, #FFBB28 100%);
+  
+
+  /* 상태에 따른 버튼 색상 컬러 */
+  --focus: #cccccc;
+  --hover-orange: #FF2600;
+  --hover-black: #000000;
+  --hover-gray: #777777;
+  --hover-border: #555555;
   --focus : #cccccc;
 }
 
