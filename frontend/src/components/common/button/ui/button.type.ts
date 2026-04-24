@@ -12,7 +12,6 @@ import type { ReactNode, ButtonHTMLAttributes } from 'react';
  */
 export type ButtonVariant =
     | 'primary'
-    | 'secondary'
     | 'dark'
     | 'success'
     | 'warning'

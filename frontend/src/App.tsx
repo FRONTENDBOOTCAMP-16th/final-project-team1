@@ -17,7 +17,7 @@ function App() {
       <Button variant="primary">
         <SquarePen size={16} />글쓰기
       </Button>
-      <Button variant="secondary">
+      <Button variant="blank">
         <Trash size={16} />공지사항 삭제
       </Button>
       <Button variant="dark">
