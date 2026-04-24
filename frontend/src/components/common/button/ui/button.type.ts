@@ -16,7 +16,11 @@ export type ButtonVariant =
     | 'success'
     | 'warning'
     | 'error'
-    | 'blank';
+    | 'blank'
+    | 'active'
+    | 'inactive'
+    | 'detail';
+
 
 /**
  * 버튼 크기 (세로 높이 기준)
