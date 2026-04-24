@@ -1,0 +1,62 @@
+
+:global(.react-datepicker-wrapper) {
+  width: 100%;
+}
+
+.datepicker {
+  position: relative;
+  flex: 1;
+  
+  .input {
+    width: 100%;
+    min-width: 153px;
+    height: 40px;
+    border: 2px solid #eeeeee;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-weight: 500;
+    font-size: 14px;
+    color: #111111;
+    text-align: center;
+    cursor: pointer;
+    caret-color: transparent;
+
+    &::placeholder {
+      color: #111111;
+      font-weight: 500;
+      font-size: 14px;
+      color: #111111;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #cccccc;
+    }
+
+  }
+
+  .icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: #aaaaaa;
+    pointer-events: none;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+    pointer-events: none;
+  }
+
+  /* open 상태일 때 적용 */
+  .rotate {
+    transform: translateY(-50%) rotate(180deg);
+  }
+}

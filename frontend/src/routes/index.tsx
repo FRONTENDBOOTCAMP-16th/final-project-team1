@@ -23,6 +23,8 @@ import NoticeCreatePage from '../pages/admin/notice/create/NoticeCreatePage'
 import NoticeEditPage from '../pages/admin/notice/NoticeEditPage'
 import AdminSettingsPage from '../pages/admin/settings/SettingsPage'
 
+import Samplepage from '../pages/sample/Samplepage'
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -103,5 +105,9 @@ export const router = createBrowserRouter([
   {
     path: '/admin/settings',
     element: <AdminSettingsPage />,
+  },
+  {
+    path: '/sample/Samplepage',
+    element: <Samplepage />,
   },
 ])
