@@ -74,7 +74,7 @@
 
 /* 지각 (경고 - 노랑) */
 .warning {
-    color: var( --deep-yellow);
+    color: var(--deep-yellow);
     background-color: color-mix(in srgb, var( --wait-yellow) 10%, transparent);
     border: 2px solid var( --wait-yellow);
 }
@@ -106,10 +106,15 @@
 }
 
 /* 상세보기 */
-.detail{
+.detail {
     color: var(--default-orange);
     background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
 }
+
+.detail:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--default-orange) 20%, transparent);
+}
+
 
 
 /* =========================================
@@ -117,8 +122,15 @@
    ========================================= */
 
 /* Small */
+
+.xs {
+    block-size: 30px;
+    padding-inline: 12px;
+    font-size: var(--sm-title);
+}
+
 .sm {
-    block-size: 32px;
+    block-size: 36px;
     padding-inline: 12px;
     font-size: var(--sm-title);
 }
@@ -132,7 +144,7 @@
 
 /* Large */
 .lg {
-    block-size: 48px;
+    block-size: 50px;
     padding-inline: 24px;
     font-size: var(--sub-title);
 }
