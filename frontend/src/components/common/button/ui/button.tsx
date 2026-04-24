@@ -1,23 +1,16 @@
-import type { ReactNode, ButtonHTMLAttributes } from 'react';
+import type { ButtonProps } from './button.type';
 import S from './button.module.css';
 
-// 타입 정의 (나중에 분리)
-type ButtonVariant = 'primary' | 'outline' | 'danger';
-type ButtonSize = 'sm' | 'md' | 'lg';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
-    size?: ButtonSize;
-    children: ReactNode;
-}
-
-function Button({
+export default function Button({
     variant = 'primary',
     size = 'md',
+    icon,
+    iconPosition = 'left',
     children,
     className,
-    ...restProps
+    ...rest
 }: ButtonProps) {
+    // className 조합
     const combinedClassName = [
         S.button,
         S[variant],
@@ -28,10 +21,14 @@ function Button({
         .join(' ');
 
     return (
-        <button className={combinedClassName} {...restProps}>
+        <button className={combinedClassName} {...rest}>
+            {icon && iconPosition === 'left' && (
+                <span className={S.icon}>{icon}</span>
+            )}
             {children}
+            {icon && iconPosition === 'right' && (
+                <span className={S.icon}>{icon}</span>
+            )}
         </button>
     );
 }
-
-export default Button;
