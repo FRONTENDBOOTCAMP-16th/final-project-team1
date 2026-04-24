@@ -56,11 +56,11 @@ export default function LoginPage() {
         공지사항 삭제
       </Button>
 
-      <Button variant="dark">
+      <Button variant="dark" size='md'>
         <Search size={16} />
         검색
       </Button>
-      <Button variant="dark">
+      <Button variant="dark" size='lg'>
         <Key size={16} />
         비밀번호 변경
       </Button>
@@ -68,15 +68,15 @@ export default function LoginPage() {
       <Button variant="warning">지각</Button>
       <Button variant="error">결석</Button>
       <Button variant="blank">전체</Button>
-      <Button variant="active">
+      <Button variant="active" size="xs">
         <Check size={16} />
         승인
       </Button>
-      <Button variant="inactive">
+      <Button variant="inactive" size="xs">
         <X size={16} />
         비승인
       </Button>
-      <Button variant="detail">
+      <Button variant="detail" size="sm">
         <Key size={16} />
         상세보기
       </Button>

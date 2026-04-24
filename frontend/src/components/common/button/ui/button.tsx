@@ -4,13 +4,13 @@ import S from './button.module.css';
 export default function Button({
     variant = 'primary',
     size = 'md',
+    type = 'button',
     icon,
     iconPosition = 'left',
     children,
     className,
     ...rest
 }: ButtonProps) {
-    // className 조합
     const combinedClassName = [
         S.button,
         S[variant],
@@ -21,7 +21,7 @@ export default function Button({
         .join(' ');
 
     return (
-        <button className={combinedClassName} {...rest}>
+        <button type={type} className={combinedClassName} {...rest}>
             {icon && iconPosition === 'left' && (
                 <span className={S.icon}>{icon}</span>
             )}
