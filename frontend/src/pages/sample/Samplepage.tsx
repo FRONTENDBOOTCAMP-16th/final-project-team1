@@ -2,9 +2,12 @@ import DatePicker from '../../components/common/datePicker'
 import { Header, Button } from '../../components'
 import { Plus, Search, Trash, SquarePen, X, Check, Key } from 'lucide-react'
 import { useState } from 'react'
+import Sidebar from '../../components/common/sidebar/Sidebar'
 
 export default function LoginPage() {
-  {/* 달력컴포넌트: Datepicker */}
+  {
+    /* 달력컴포넌트: Datepicker */
+  }
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
 
@@ -12,25 +15,21 @@ export default function LoginPage() {
     setStartDate(date)
     setEndDate(null)
   }
-  {/* //달력컴포넌트: Datepicker */}
+  {
+    /* //달력컴포넌트: Datepicker */
+  }
 
   return (
-  
     <div>
       {/* 헤더 컴포넌트 */}
       <Header />
       {/* // 헤더 컴포넌트 */}
 
-
       {/* 달력컴포넌트: Datepicker */}
       <h3 style={{ textAlign: 'left' }}>1. 달력 컴포넌트 샘플</h3>
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         {/* DatePicker는 width:100% 기준, 실제 크기는 부모에서 제어 */}
-        <DatePicker
-          value={startDate}
-          onChange={handleStartChange}
-          placeholder="0000-00-00"
-        />
+        <DatePicker value={startDate} onChange={handleStartChange} placeholder="0000-00-00" />
         <span>-</span>
         <DatePicker
           value={endDate}
@@ -63,30 +62,37 @@ export default function LoginPage() {
         <Key size={16} />
         비밀번호 변경
       </Button>
-      <Button variant='success'>
-        출석
-      </Button>
-      <Button variant='warning'>
-        지각
-      </Button>
-      <Button variant='error'>
-        결석
-      </Button>
-      <Button variant='blank'>
-        전체
-      </Button>
-      <Button variant='active'>
+      <Button variant="success">출석</Button>
+      <Button variant="warning">지각</Button>
+      <Button variant="error">결석</Button>
+      <Button variant="blank">전체</Button>
+      <Button variant="active">
         <Check size={16} />
         승인
       </Button>
-      <Button variant='inactive'>
+      <Button variant="inactive">
         <X size={16} />
         비승인
       </Button>
-      <Button variant='detail'>
+      <Button variant="detail">
         <Key size={16} />
         상세보기
       </Button>
+
+      {/* 사이드바 컴포넌트 */}
+      <h3 style={{ textAlign: 'left' }}>3. 사이드바 컴포넌트 샘플</h3>
+
+      <div style={{ display: 'flex' }}>
+        <div>
+          <strong>관리자용</strong>
+          <Sidebar role="admin" />
+        </div>
+        <div>
+          <strong>학생용</strong>
+          <Sidebar role="student" />
+        </div>
+      </div>
+      {/* //사이드바 컴포넌트 */}
     </div>
   )
 }
