@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class StudentCreateResponse {
+public class StudentAddResponse {
 
     private String studentId;
     private String name;
