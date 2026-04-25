@@ -37,4 +37,43 @@ public class Student {
 
     @Column(name = "student_status_code", length = 10)
     private String studentStatusCode;
+
+    public Student(
+            String studentId,
+            String name,
+            String password,
+            Boolean passwordYn,
+            String phoneNumber,
+            String email,
+            Integer classId,
+            String studentStatusCode
+    ) {
+        this.studentId = studentId;
+        this.name = name;
+        this.password = password;
+        this.passwordYn = passwordYn;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.classId = classId;
+        this.studentStatusCode = studentStatusCode;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+        this.passwordYn = false;
+    }
+
+    public void updateStudent(
+            String name,
+            String phoneNumber,
+            String email,
+            Integer classId,
+            String studentStatusCode
+    ) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.classId = classId;
+        this.studentStatusCode = studentStatusCode;
+    }
 }

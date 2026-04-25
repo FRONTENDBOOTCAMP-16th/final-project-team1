@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class StudentCreateRequest {
+public class StudentAddRequest {
 
     private String studentId;
     private String name;
