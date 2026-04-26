@@ -1,0 +1,87 @@
+.card {
+  --point-color: #666666;
+  --icon-bg-color: #f1f3f5;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  inline-size: 176px;
+  block-size: 138px;
+  padding: 20px;
+
+  background-color: #ffffff;
+  border: 2px solid var(--point-color);
+  border-radius: 12px;
+}
+
+.gray {
+  --point-color: #666666;
+  --icon-bg-color: #f1f3f5;
+}
+
+.green {
+  --point-color: #00a84f;
+  --icon-bg-color: #e6f7ef;
+}
+
+.yellow {
+  --point-color: #f5b400;
+  --icon-bg-color: #fff7db;
+}
+
+.red {
+  --point-color: #ff1f1f;
+  --icon-bg-color: #ffe8e8;
+}
+
+.orange {
+  --point-color: #ff5a00;
+  --icon-bg-color: #fff0e6;
+}
+
+.icon_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  inline-size: 50px;
+  block-size: 50px;
+
+  margin-block-end: 12px;
+
+  color: var(--point-color);
+  background-color: var(--icon-bg-color);
+  border-radius: 9px;
+}
+
+.icon_box svg {
+  inline-size: 30px;
+  block-size: 30px;
+
+  color: currentcolor;
+  stroke: currentcolor;
+}
+
+.label {
+  margin-block-end: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--point-color);
+  text-align: left;
+}
+
+.value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--point-color);
+}
+
+.unit {
+  margin-inline-start: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555555;
+}
