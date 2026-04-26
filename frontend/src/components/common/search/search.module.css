@@ -1,0 +1,16 @@
+.searchBar{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 34px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  .searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+  }
+}
