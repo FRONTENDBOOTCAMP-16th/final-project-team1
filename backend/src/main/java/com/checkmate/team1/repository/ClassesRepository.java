@@ -18,4 +18,6 @@ public interface ClassesRepository extends JpaRepository<Classes, Integer> {
             String keyword,
             Pageable pageable
     );
+
+    boolean existsByClassName(String className);
 }

@@ -31,4 +31,32 @@ public class Notice {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+    public Notice(
+            String title,
+            String content,
+            LocalDate createdDate,
+            Boolean isOpen,
+            Boolean isDeleted
+    ) {
+        this.title = title;
+        this.content = content;
+        this.createdDate = createdDate;
+        this.isOpen = isOpen;
+        this.isDeleted = isDeleted;
+    }
+
+    public void updateNotice(
+            String title,
+            String content,
+            Boolean isOpen
+    ) {
+        this.title = title;
+        this.content = content;
+        this.isOpen = isOpen;
+    }
+
+    public void deleteNotice() {
+        this.isDeleted = true;
+    }
 }

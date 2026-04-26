@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 
@@ -18,4 +20,13 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     );
 
     Optional<Notice> findByNoticeIdAndIsOpenTrueAndIsDeletedFalse(Integer noticeId);
+
+    Page<Notice> findByIsDeletedFalse(Pageable pageable);
+
+    Page<Notice> findByIsDeletedFalseAndTitleContaining(
+            String keyword,
+            Pageable pageable
+    );
+
+    long countByIsOpenTrueAndIsDeletedFalse();
 }

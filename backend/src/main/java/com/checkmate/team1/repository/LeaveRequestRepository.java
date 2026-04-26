@@ -29,4 +29,6 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Inte
     long countByApprovalStatusCode(String approvalStatusCode);
 
     List<LeaveRequest> findTop6ByOrderByLeaveRequestIdDesc();
+
+    List<LeaveRequest> findAllByOrderByLeaveRequestIdDesc();
 }

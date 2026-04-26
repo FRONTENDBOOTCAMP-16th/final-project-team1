@@ -45,4 +45,8 @@ public class LeaveRequest {
         this.endDate = endDate;
         this.approvalStatusCode = approvalStatusCode;
     }
+
+    public void updateApprovalStatusCode(String approvalStatusCode) {
+        this.approvalStatusCode = approvalStatusCode;
+    }
 }
