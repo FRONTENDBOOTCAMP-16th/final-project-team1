@@ -1,14 +1,27 @@
 import DatePicker from '../../components/common/datePicker'
 import Sidebar from '../../components/common/sidebar/Sidebar'
-import SearchBar from '../../components/common/search/search' 
+import SearchBar from '../../components/common/search/search'
 import ComboBox from '../../components/common/comboBox/comboBox'
 import { Header, Button } from '../../components'
-import { Plus, Search, Trash, SquarePen, X, Check, Key, Clock } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  Trash,
+  SquarePen,
+  X,
+  Check,
+  Key,
+  Clock,
+  UserCheck,
+  UserX,
+  TrendingUp,
+  ScrollText,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import CustomComboBox from '../../components/common/comboBox/customComboBox'
 
 import CountCard from '../../components/common/countCard/CountCard'
-import { UserCheck, UserX, TrendingUp, ScrollText } from 'lucide-react'
+import Pagination from '../../components/common/pagination'
 
 export default function LoginPage() {
   {
@@ -39,9 +52,16 @@ export default function LoginPage() {
   // useEffect(( => {
   //   나중에 연결
   // },[]))
-
   {
     /* //카운트 카드 컴포넌트 */
+  }
+
+  {
+    /* 페이지네이션 컴포넌트 */
+  }
+  const [currentPage, setCurrentPage] = useState(1)
+  {
+    /* //페이지네이션 컴포넌트 */
   }
 
   return (
@@ -162,13 +182,24 @@ export default function LoginPage() {
       </div>
       {/* //카운트 카드 컴포넌트 */}
 
-
+      {/* 검색바/콤보박스 컴포넌트 샘플 */}
       <h3 style={{ textAlign: 'left' }}>4. 검색바/콤보박스 컴포넌트 샘플</h3>
-      
+
       <ComboBox options={['옵션 1', '옵션 2', '옵션 3']} placeholder="콤보박스 선택" />
-      <CustomComboBox options={['커스텀 옵션 1', '커스텀 옵션 2', '커스텀 옵션 3']} placeholder="커스텀 콤보박스 선택" />
-      <SearchBar placeholder='강의검색'/>
-      <SearchBar placeholder='강의명을 입력하세요'/>
+      <CustomComboBox
+        options={['커스텀 옵션 1', '커스텀 옵션 2', '커스텀 옵션 3']}
+        placeholder="커스텀 콤보박스 선택"
+      />
+      <SearchBar placeholder="강의검색" />
+      <SearchBar placeholder="강의명을 입력하세요" />
+      {/* //검색바/콤보박스 컴포넌트 샘플 */}
+
+      {/* 페이지네이션 컴포넌트 */}
+      <h3 style={{ textAlign: 'left' }}>5. 페이지네이션 컴포넌트 샘플</h3>
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <Pagination currentPage={currentPage} totalPages={10} onPageChange={setCurrentPage} />
+      </div>
+      {/* //페이지네이션 컴포넌트 */}
     </div>
   )
 }
