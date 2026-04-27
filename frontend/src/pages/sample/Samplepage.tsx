@@ -25,8 +25,14 @@ import Pagination from '../../components/common/pagination'
 
 import Table, { type TableColumn } from '../../components/common/table'
 import S from '../../components/common/table/table.module.css'
+import {
+  getAdminDashboardSummary,
+  type AdminDashboardData,
+} from '../admin/dashboard/api/dashboardApi'
 
-{/* 테이블 컴포넌트 */}
+{
+  /* 테이블 컴포넌트 */
+}
 type StudentStatus = '수료중' | '수료완료' | '중도포기'
 type AttendanceStatus = '출석완료' | '지각' | '결석'
 type VacationType = '병결' | '공결' | '개인사유'
@@ -148,7 +154,9 @@ const resultStatusMap = {
     className: S.resultReject,
   },
 }
-{/* //테이블 컴포넌트 */}
+{
+  /* //테이블 컴포넌트 */
+}
 
 export default function LoginPage() {
   {
@@ -168,6 +176,8 @@ export default function LoginPage() {
   {
     /* 카운트 카드 컴포넌트 */
   }
+  const [summary, setSummary] = useState<AdminDashboardData | null>(null)
+
   const countCardData = {
     attendaceRate: 92.74,
     presentCount: 230,
@@ -176,9 +186,20 @@ export default function LoginPage() {
     leavePendingCount: 14,
   }
 
-  // useEffect(( => {
-  //   나중에 연결
-  // },[]))
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const data = await getAdminDashboardSummary()
+        console.log('대시보드 API 데이터:', data)
+        setSummary(data)
+      } catch (error) {
+        console.error('대시보드 API 실패:', error)
+      }
+    }
+
+    fetchSummary()
+  }, [])
+
   {
     /* //카운트 카드 컴포넌트 */
   }
@@ -191,7 +212,9 @@ export default function LoginPage() {
     /* //페이지네이션 컴포넌트 */
   }
 
-  {/* 테이블 컴포넌트 */}
+  {
+    /* 테이블 컴포넌트 */
+  }
   const studentColumns: TableColumn<Student>[] = [
     {
       key: 'name',
@@ -426,7 +449,9 @@ export default function LoginPage() {
       status: '반려',
     },
   ]
-  {/* // 테이블 컴포넌트 */}
+  {
+    /* // 테이블 컴포넌트 */
+  }
 
   return (
     <div>
@@ -509,35 +534,35 @@ export default function LoginPage() {
       <div style={{ display: 'flex', gap: '16px' }}>
         <CountCard
           label="오늘의 출석률"
-          value={countCardData.attendaceRate}
+          value={summary?.attendanceRate ?? 0}
           unit="%"
           icon={<TrendingUp />}
           variant="gray"
         />
         <CountCard
           label="출석완료"
-          value={countCardData.presentCount}
+          value={summary?.presentCount ?? 0}
           unit="명"
           icon={<UserCheck />}
           variant="green"
         />
         <CountCard
           label="지각인원"
-          value={countCardData.lateCount}
+          value={summary?.lateCount ?? 0}
           unit="명"
           icon={<Clock />}
           variant="yellow"
         />
         <CountCard
           label="결석인원"
-          value={countCardData.absentCount}
+          value={summary?.absentCount ?? 0}
           unit="명"
           icon={<UserX />}
           variant="red"
         />
         <CountCard
           label="휴가승인대기"
-          value={countCardData.leavePendingCount}
+          value={summary?.pendingLeaveCount ?? 0}
           unit="명"
           icon={<ScrollText />}
           variant="orange"
