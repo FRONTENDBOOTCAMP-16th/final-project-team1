@@ -100,7 +100,6 @@ export default function LoginPage() {
         <Trash size={16} />
         공지사항 삭제
       </Button>
-
       <Button variant="dark" size="md">
         <Search size={16} />
         검색
@@ -183,7 +182,7 @@ export default function LoginPage() {
       {/* //카운트 카드 컴포넌트 */}
 
       {/* 검색바/콤보박스 컴포넌트 샘플 */}
-      <h3 style={{ textAlign: 'left' }}>4. 검색바/콤보박스 컴포넌트 샘플</h3>
+      <h3 style={{ textAlign: 'left' }}>5. 검색바/콤보박스 컴포넌트 샘플</h3>
 
       <ComboBox options={['옵션 1', '옵션 2', '옵션 3']} placeholder="콤보박스 선택" />
       <CustomComboBox
