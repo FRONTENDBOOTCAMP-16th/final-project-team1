@@ -1,8 +1,12 @@
 import DatePicker from '../../components/common/datePicker'
+import Sidebar from '../../components/common/sidebar/Sidebar'
+import SearchBar from '../../components/common/search/search' 
+import ComboBox from '../../components/common/comboBox/comboBox'
 import { Header, Button } from '../../components'
 import { Plus, Search, Trash, SquarePen, X, Check, Key, Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import Sidebar from '../../components/common/sidebar/Sidebar'
+import CustomComboBox from '../../components/common/comboBox/customComboBox'
+
 import CountCard from '../../components/common/countCard/CountCard'
 import { UserCheck, UserX, TrendingUp, ScrollText } from 'lucide-react'
 
@@ -155,6 +159,14 @@ export default function LoginPage() {
         />
       </div>
       {/* //카운트 카드 컴포넌트 */}
+
+
+      <h3 style={{ textAlign: 'left' }}>5. 검색바/콤보박스 컴포넌트 샘플</h3>
+      
+      <ComboBox options={['옵션 1', '옵션 2', '옵션 3']} placeholder="콤보박스 선택" />
+      <CustomComboBox options={['커스텀 옵션 1', '커스텀 옵션 2', '커스텀 옵션 3']} placeholder="커스텀 콤보박스 선택" />
+      <SearchBar placeholder='강의검색'/>
+      <SearchBar placeholder='강의명을 입력하세요'/>
     </div>
   )
 }
