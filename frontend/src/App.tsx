@@ -1,17 +1,16 @@
-// import { RouterProvider } from 'react-router-dom'
-// import { router } from './routes'
-
 import { Routes, Route } from 'react-router-dom'
+
+import LoginPage from './pages/auth/LoginPage'
+import StudentListPage from './pages/admin/student/StudentListPage'
 import Samplepage from './pages/sample/Samplepage'
 
 function App() {
-
   return (
-    <div>
-      <Routes>
-        <Route path="/sample/Samplepage" element={<Samplepage />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/admin/student" element={<StudentListPage />} />
+      <Route path="/sample/Samplepage" element={<Samplepage />} />
+    </Routes>
   )
 }
 

@@ -26,7 +26,9 @@ import Pagination from '../../components/common/pagination'
 import Table, { type TableColumn } from '../../components/common/table'
 import S from '../../components/common/table/table.module.css'
 
-{/* 테이블 컴포넌트 */}
+{
+  /* 테이블 컴포넌트 */
+}
 type StudentStatus = '수료중' | '수료완료' | '중도포기'
 type AttendanceStatus = '출석완료' | '지각' | '결석'
 type VacationType = '병결' | '공결' | '개인사유'
@@ -148,7 +150,9 @@ const resultStatusMap = {
     className: S.resultReject,
   },
 }
-{/* //테이블 컴포넌트 */}
+{
+  /* //테이블 컴포넌트 */
+}
 
 export default function LoginPage() {
   {
@@ -191,7 +195,9 @@ export default function LoginPage() {
     /* //페이지네이션 컴포넌트 */
   }
 
-  {/* 테이블 컴포넌트 */}
+  {
+    /* 테이블 컴포넌트 */
+  }
   const studentColumns: TableColumn<Student>[] = [
     {
       key: 'name',
@@ -426,7 +432,9 @@ export default function LoginPage() {
       status: '반려',
     },
   ]
-  {/* // 테이블 컴포넌트 */}
+  {
+    /* // 테이블 컴포넌트 */
+  }
 
   return (
     <div>
