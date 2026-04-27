@@ -9,6 +9,7 @@ import S from '../../components/common/table/table.module.css'
 type StudentStatus = '수료중' | '수료완료' | '중도포기'
 type AttendanceStatus = '출석완료' | '지각' | '결석'
 type VacationType = '병결' | '공결' | '개인사유'
+type VacationResultStatus = '승인' | '반려'
 
 
 type Student = {
@@ -39,6 +40,14 @@ type Notice = {
   title: string
   createdAt: string
   isPublic: boolean
+}
+
+type VacationHistory = {
+  name: string
+  studentNo: string
+  reason: '병결' | '공결' | '개인사유'
+  period: string
+  status: VacationResultStatus
 }
 
 const studentStatusMap = {
@@ -108,6 +117,17 @@ const noticeColumns: TableColumn<Notice>[] = [
     ),
   },
 ]
+
+const resultStatusMap = {
+  승인: {
+    icon: <Check size={14} />,
+    className: S.resultSuccess,
+  },
+  반려: {
+    icon: <X size={14} />,
+    className: S.resultReject,
+  },
+}
 
 export default function Samplepage() {
   {/* 달력컴포넌트: Datepicker */}
@@ -221,6 +241,39 @@ export default function Samplepage() {
     },
   ]
 
+  const historyColumns: TableColumn<VacationHistory>[] = [
+    {
+      key: 'name',
+      header: '이름',
+      render: (row) => (
+        <div className={S.nameBox}>
+          <span className={S.circle}>{row.name[0]}</span>
+          <span className={S.tit}>{row.name}</span>
+        </div>
+      ),
+    },
+    { key: 'studentNo', header: '학번' },
+    {
+      key: 'reason',
+      header: '사유',
+      render: (row) => {
+        const type = vacationTypeMap[row.reason]
+
+        return <span className={`${S.statusBadge} ${type.className}`}>{row.reason}</span>
+      },
+    },
+    { key: 'period', header: '날짜' },
+    {
+      key: 'status',
+      header: '처리',
+      render: (row) => {
+        const result = resultStatusMap[row.status]
+
+        return <span className={`${S.resultIcon} ${result.className}`}>{result.icon}</span>
+      },
+    },
+  ]
+
   const studentData: Student[] = [
     {
       name: '김민수',
@@ -305,6 +358,23 @@ export default function Samplepage() {
     },
   ]
 
+  const historyData: VacationHistory[] = [
+    {
+      name: '김민수',
+      studentNo: '2024001',
+      reason: '공결',
+      period: '00.00 - 00.00',
+      status: '승인',
+    },
+    {
+      name: '황재호',
+      studentNo: '2024001',
+      reason: '병결',
+      period: '00.00 - 00.00',
+      status: '반려',
+    },
+  ]
+
   return (
     <div>
       <Header />
@@ -367,6 +437,9 @@ export default function Samplepage() {
 
       <h3>3-4.공지사항 관리 테이블</h3>
       <Table columns={noticeColumns} data={noticeData} />
+
+      <h3>3-5. 휴가신청 내역 테이블</h3>
+      <Table columns={historyColumns} data={historyData} />
     </div>
   )
 }
