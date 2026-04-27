@@ -1,4 +1,4 @@
-.header{
+.header {
   display: flex;
   flex-flow: nowrap row;
   justify-content: space-between;
@@ -10,32 +10,33 @@
   padding: 30px;
   text-align: left;
   font-family: 'Pretendard variable';
- 
-    .menu_name{
-      margin: 0;
-      padding: 0;
-      font-size: var(--big-title);
-      font-weight: var(--Exbd);
-    }
+  margin: 0 auto;
 
-    .sub_title{
-      margin-block-start: 10px;
-      font-size: var(--sub-title);
-      color: var(--error-gray)
-    }
-  
-  .user_profile{
+  .menu_name {
+    margin: 0;
+    padding: 0;
+    font-size: var(--big-title);
+    font-weight: var(--Exbd);
+  }
+
+  .sub_title {
+    margin-block-start: 10px;
+    font-size: var(--sub-title);
+    color: var(--error-gray);
+  }
+
+  .user_profile {
     display: flex;
     flex-flow: nowrap row;
     align-items: center;
     gap: 10px;
 
-    .user_icons{
+    .user_icons {
       display: flex;
       flex-flow: nowrap row;
       align-items: center;
 
-      .user_first_name{
+      .user_first_name {
         display: flex;
         flex-flow: nowrap row;
         justify-content: center;
@@ -51,22 +52,22 @@
       }
     }
 
-    .user_status{
+    .user_status {
       margin-inline-end: 30px;
 
-      .account_name{
+      .account_name {
         font-size: var(--sub-title);
         font-weight: var(--Bd);
-        color: var(--default-black)
+        color: var(--default-black);
       }
 
-      .account_eng{
+      .account_eng {
         font-size: var(--sm-title);
-        color: var(--error-gray)
+        color: var(--error-gray);
       }
     }
 
-    .logout_button{
+    .logout_button {
       inline-size: 70px;
       block-size: 40px;
       font-size: var(--sm-title);
@@ -76,5 +77,4 @@
       cursor: pointer;
     }
   }
-
 }
