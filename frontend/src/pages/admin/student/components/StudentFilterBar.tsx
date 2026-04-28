@@ -34,7 +34,7 @@ export default function StudentFilterBar({
             onChange={(e) => onChangeCourse(e.target.value)}
             className={comboStyle.comboSelect}
           >
-            <option value="">강의명 콤보박스</option>
+            <option value="">전체 보기</option>
             <option value="웹 개발 기초 과정">웹 개발 기초 과정</option>
             <option value="모바일 앱 개발">모바일 앱 개발</option>
             <option value="UI/UX 디자인 심화">UI/UX 디자인 심화</option>
