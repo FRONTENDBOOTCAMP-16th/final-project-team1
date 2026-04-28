@@ -590,20 +590,55 @@ export default function LoginPage() {
       {/* //페이지네이션 컴포넌트 */}
 
       {/* 테이블 컴포넌트 */}
-      <h3>7-1. 학생 관리 테이블</h3>
-      <Table columns={studentColumns} data={studentData} />
+      <h3>6-1. 학생 관리 테이블</h3>
+      <Table
+        columns={studentColumns}
+        data={studentData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
-      <h3>7-2. 출석 관리 테이블</h3>
-      <Table columns={attendanceColumns} data={attendanceData} />
+      <h3>6-2. 출석 관리 테이블</h3>
+      <Table
+        columns={attendanceColumns}
+        data={attendanceData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
-      <h3>7-3. 휴가 관리 테이블</h3>
-      <Table columns={vacationColumns} data={vacationData} />
+      <h3>6-3. 휴가 관리 테이블</h3>
+      <Table
+        columns={vacationColumns}
+        data={vacationData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
-      <h3>7-4.공지사항 관리 테이블</h3>
-      <Table columns={noticeColumns} data={noticeData} />
+      <h3>6-4.공지사항 관리 테이블</h3>
+      <Table
+        columns={noticeColumns}
+        data={noticeData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
-      <h3>7-5. 휴가신청 내역 테이블</h3>
-      <Table columns={historyColumns} data={historyData} />
+      <h3>6-5. 휴가신청 내역 테이블</h3>
+      <Table
+        columns={historyColumns}
+        data={historyData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
       {/* // 테이블 컴포넌트 */}
 
       {/* 팝업창 컴포넌트 */}

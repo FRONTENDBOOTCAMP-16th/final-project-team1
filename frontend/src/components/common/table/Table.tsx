@@ -1,7 +1,18 @@
 import S from './table.module.css'
 import type { CommonTableProps } from './table.types'
 
-export default function CommonTable<T>({ columns, data, rowKey }: CommonTableProps<T>) {
+export default function CommonTable<T>({
+  columns,
+  data,
+  rowKey,
+  totalCount,
+  currentPage = 1,
+  pageSize = 12,
+  countLabel = '명',
+}: CommonTableProps<T>) {
+  const startCount = (currentPage - 1) * pageSize + 1
+  const endCount = Math.min(currentPage * pageSize, totalCount ?? data.length)
+
   return (
     <div className={S.tableBox}>
       <table className={S.table}>
@@ -30,6 +41,14 @@ export default function CommonTable<T>({ columns, data, rowKey }: CommonTablePro
           ))}
         </tbody>
       </table>
+
+      {totalCount !== undefined && (
+        <div className={S.tableFooter}>
+          총 {totalCount}
+          {countLabel} 중 {startCount}-{endCount}
+          {countLabel} 표시
+        </div>
+      )}
     </div>
   )
 }

@@ -11,5 +11,10 @@ export interface TableColumn<T> {
 export interface CommonTableProps<T> {
   columns: TableColumn<T>[]
   data: T[]
-  rowKey?: (row: T, rowIndex: number) => string | number
+  rowKey?: (row: T, index: number) => string | number
+
+  totalCount?: number
+  currentPage?: number
+  pageSize?: number
+  countLabel?: string
 }
