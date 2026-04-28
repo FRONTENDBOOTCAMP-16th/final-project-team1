@@ -4,12 +4,11 @@ import { useState } from 'react'
 import StatusSummary from '@/components/common/statusSummary/StatusSummary'
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 
-import { Button} from '@/components'
+import { Button } from '@/components'
 import S from '@/pages/admin/leave/styles/leave.module.css'
 
-import LeaveStatusTabs from '@/pages/admin/leave/components/leaveStatusTabs'
+import LeaveStatusTabs from '@/pages/admin/leave/components/LeaveStatusTabs'
 import type { TabType } from '@/pages/admin/leave/components/leaveStatusTabs.type'
-
 
 import Table from '@/components/common/table'
 import { type TableColumn } from '@/components/common/table'
@@ -28,7 +27,7 @@ const noticeSummaryCards: SummaryCard[] = [
   {
     label: '전체 공지',
     count: 8,
-    color: 'orange', 
+    color: 'orange',
     icon: <FileText size={20} />,
   },
   {
@@ -61,7 +60,6 @@ const vacationTypeMap = {
 }
 
 export default function LeaveApprovePage() {
-  
   const [activeTab, setActiveTab] = useState<TabType>('pending')
 
   const actionColumn: TableColumn<Vacation> = {
@@ -101,7 +99,7 @@ export default function LeaveApprovePage() {
       )
     },
   }
-  
+
   const vacationColumns: TableColumn<Vacation>[] = [
     {
       key: 'name',
@@ -160,7 +158,6 @@ export default function LeaveApprovePage() {
     currentData = rejectedData
   }
 
-
   return (
     <AdminLayout>
       <div className={S.page}>
@@ -171,7 +168,14 @@ export default function LeaveApprovePage() {
 
           <section className={S.content}>
             <LeaveStatusTabs activeTab={activeTab} onChange={setActiveTab} />
-            <Table columns={vacationColumns} data={currentData} />
+            <Table
+              columns={vacationColumns}
+              data={currentData}
+              totalCount={248}
+              currentPage={1}
+              pageSize={12}
+              countLabel="명"
+            />
           </section>
         </main>
       </div>
