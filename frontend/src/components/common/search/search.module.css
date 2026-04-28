@@ -1,11 +1,26 @@
-.searchBar{
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.comboArea {
+  flex: 1;
+}
+
+.searchArea {
+  flex: 3;
+}
+
+.searchBar {
   display: flex;
   align-items: center;
   gap: 8px;
-  block-size: 34px;
+  block-size: 40px;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  inline-size: 100%;
 
   .searchInput {
     flex: 1;
