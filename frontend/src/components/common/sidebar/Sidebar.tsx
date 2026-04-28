@@ -18,7 +18,7 @@ function Sidebar({ role }: SidebarProps) {
 
       <nav className={S['sidebar_nav']}>
         <ul className={S['sidebar_list']}>
-          {menuItem.map((item) => (
+          {menuItem?.map((item) => (
             <li key={item.path} className={S['sidebar_item']}>
               <NavLink
                 to={item.path}
