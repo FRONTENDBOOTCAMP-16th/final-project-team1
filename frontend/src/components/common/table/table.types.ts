@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type TableColumn<T> = {
+export interface TableColumn<T> {
   key: keyof T | string
   header: string
   width?: string
@@ -8,8 +8,8 @@ export type TableColumn<T> = {
   render?: (row: T) => ReactNode
 }
 
-export type CommonTableProps<T> = {
+export interface CommonTableProps<T> {
   columns: TableColumn<T>[]
   data: T[]
-  rowKey?: (row: T, index: number) => string | number
+  rowKey?: (row: T, rowIndex: number) => string | number
 }

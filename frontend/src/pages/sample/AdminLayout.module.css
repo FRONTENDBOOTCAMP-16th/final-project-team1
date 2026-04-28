@@ -18,3 +18,17 @@
   padding: 32px;
   overflow-y: auto;
 }
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.comboArea {
+  flex: 1;
+}
+
+.searchArea {
+  flex: 3;
+}

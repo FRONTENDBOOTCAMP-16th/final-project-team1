@@ -1,158 +1,155 @@
 /* wrapper div */
 .comboBox {
   display: inline-block;
-  position: relative;       
+  position: relative;
   inline-size: 100%;
 }
 
 /* select 본체 */
 .comboSelect {
-    inline-size: 100%;
-    block-size: 40px;
-    padding-inline-start: 12px;
-    padding-inline-end: 36px; 
+  inline-size: 100%;
+  block-size: 40px;
+  padding-inline-start: 12px;
+  padding-inline-end: 36px;
 
-    font-family: 'Pretendard variable';
-    font-size: var(--sub-title);
-    color: var(--default-black);
-    background-color: var(--white);
+  font-family: 'Pretendard variable';
+  font-size: var(--sub-title);
+  color: var(--default-black);
+  background-color: var(--white);
 
-    border: 2px solid var(--border-gray);
-    border-radius: var(--border-radius-md);
+  border: 2px solid var(--border-gray);
+  border-radius: var(--border-radius-md);
 
-    cursor: pointer;
-    outline: none;
+  cursor: pointer;
+  outline: none;
 
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .comboSelect:focus {
-    border-color: var(--default-orange);
+  border-color: var(--default-orange);
 }
 
 /* lucide 화살표 */
 .arrow {
-    position: absolute;              
-    inset-inline-end: 12px;          
-    inset-block-start: 50%;        
-    transform: translateY(-50%);   
+  position: absolute;
+  inset-inline-end: 12px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
 
-    color: var(--default-orange);
-    pointer-events: none;           
-    transition: color 0.2s ease;
+  color: var(--default-orange);
+  pointer-events: none;
+  transition: color 0.2s ease;
 }
 
 .comboSelect:focus ~ .arrow {
-    color: var(--default-orange);
+  color: var(--default-orange);
 }
-
-
 
 /* 커스텀 콤보박스 CSS 시작 */
 
-
 /* 트리거 버튼 (닫혀있을 때 보이는 부분) */
 .trigger {
-    inline-size: 100%;
-    block-size: 40px;
+  inline-size: 100%;
+  block-size: 40px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    background-color: var(--white);
-    border: 2px solid var(--border-gray);
-    border-radius: var(--border-radius-md);
+  background-color: var(--white);
+  border: 2px solid var(--border-gray);
+  border-radius: var(--border-radius-md);
 
-    font-family: 'Pretendard variable';
-    font-size: var(--sub-title);
-    color: var(--default-black);
-    text-align: start;
+  font-family: 'Pretendard variable';
+  font-size: var(--sub-title);
+  color: var(--default-black);
+  text-align: start;
 
-    cursor: pointer;
-    outline: none;
+  cursor: pointer;
+  outline: none;
 
-    transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .trigger:hover:not(:disabled) {
-    border-color: var(--default-orange);
+  border-color: var(--default-orange);
 }
 
 .trigger:focus {
-    border-color: var(--default-orange);
+  border-color: var(--default-orange);
 }
 
 .trigger:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* placeholder 텍스트 (선택 안 됐을 때) */
 .placeholder {
-    color: var(--gray, #999);
+  color: var(--gray, #999);
 }
 
 /* 선택된 값 텍스트 */
 .value {
-    color: var(--default-black);
+  color: var(--default-black);
 }
 
 /* 화살표 회전 (열렸을 때) */
 .arrowOpen {
-    transform: translateY(-50%) rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 /* 드롭다운 메뉴 박스 */
 .dropdown {
-    position: absolute;
-    inset-block-start: calc(100% + 4px);  /* 트리거 바로 아래 */
-    inset-inline-start: 0;
-    inline-size: 100%;
+  position: absolute;
+  inset-block-start: calc(100% + 4px); /* 트리거 바로 아래 */
+  inset-inline-start: 0;
+  inline-size: 100%;
 
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  list-style: none;
+  margin: 0;
 
-    background-color: var(--white);
-    border-radius: var(--border-radius-md);
-    z-index: 10;
+  background-color: var(--white);
+  border-radius: var(--border-radius-md);
+  z-index: 10;
 
-    max-block-size: 240px;
-    overflow-y: auto;
+  max-block-size: 240px;
+  overflow-y: auto;
 }
 
 /* 각 옵션 항목 */
 .option {
-    padding: 12px;
-    border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 4px;
 
-    font-family: 'Pretendard variable';
-    font-size: var(--sub-title);
-    color: var(--default-black);
+  font-family: 'Pretendard variable';
+  font-size: var(--sub-title);
+  color: var(--default-black);
 
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .option:hover {
-    background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
-    color: var(--default-orange);
+  background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
+  color: var(--default-orange);
 }
 
 /* 선택된 옵션 */
 .optionSelected {
-    background-color: var(--default-orange);
-    color: var(--white);
-    font-weight: 500;
+  background-color: var(--default-orange);
+  color: var(--white);
+  font-weight: 500;
 }
 
 .optionSelected:hover {
-    background-color: var(--default-orange);
-    color: var(--white);
+  background-color: var(--default-orange);
+  color: var(--white);
 }
