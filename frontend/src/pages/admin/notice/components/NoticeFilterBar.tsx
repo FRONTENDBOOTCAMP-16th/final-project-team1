@@ -27,6 +27,11 @@ export default function NoticeFilterBar({
         <SearchBar
           value={keyword}
           onChange={(e) => onChangeKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSearch()
+            }
+          }}
           placeholder="공지사항 검색"
         />
 
