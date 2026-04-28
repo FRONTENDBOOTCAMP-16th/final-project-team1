@@ -27,7 +27,7 @@ import S from '../../components/common/table/table.module.css'
 import {
   getAdminDashboardSummary,
   type AdminDashboardData,
-} from '../admin/dashboard/api/dashboardApi'
+} from '@/pages/admin/dashboard/api/dashboardApi'
 
 {
   /* 테이블 컴포넌트 */
@@ -176,7 +176,6 @@ export default function LoginPage() {
     /* 카운트 카드 컴포넌트 */
   }
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
-
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -565,7 +564,6 @@ export default function LoginPage() {
       {/* 검색바/콤보박스 컴포넌트 샘플 */}
       <h3 style={{ textAlign: 'left' }}>5. 검색바/콤보박스 컴포넌트 샘플</h3>
 
-     
       <ComboBox
         options={['커스텀 옵션 1', '커스텀 옵션 2', '커스텀 옵션 3']}
         placeholder="커스텀 콤보박스 선택"
