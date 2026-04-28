@@ -29,6 +29,8 @@ import {
   type AdminDashboardData,
 } from '@/pages/admin/dashboard/api/dashboardApi'
 
+import Modal from '@/components/common/modal/Modal'
+
 {
   /* 테이블 컴포넌트 */
 }
@@ -452,6 +454,14 @@ export default function LoginPage() {
     /* // 테이블 컴포넌트 */
   }
 
+  {
+    /* 모달 컴포넌트 */
+  }
+  const [open, setOpen] = useState(false)
+  {
+    /* // 모달 컴포넌트 */
+  }
+
   return (
     <div>
       <Header />
@@ -581,7 +591,7 @@ export default function LoginPage() {
       {/* //검색바/콤보박스 컴포넌트 샘플 */}
 
       {/* 페이지네이션 컴포넌트 */}
-      <h3 style={{ textAlign: 'left' }}>5. 페이지네이션 컴포넌트 샘플</h3>
+      <h3 style={{ textAlign: 'left' }}>6. 페이지네이션 컴포넌트 샘플</h3>
       <div style={{ display: 'flex', gap: '16px' }}>
         <Pagination currentPage={currentPage} totalPages={10} onPageChange={setCurrentPage} />
       </div>
@@ -638,6 +648,24 @@ export default function LoginPage() {
         countLabel="명"
       />
       {/* // 테이블 컴포넌트 */}
+
+      {/* 팝업창 컴포넌트 */}
+      <h3 style={{ textAlign: 'left' }}>8. 팝업창 컴포넌트 샘플</h3>
+      <div style={{ display: 'flex', gap: '16px' }}></div>
+
+      <button onClick={() => setOpen(true)}>입실/퇴실</button>
+
+      <Modal
+        isOpen={open}
+        title="멋쟁이사자처럼"
+        onClose={() => setOpen(false)}
+        onConfirm={() => {
+          setOpen(false)
+        }}
+      >
+        입실하시겠습니까?
+      </Modal>
+      {/* //팝업창 컴포넌트 */}
     </div>
   )
 }
