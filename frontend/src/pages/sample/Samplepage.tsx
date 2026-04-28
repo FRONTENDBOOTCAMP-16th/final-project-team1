@@ -1,8 +1,8 @@
-import DatePicker from '../../components/common/datePicker'
-import Sidebar from '../../components/common/sidebar/Sidebar'
-import SearchBar from '../../components/common/search/search'
-import ComboBox from '../../components/common/comboBox/customComboBox'
-import { Header, Button } from '../../components'
+import DatePicker from '@/components/common/datePicker'
+import Sidebar from '@/components/common/sidebar/Sidebar'
+import SearchBar from '@/components/common/search/search'
+import ComboBox from '@/components/common/comboBox/customComboBox'
+import { Header, Button } from '@/components'
 import {
   Plus,
   Search,
@@ -19,11 +19,11 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import CountCard from '../../components/common/countCard/CountCard'
-import Pagination from '../../components/common/pagination'
+import CountCard from '@/components/common/countCard/CountCard'
+import Pagination from '@/components/common/pagination'
 
-import Table, { type TableColumn } from '../../components/common/table'
-import S from '../../components/common/table/table.module.css'
+import Table, { type TableColumn } from '@/components/common/table'
+import S from '@/components/common/table/table.module.css'
 import {
   getAdminDashboardSummary,
   type AdminDashboardData,
