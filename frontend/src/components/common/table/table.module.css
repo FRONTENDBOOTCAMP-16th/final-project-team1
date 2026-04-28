@@ -1,12 +1,12 @@
 .tableBox {
   width: 100%;
+  margin: 30px 0 0;
+  background-color: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #fff;
-
-  
 }
+
 .circle {
   display: inline-flex;
   align-items: center;
@@ -148,6 +148,9 @@
 
   tr {
     border-top: 1px solid #e5e5e5;
+    &:first-child {
+      border: none;
+    }
   }
 
   th {

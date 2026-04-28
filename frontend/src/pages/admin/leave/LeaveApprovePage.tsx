@@ -4,8 +4,7 @@ import { useState } from 'react'
 import StatusSummary from '@/components/common/statusSummary/StatusSummary'
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 
-import { Header, Button} from '@/components'
-import Sidebar from '@/components/common/sidebar/Sidebar'
+import { Button} from '@/components'
 import S from '@/pages/admin/leave/styles/leave.module.css'
 
 import LeaveStatusTabs from '@/pages/admin/leave/components/leaveStatusTabs'
@@ -15,6 +14,7 @@ import type { TabType } from '@/pages/admin/leave/components/leaveStatusTabs.typ
 import Table from '@/components/common/table'
 import { type TableColumn } from '@/components/common/table'
 
+import AdminLayout from '@/pages/sample/AdminLayout'
 
 type VacationType = '병결' | '공결' | '개인사유'
 type Vacation = {
@@ -162,21 +162,19 @@ export default function LeaveApprovePage() {
 
 
   return (
-    <div className={S.page}>
-      <Sidebar role="admin" />
+    <AdminLayout>
+      <div className={S.page}>
+        <main className={S.main}>
+          <section>
+            <StatusSummary cards={noticeSummaryCards} />
+          </section>
 
-      <main className={S.main}>
-        <Header />
-
-        <section className={S.content}>
-          <StatusSummary cards={noticeSummaryCards} />
-        </section>
-
-        <section className={S.content}>
-          <LeaveStatusTabs activeTab={activeTab} onChange={setActiveTab} />
-          <Table columns={vacationColumns} data={currentData} />
-        </section>
-      </main>
-    </div>
+          <section className={S.content}>
+            <LeaveStatusTabs activeTab={activeTab} onChange={setActiveTab} />
+            <Table columns={vacationColumns} data={currentData} />
+          </section>
+        </main>
+      </div>
+    </AdminLayout>
   )
 }
