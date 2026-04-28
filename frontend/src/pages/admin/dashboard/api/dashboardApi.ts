@@ -1,4 +1,4 @@
-import { axiosInstance } from '../../../../api/axiosInstance'
+import { api } from '@/api/axios'
 
 export interface AdminDashboardData {
   studentCount: number
@@ -11,11 +11,10 @@ export interface AdminDashboardData {
 }
 
 export async function getAdminDashboardSummary() {
-  const response = await axiosInstance.get<{
-    success: boolean
-    message: string
-    data: AdminDashboardData
-  }>('/api/admin/dashboard')
+  const response = await api.get('/api/admin/dashboard')
+
+  console.log('전체 응답:', response)
+  console.log('response.data:', response.data)
 
   return response.data.data
 }
