@@ -128,7 +128,7 @@ const noticeColumns: TableColumn<Notice>[] = [
   {
     key: 'isPublic',
     header: '공개여부',
-    render: (row) => (
+    render: () => (
       <div className={S.actionBox}>
         <Button type="button" variant="active">
           <Check size={16} />
@@ -178,13 +178,6 @@ export default function LoginPage() {
   }
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
 
-  const countCardData = {
-    attendaceRate: 92.74,
-    presentCount: 230,
-    lateCount: 16,
-    absentCount: 2,
-    leavePendingCount: 14,
-  }
 
   useEffect(() => {
     const fetchSummary = async () => {
