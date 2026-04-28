@@ -180,3 +180,11 @@
   font-size: 14px;
   color: #666;
 }
+
+.empty {
+  height: 160px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+

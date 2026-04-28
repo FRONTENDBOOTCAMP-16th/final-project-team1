@@ -30,15 +30,23 @@ export default function CommonTable<T>({
         </thead>
 
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowKey ? rowKey(row, rowIndex) : rowIndex}>
-              {columns.map((column) => (
-                <td key={String(column.key)} style={{ textAlign: column.align ?? 'center' }}>
-                  {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
-                </td>
-              ))}
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className={S.empty}>
+                검색 결과가 없습니다.
+              </td>
             </tr>
-          ))}
+          ) : (
+            data.map((row, rowIndex) => (
+              <tr key={rowKey ? rowKey(row, rowIndex) : rowIndex}>
+                {columns.map((column) => (
+                  <td key={String(column.key)} style={{ textAlign: column.align ?? 'center' }}>
+                    {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
