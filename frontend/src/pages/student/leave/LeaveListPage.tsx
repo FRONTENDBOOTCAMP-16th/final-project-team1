@@ -1,5 +1,12 @@
+import { StudentLayout } from "@/components"
+import S from './styles/leave.css'
+
 function LeaveListPage() {
-  return <div>휴가 신청 목록</div>
+  return (
+    <div className={S.leaveListContainer}>
+  <StudentLayout />
+    </div>
+  )
 }
 
 export default LeaveListPage
