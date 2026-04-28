@@ -6,7 +6,7 @@ import NoticeFilterBar from './components/NoticeFilterBar'
 
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 
-import S from '@/pages/admin/leave/styles/leave.module.css'
+import S from './styles/notice.module.css'
 
 import AdminLayout from '@/pages/sample/AdminLayout'
 import { Button } from '@/components'
@@ -39,8 +39,12 @@ export default function NoticeListPage() {
   const [searchKeyword, setSearchKeyword] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 핵심: 고정 데이터가 아니라 상태로 관리
   const [notices, setNotices] = useState<Notice[]>(noticeData)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const handleSelect = (no: string) => {
+    setSelectedIds((prev) => (prev.includes(no) ? prev.filter((id) => id !== no) : [...prev, no]))
+  }
 
   const handleTogglePublic = (no: string, value: boolean) => {
     setNotices((prev) =>
@@ -48,13 +52,44 @@ export default function NoticeListPage() {
     )
   }
 
+  const filteredNotices = useMemo(() => {
+    return notices.filter((notice) => notice.title.includes(searchKeyword))
+  }, [notices, searchKeyword])
+
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE))
+
+  const pagedNotices = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE
+    const end = start + PAGE_SIZE
+    return filteredNotices.slice(start, end)
+  }, [filteredNotices, currentPage])
+
   const noticeColumns: TableColumn<Notice>[] = [
-    { key: 'no', header: '번호' },
-    { key: 'title', header: '제목' },
-    { key: 'createdAt', header: '작성일' },
+    {
+      key: 'checkbox',
+      header: '',
+      width: '100px',
+      render: (row) => (
+        <input
+          type="checkbox"
+          className={S.checkbox}
+          checked={selectedIds.includes(row.no)}
+          onChange={() => handleSelect(row.no)}
+        />
+      ),
+    },
+    { key: 'no', header: '번호', width: '100px' },
+    {
+      key: 'title',
+      header: '제목',
+      width: '600px',
+      render: (row) => <div className={S.ellipsis}>{row.title}</div>,
+    },
+    { key: 'createdAt', header: '작성일', width: '200px' },
     {
       key: 'isPublic',
       header: '공개여부',
+      width: '200px',
       render: (row) => (
         <div className={S.actionBox}>
           {row.isPublic ? (
@@ -77,25 +112,20 @@ export default function NoticeListPage() {
     },
   ]
 
-  const filteredNotices = useMemo(() => {
-    return notices.filter((notice) => notice.title.includes(searchKeyword))
-  }, [notices, searchKeyword])
-
-  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE))
-
-  const pagedNotices = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE
-    const end = start + PAGE_SIZE
-    return filteredNotices.slice(start, end)
-  }, [filteredNotices, currentPage])
-
   const handleSearch = () => {
     setSearchKeyword(keyword)
     setCurrentPage(1)
   }
 
   const handleDelete = () => {
-    console.log('삭제')
+    if (selectedIds.length === 0) {
+      alert('삭제할 공지사항을 선택해주세요.')
+      return
+    }
+
+    setNotices((prev) => prev.filter((notice) => !selectedIds.includes(notice.no)))
+    setSelectedIds([])
+    setCurrentPage(1)
   }
 
   const handleCreate = () => {
