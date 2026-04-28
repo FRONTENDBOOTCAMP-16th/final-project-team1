@@ -8,9 +8,16 @@ export default function ComboBox({
     className,
     ...rest
 }: ComboBoxProps) {
-    const wrapperClassName = [S.comboBox,  className]
+    const wrapperClassName = [S.comboBox, className]
         .filter(Boolean)
         .join(' ');
+
+    // options를 통일된 객체 배열로 정규화
+    const normalizedOptions = options.map((opt) =>
+        typeof opt === 'string'
+            ? { value: opt, label: opt }
+            : opt
+    );
 
     return (
         <div className={wrapperClassName}>
@@ -25,9 +32,9 @@ export default function ComboBox({
                         {placeholder}
                     </option>
                 )}
-                {options.map((option) => (
-                    <option key={option} value={option}>
-                        {option}
+                {normalizedOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                        {opt.label}
                     </option>
                 ))}
             </select>
