@@ -177,6 +177,14 @@ export default function LoginPage() {
   }
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
 
+  const countCardData = {
+    attendaceRate: 92.74,
+    presentCount: 230,
+    lateCount: 16,
+    absentCount: 2,
+    leavePendingCount: 14,
+  }
+
   useEffect(() => {
     const fetchSummary = async () => {
       try {
