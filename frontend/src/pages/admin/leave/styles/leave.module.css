@@ -74,7 +74,7 @@
   }
 
   th {
-    font-weight: 700;
+    font-weight: var(--Bd);
     font-size: var(--border-radius-xl);
     color: var(--default-black);
   }

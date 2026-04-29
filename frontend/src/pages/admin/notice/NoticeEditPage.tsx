@@ -8,7 +8,7 @@ import 'react-quill-new/dist/quill.snow.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import S from './styles/noticeEditor.module.css'
 
-export default function NoticeCreatePage() {
+export default function NoticeEditPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
