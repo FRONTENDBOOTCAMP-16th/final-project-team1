@@ -1,4 +1,5 @@
 import { Search, Plus, ChevronDown } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import comboStyle from '@/components/common/comboBox/comboBox.module.css'
 import searchStyle from '@/components/common/search/search.module.css'
@@ -18,6 +19,8 @@ export default function StudentFilterBar({
   onChangeCourse,
   onSearch,
 }: Props) {
+  const navigate = useNavigate()
+
   return (
     <div
       style={{
@@ -63,7 +66,11 @@ export default function StudentFilterBar({
         검색
       </button>
 
-      <button type="button" className="add-button">
+      <button
+        type="button"
+        onClick={() => navigate('/admin/student/create')}
+        className="add-button"
+      >
         <Plus size={16} />
         신규학생 추가
       </button>
