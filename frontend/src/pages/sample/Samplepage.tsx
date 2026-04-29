@@ -450,6 +450,10 @@ export default function LoginPage() {
     /* 모달 컴포넌트 */
   }
   const [open, setOpen] = useState(false)
+  const [buttonType, setButtonType] = useState<'none' | 'one' | 'two'>('none')
+  const handleOk = () => {
+    setOpen(false)
+  }
   {
     /* // 모달 컴포넌트 */
   }
@@ -643,19 +647,43 @@ export default function LoginPage() {
 
       {/* 팝업창 컴포넌트 */}
       <h3 style={{ textAlign: 'left' }}>8. 팝업창 컴포넌트 샘플</h3>
-      <div style={{ display: 'flex', gap: '16px' }}></div>
 
-      <button onClick={() => setOpen(true)}>입실/퇴실</button>
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <button
+          onClick={() => {
+            setButtonType('none')
+            setOpen(true)
+          }}
+        >
+          버튼 없음
+        </button>
+
+        <button
+          onClick={() => {
+            setButtonType('one')
+            setOpen(true)
+          }}
+        >
+          버튼 1개
+        </button>
+
+        <button
+          onClick={() => {
+            setButtonType('two')
+            setOpen(true)
+          }}
+        >
+          버튼 2개
+        </button>
+      </div>
 
       <Modal
         isOpen={open}
-        title="멋쟁이사자처럼"
         onClose={() => setOpen(false)}
-        onConfirm={() => {
-          setOpen(false)
-        }}
+        onConfirm={handleOk}
+        buttonType={buttonType}
       >
-        입실하시겠습니까?
+        내용을 확인해 주세요
       </Modal>
       {/* //팝업창 컴포넌트 */}
     </div>
