@@ -1,0 +1,17 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.left {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.right {
+  display: flex;
+  gap: 8px;
+}

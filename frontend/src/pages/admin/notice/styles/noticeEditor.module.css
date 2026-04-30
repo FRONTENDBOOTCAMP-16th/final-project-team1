@@ -1,0 +1,108 @@
+.page {
+  margin: 40px 0 0;
+
+  .btn {
+    display: inline-block;
+    width: 100%;
+    margin: 20px 0 0;
+    text-align: right;
+  }
+}
+
+.formGroup {
+  text-align: left;
+  margin: 24px 0 0;
+
+  &:first-child {
+    margin: 0;
+  }
+
+  .title {
+    display: inline-block;
+    margin: 0 0 10px 0;
+    font-weight: var(--SBd);
+    font-size: var(--border-radius-xl);
+    color: rgba(17, 17, 17, 0.7);
+  }
+
+  .input {
+    width: 100%;
+    height: 65px;
+    padding: 0 24px;
+    border: 2px solid var(--border-gray);
+    border-radius: 10px;
+    font-weight: var(--Md);
+    font-size: 20px;
+    color: rgba(17, 17, 17, 0.7);
+    
+    &::placeholder {
+      color: rgba(17, 17, 17, 0.3);
+    }
+  }
+}
+
+
+/***** ReactQuill *****/
+.editor {
+  width: 100%;
+}
+
+/* toolbar */
+.editor :global(.ql-toolbar) {
+  height: 49px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 2px solid var(--border-gray);
+  border-bottom: 1px solid var(--border-gray);
+  border-radius: 10px 10px 0 0;
+  background-color: #fafafa;
+}
+
+/* 버튼 간격 */
+.editor :global(.ql-toolbar button) {
+  width: 32px;
+  height: 32px;
+}
+
+/* 구분선 느낌 */
+.editor :global(.ql-formats) {
+  margin: 0 8px 0 0;
+  padding: 0 8px 0 0;
+  border-right: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.editor :global(.ql-formats:last-child) {
+  border-right: none;
+}
+
+/* 입력 영역 */
+.editor :global(.ql-container) {
+  height: 365px;
+  background: var(--white);
+  border: 2px solid #dddddd;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  font-size: var(--sub-title);
+  line-height: 28px;
+}
+
+/* 실제 글 입력 부분 */
+.editor :global(.ql-editor) {
+  padding: 24px;
+}
+
+/* placeholder */
+.editor :global(.ql-editor.ql-blank::before) {
+  left: 24px;
+  color: rgba(17, 17, 17, 0.3);
+}
+
+/* 글씨체 기울임 */
+.editor :global(.ql-editor em),
+.editor :global(.ql-editor i) {
+  display: inline-block;
+  font-style: italic !important;
+  transform: skewX(-10deg);
+}
+/***** //ReactQuill *****/

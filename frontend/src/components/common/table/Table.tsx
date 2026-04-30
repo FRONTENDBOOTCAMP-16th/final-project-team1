@@ -1,7 +1,18 @@
 import S from './table.module.css'
 import type { CommonTableProps } from './table.types'
 
-export default function CommonTable<T>({ columns, data, rowKey }: CommonTableProps<T>) {
+export default function CommonTable<T>({
+  columns,
+  data,
+  rowKey,
+  totalCount,
+  currentPage = 1,
+  pageSize = 12,
+  countLabel = '명',
+}: CommonTableProps<T>) {
+  const startCount = (currentPage - 1) * pageSize + 1
+  const endCount = Math.min(currentPage * pageSize, totalCount ?? data.length)
+
   return (
     <div className={S.tableBox}>
       <table className={S.table}>
@@ -19,17 +30,33 @@ export default function CommonTable<T>({ columns, data, rowKey }: CommonTablePro
         </thead>
 
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowKey ? rowKey(row, rowIndex) : rowIndex}>
-              {columns.map((column) => (
-                <td key={String(column.key)} style={{ textAlign: column.align ?? 'center' }}>
-                  {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
-                </td>
-              ))}
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className={S.empty}>
+                검색 결과가 없습니다.
+              </td>
             </tr>
-          ))}
+          ) : (
+            data.map((row, rowIndex) => (
+              <tr key={rowKey ? rowKey(row, rowIndex) : rowIndex}>
+                {columns.map((column) => (
+                  <td key={String(column.key)} style={{ textAlign: column.align ?? 'center' }}>
+                    {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
+
+      {totalCount !== undefined && (
+        <div className={S.tableFooter}>
+          총 {totalCount}
+          {countLabel} 중 {startCount}-{endCount}
+          {countLabel} 표시
+        </div>
+      )}
     </div>
   )
 }

@@ -1,0 +1,102 @@
+section {
+  margin: 30px 0 0;
+}
+
+.count_box {
+  display: flex;
+  gap: 16px;
+}
+
+.filter_box {
+  display: flex;
+  justify-content: flex-end;
+
+  .date_box {
+    display: flex;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+.tableBox {
+  .tit,
+  .name {
+    color: var(--default-black);
+  }
+
+  .statusBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 102px;
+    height: 30px;
+    padding: 0 5px;
+    border-radius: 20px;
+    font-weight: var(--Md);
+    font-size: var(--sub-title);
+    line-height: var(--big-title);
+  }
+
+  .attendanceComplete {
+    color: #00a84f;
+    border: 1px solid #00c853;
+    background-color: #effff5;
+  }
+
+  .attendanceLate {
+    color: #f59f00;
+    border: 1px solid #ffb300;
+    background-color: #fffaf0;
+  }
+
+  .attendanceAbsent {
+    color: #ff3b30;
+    border: 1px solid #ff4d4f;
+    background-color: #fff1f0;
+  }
+
+  .ellipsis {
+    display: inline-block;
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  thead {
+    height: 53px;
+    background: #f5f5f5;
+  }
+
+  tr {
+    border-top: 1px solid #e5e5e5;
+    &:first-child {
+      border: none;
+    }
+  }
+
+  th {
+    font-weight: var(--Bd);
+    font-size: var(--border-radius-xl);
+      color: var(--default-black);
+  }
+
+  td {
+    height: 73px;
+    font-size: var(--border-radius-xl);
+    line-height: 20px;
+    color: #666666;
+
+    .tit {
+      color: var(--default-black);
+    }
+  }
+}
+
+
