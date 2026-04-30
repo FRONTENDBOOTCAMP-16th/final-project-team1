@@ -1,23 +1,32 @@
+.leaveContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+}
+
+
+.ButtonBox{
+  display:flex;
+  flex-flow: nowrap row;
+  justify-content: space-between;
+  gap: 30px;
+  padding-block:30px;
+
+  .leftButton{
+    display: flex;
+    gap: 10px;
+  }
+}
+
 .tableBox {
   width: 100%;
-  margin: 30px 0;
-  background-color: #fff;
   border: 2px solid #e5e5e5;
   border-radius: 16px;
   overflow: hidden;
+  background-color: #fff;
 }
 
-.circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: 0 10px 0 0;
-  border-radius: 50%;
-  background-color: var(--default-orange);
-  color: #fff;;
-}
 
 .tit,
 .name {
@@ -148,9 +157,6 @@
 
   tr {
     border-top: 1px solid #e5e5e5;
-    &:first-child {
-      border: none;
-    }
   }
 
   th {
@@ -171,20 +177,35 @@
   }
 }
 
-.tableFooter {
-  display: flex;
-  align-items: center;
-  height: 64px;
-  padding: 0 24px;
-  border-top: 1px solid #e5e5e5;
-  font-size: 14px;
-  color: #666;
+
+
+/* ===========================================
+   휴가 종류 배지 (각각 다른 색)
+   =========================================== */
+.reasonPersonal {
+    color: var(--default-black);
+    background-color: #F0F0F0;
+    border: 1px solid var(--default-gray);
+    border-radius: var(--border-radius-md);
 }
 
-.empty {
-  height: 160px;
-  text-align: center;
-  color: #999;
-  font-size: 14px;
+/* ===========================================
+   처리상태 배지
+   =========================================== */
+.statusPending {
+    color: #f59f00;
+    border: 1px solid #ffb300;
+    background-color: #fffaf0;
 }
 
+.statusApproved {
+    color: #00a84f;
+    border: 1px solid #00c853;
+    background-color: #effff5;
+}
+
+.statusRejected {
+    color: #ff3b30;
+    border: 1px solid #ff4d4f;
+    background-color: #fff1f0;
+}

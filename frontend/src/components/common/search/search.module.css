@@ -1,16 +1,59 @@
-.searchBar{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  block-size: 34px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.filterRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-  .searchInput {
+.comboArea {
     flex: 1;
+}
+
+.searchArea {
+    flex: 3;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    inline-size: 100%;
+    block-size: 44px;
+    padding-inline: 16px;                  
+    padding-block: 0;
+    margin-block-start: 30px;
+               
+    border: 2px solid #E5E5E5;       
+    border-radius: 8px;
+    
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* 포커스 시 강조 */
+.searchBar:focus-within {
+    background-color: var(--white);
+    border-color: var(--default-orange);
+}
+
+/* 돋보기 아이콘 */
+.searchBar > svg {
+    flex-shrink: 0;
+    color: #666;
+}
+
+/* input */
+.searchInput {
+    flex: 1;
+    
+    background: transparent;                /* 부모 배경 보이게 */
     border: none;
     outline: none;
+    
+    font-family: 'Pretendard variable';
     font-size: 14px;
-  }
+    color: var(--default-black);
+}
+
+.searchInput::placeholder {
+    color: #666666;
 }

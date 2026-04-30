@@ -1,0 +1,42 @@
+.noticeBoard{
+  inline-size: 100%;
+  block-size: auto;
+  background-color: #f5f5f5;
+  border: 2px solid var(--border-gray);
+  border-radius: var(--border-radius-xl);
+  font-family: var(--font-family);
+  overflow: hidden;
+
+  .noticeTitle{
+    padding: 30px;
+    text-align: start;
+
+    .noticeHeading{
+      font-size: 24px;
+      font-weight: var(--Bd);
+      margin-bottom: 10px;
+    }
+
+    .noticeDate{
+      font-size: var(--md-text);
+      color: #666666;
+    }
+  }
+
+  .noticeContent{
+    padding: 30px;
+    text-align: start;
+    font-size: 16px;
+    color: var(--default-black);
+    background-color: #fff;
+
+    .noticeText{
+        white-space: pre-wrap;
+    }
+  }
+
+  .returnList{
+    padding-block: 30px;
+    text-align: center;
+  }
+}

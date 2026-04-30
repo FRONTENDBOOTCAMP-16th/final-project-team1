@@ -221,3 +221,25 @@ select {
   color: #fff;
   border-color: #ff6b00;
 }
+
+.search-button,
+.add-button {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-button {
+  background-color: #333;
+  color: #fff;
+}
+
+.add-button {
+  background-color: var(--default-orange);
+  color: #fff;
+}

@@ -1,0 +1,49 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.modal {
+  inline-size: 320px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.title {
+  margin-bottom: 12px;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.content {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333333;
+}
+
+.buttonArea {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cancel {
+  padding: 6px 10px;
+  background: #dddddd;
+  border-radius: 10px;
+  border: none;
+}
+
+.confirm {
+  padding: 6px 10px;
+  background: var(--default-orange);
+  color: #ffffff;
+  border-radius: 10px;
+  border: none;
+}

@@ -2,6 +2,7 @@ import DatePicker from '@/components/common/datePicker'
 import Sidebar from '@/components/common/sidebar/Sidebar'
 import SearchBar from '@/components/common/search/search'
 import ComboBox from '@/components/common/comboBox/customComboBox'
+import NoticeBoard from '@/components/common/noticeBoard/noticeBoard'
 import { Header, Button } from '@/components'
 import {
   Plus,
@@ -28,6 +29,8 @@ import {
   getAdminDashboardSummary,
   type AdminDashboardData,
 } from '@/pages/admin/dashboard/api/dashboardApi'
+
+import Modal from '@/components/common/modal/Modal'
 
 {
   /* 테이블 컴포넌트 */
@@ -444,6 +447,18 @@ export default function LoginPage() {
     /* // 테이블 컴포넌트 */
   }
 
+  {
+    /* 모달 컴포넌트 */
+  }
+  const [open, setOpen] = useState(false)
+  const [buttonType, setButtonType] = useState<'none' | 'one' | 'two'>('none')
+  const handleOk = () => {
+    setOpen(false)
+  }
+  {
+    /* // 모달 컴포넌트 */
+  }
+
   return (
     <div>
       <Header />
@@ -573,7 +588,7 @@ export default function LoginPage() {
       {/* //검색바/콤보박스 컴포넌트 샘플 */}
 
       {/* 페이지네이션 컴포넌트 */}
-      <h3 style={{ textAlign: 'left' }}>5. 페이지네이션 컴포넌트 샘플</h3>
+      <h3 style={{ textAlign: 'left' }}>6. 페이지네이션 컴포넌트 샘플</h3>
       <div style={{ display: 'flex', gap: '16px' }}>
         <Pagination currentPage={currentPage} totalPages={10} onPageChange={setCurrentPage} />
       </div>
@@ -581,20 +596,101 @@ export default function LoginPage() {
 
       {/* 테이블 컴포넌트 */}
       <h3>6-1. 학생 관리 테이블</h3>
-      <Table columns={studentColumns} data={studentData} />
+      <Table
+        columns={studentColumns}
+        data={studentData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
       <h3>6-2. 출석 관리 테이블</h3>
-      <Table columns={attendanceColumns} data={attendanceData} />
+      <Table
+        columns={attendanceColumns}
+        data={attendanceData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
       <h3>6-3. 휴가 관리 테이블</h3>
-      <Table columns={vacationColumns} data={vacationData} />
+      <Table
+        columns={vacationColumns}
+        data={vacationData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
       <h3>6-4.공지사항 관리 테이블</h3>
-      <Table columns={noticeColumns} data={noticeData} />
+      <Table
+        columns={noticeColumns}
+        data={noticeData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
 
       <h3>6-5. 휴가신청 내역 테이블</h3>
-      <Table columns={historyColumns} data={historyData} />
+      <Table
+        columns={historyColumns}
+        data={historyData}
+        totalCount={248}
+        currentPage={1}
+        pageSize={12}
+        countLabel="명"
+      />
       {/* // 테이블 컴포넌트 */}
+
+      {/* 팝업창 컴포넌트 */}
+      <h3 style={{ textAlign: 'left' }}>8. 팝업창 컴포넌트 샘플</h3>
+
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <button
+          onClick={() => {
+            setButtonType('none')
+            setOpen(true)
+          }}
+        >
+          버튼 없음
+        </button>
+
+        <button
+          onClick={() => {
+            setButtonType('one')
+            setOpen(true)
+          }}
+        >
+          버튼 1개
+        </button>
+
+        <button
+          onClick={() => {
+            setButtonType('two')
+            setOpen(true)
+          }}
+        >
+          버튼 2개
+        </button>
+      </div>
+
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={handleOk}
+        buttonType={buttonType}
+      >
+        내용을 확인해 주세요
+      </Modal>
+      {/* //팝업창 컴포넌트 */}
+
+      {/* 공지사항 게시판 */}
+      <h3 style={{ textAlign: 'left' }}>9. 공지사항 게시판</h3>
+      <NoticeBoard title="봄학기 중간 평가 공지" date="2026.04.10" content="멋쟁이사자처럼 16기 수강생 여러분께,\n\n봄학기 중간 평가 일정을 안내드립니다." onBackClick={() => {}} />
     </div>
   )
 }

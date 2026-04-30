@@ -1,3 +1,8 @@
+import { Search, Plus, ChevronDown } from 'lucide-react'
+
+import comboStyle from '@/components/common/comboBox/comboBox.module.css'
+import searchStyle from '@/components/common/search/search.module.css'
+
 interface Props {
   keyword: string
   selectedCourse: string
@@ -14,32 +19,54 @@ export default function StudentFilterBar({
   onSearch,
 }: Props) {
   return (
-    <div className="filter-bar">
-      <select
-        value={selectedCourse}
-        onChange={(e) => onChangeCourse(e.target.value)}
-        className="course-select"
-      >
-        <option value="">강의명 콤보박스</option>
-        <option value="웹 개발 기초 과정">웹 개발 기초 과정</option>
-        <option value="모바일 앱 개발">모바일 앱 개발</option>
-        <option value="UI/UX 디자인 심화">UI/UX 디자인 심화</option>
-        <option value="프론트엔드 프레임워크">프론트엔드 프레임워크</option>
-      </select>
+    <div
+      style={{
+        display: 'flex',
+        gap: '10px',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <div className={comboStyle.comboBox}>
+          <select
+            value={selectedCourse}
+            onChange={(e) => onChangeCourse(e.target.value)}
+            className={comboStyle.comboSelect}
+          >
+            <option value="">전체 보기</option>
+            <option value="웹 개발 기초 과정">웹 개발 기초 과정</option>
+            <option value="모바일 앱 개발">모바일 앱 개발</option>
+            <option value="UI/UX 디자인 심화">UI/UX 디자인 심화</option>
+            <option value="프론트엔드 프레임워크">프론트엔드 프레임워크</option>
+          </select>
 
-      <input
-        type="text"
-        value={keyword}
-        onChange={(e) => onChangeKeyword(e.target.value)}
-        placeholder="학생 이름 또는 학번 검색"
-        className="search-input"
-      />
+          <ChevronDown className={comboStyle.arrow} size={16} />
+        </div>
+      </div>
 
-      <button onClick={onSearch} className="search-button">
+      <div style={{ flex: 3 }}>
+        <div className={searchStyle.searchBar}>
+          <Search size={16} />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => onChangeKeyword(e.target.value)}
+            placeholder="학생 이름 또는 학번 검색"
+            className={searchStyle.searchInput}
+          />
+        </div>
+      </div>
+
+      <button type="button" onClick={onSearch} className="search-button">
+        <Search size={16} />
         검색
       </button>
 
-      <button className="add-button">+ 신규학생 추가</button>
+      <button type="button" className="add-button">
+        <Plus size={16} />
+        신규학생 추가
+      </button>
     </div>
   )
 }
