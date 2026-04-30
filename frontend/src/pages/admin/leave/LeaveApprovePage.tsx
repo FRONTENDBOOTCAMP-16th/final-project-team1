@@ -97,8 +97,9 @@ export default function LeaveApprovePage() {
         const mapped = result.map(mapToVacation)
 
         setData(mapped)
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        console.error('데이터 조회 실패:', e)
+        alert('데이터를 불러오는데 실패했습니다.')
       }
     }
 
@@ -127,8 +128,14 @@ export default function LeaveApprovePage() {
           item.leaveRequestId === leaveRequestId ? { ...item, status: nextStatus } : item,
         ),
       )
-    } catch (e) {
-      console.error(e)
+    } catch (e: unknown) {
+      console.error('상태 변경 실패:', e)
+
+      if (e instanceof Error) {
+        alert(e.message)
+      } else {
+        alert('처리에 실패했습니다.')
+      }
     }
   }
 
