@@ -1,37 +1,24 @@
-import { FileText, Check, X } from 'lucide-react'
+// 외부 라이브러리
 import { useEffect, useMemo, useState } from 'react'
+import { FileText, Check } from 'lucide-react'
 
-import StatusSummary from '@/components/common/statusSummary/StatusSummary'
-import NoticeFilterBar from './components/NoticeFilterBar'
-import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
-
-import S from './styles/notice.module.css'
-import AdminLayout from '@/pages/sample/AdminLayout'
+// 공통 컴포넌트
 import { Button } from '@/components'
-
+import StatusSummary from '@/components/common/statusSummary/StatusSummary'
+import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 
-import { getRecentNoticeRequests } from './api/noticeApi'
+// 레이아웃
+import AdminLayout from '@/pages/sample/AdminLayout'
+
+// 페이지 내부 컴포넌트 / API / 스타일
+import NoticeFilterBar from './components/NoticeFilterBar'
+import { deleteNotice, getRecentNoticeRequests } from './api/noticeApi'
+import S from './styles/notice.module.css'
 
 /** 한 페이지에 보여줄 개수 */
 const PAGE_SIZE = 10
-
-/** 요약 카드 */
-const noticeSummaryCards: SummaryCard[] = [
-  {
-    label: '전체 공지',
-    count: 8,
-    color: 'orange',
-    icon: <FileText size={20} />,
-  },
-  {
-    label: '공개 중',
-    count: 6,
-    color: 'green',
-    icon: <Check size={20} />,
-  },
-]
 
 /** 서버 데이터 */
 type NoticeApiItem = {
@@ -53,7 +40,7 @@ type Notice = {
   statusText: string
 }
 
-/** 변환 함수 */
+/** 서버 데이터 → 화면 데이터 변환 */
 const mapToNotice = (item: NoticeApiItem): Notice => ({
   noticeId: item.noticeId,
   no: item.displayNo,
@@ -64,14 +51,22 @@ const mapToNotice = (item: NoticeApiItem): Notice => ({
 })
 
 export default function NoticeListPage() {
+  /** 전체 공지 데이터 */
   const [data, setData] = useState<Notice[]>([])
+
+  /** 검색어 입력값 */
   const [keyword, setKeyword] = useState('')
+
+  /** 실제 검색에 사용되는 값 */
   const [searchKeyword, setSearchKeyword] = useState('')
+
+  /** 현재 페이지 */
   const [currentPage, setCurrentPage] = useState(1)
 
+  /** 선택된 공지 ID 목록 */
   const [selectedIds, setSelectedIds] = useState<number[]>([])
 
-  /** API 호출 */
+  /** 최초 진입 시 공지 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,15 +82,33 @@ export default function NoticeListPage() {
     fetchData()
   }, [])
 
-  /** 체크박스 선택 */
-  const handleSelect = (no: number) => {
-    setSelectedIds((prev) => (prev.includes(no) ? prev.filter((id) => id !== no) : [...prev, no]))
+  /** 요약 카드 데이터 */
+  const noticeSummaryCards: SummaryCard[] = [
+    {
+      label: '전체 공지',
+      count: data.length,
+      color: 'orange',
+      icon: <FileText size={20} />,
+    },
+    {
+      label: '공개 중',
+      count: data.filter((notice) => notice.isOpen).length,
+      color: 'green',
+      icon: <Check size={20} />,
+    },
+  ]
+
+  /** 체크박스 선택 / 해제 */
+  const handleSelect = (noticeId: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(noticeId) ? prev.filter((id) => id !== noticeId) : [...prev, noticeId],
+    )
   }
 
-  /** 공개/비공개 토글 */
-  const handleTogglePublic = (no: number, value: boolean) => {
+  /** 공개 / 비공개 토글 */
+  const handleTogglePublic = (noticeId: number, value: boolean) => {
     setData((prev) =>
-      prev.map((notice) => (notice.no === no ? { ...notice, isOpen: value } : notice)),
+      prev.map((notice) => (notice.noticeId === noticeId ? { ...notice, isOpen: value } : notice)),
     )
   }
 
@@ -103,42 +116,55 @@ export default function NoticeListPage() {
   const handleSearch = () => {
     setSearchKeyword(keyword)
     setCurrentPage(1)
+    setSelectedIds([])
   }
 
-  /** 필터링 */
-  const filteredNotices = useMemo(() => {
-    return data.filter((notice) => notice.title.includes(searchKeyword))
-  }, [data, searchKeyword])
-
-  /** 페이징 */
-  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE))
-
-  const pagedNotices = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE
-    const end = start + PAGE_SIZE
-    return filteredNotices
-    .slice(start, end)
-    .map((item, index) => ({
-      ...item,
-      no: start + index + 1,
-    }))
-  }, [filteredNotices, currentPage])
-
-  /** 삭제 */
-  const handleDelete = () => {
+  /** 선택 삭제 */
+  const handleDelete = async () => {
     if (selectedIds.length === 0) {
       alert('삭제할 공지사항을 선택해주세요.')
       return
     }
 
-    setData((prev) => prev.filter((notice) => !selectedIds.includes(notice.no)))
-    setSelectedIds([])
-    setCurrentPage(1)
+    if (!confirm('선택한 공지사항을 삭제하시겠습니까?')) return
+
+    try {
+      await Promise.all(selectedIds.map((noticeId) => deleteNotice(noticeId)))
+
+      setData((prev) => prev.filter((notice) => !selectedIds.includes(notice.noticeId)))
+      setSelectedIds([])
+      setCurrentPage(1)
+
+      alert('삭제되었습니다.')
+    } catch (e) {
+      console.error('삭제 실패:', e)
+      alert('삭제에 실패했습니다.')
+    }
   }
 
+  /** 등록 */
   const handleCreate = () => {
     console.log('등록')
   }
+
+  /** 검색 필터링 */
+  const filteredNotices = useMemo(() => {
+    return data.filter((notice) => notice.title.includes(searchKeyword))
+  }, [data, searchKeyword])
+
+  /** 전체 페이지 수 */
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE))
+
+  /** 현재 페이지에 보여줄 데이터 */
+  const pagedNotices = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE
+    const end = start + PAGE_SIZE
+
+    return filteredNotices.slice(start, end).map((item, index) => ({
+      ...item,
+      no: start + index + 1,
+    }))
+  }, [filteredNotices, currentPage])
 
   /** 테이블 컬럼 */
   const noticeColumns: TableColumn<Notice>[] = [
@@ -150,8 +176,8 @@ export default function NoticeListPage() {
         <input
           type="checkbox"
           className={S.checkbox}
-          checked={selectedIds.includes(row.no)}
-          onChange={() => handleSelect(row.no)}
+          checked={selectedIds.includes(row.noticeId)}
+          onChange={() => handleSelect(row.noticeId)}
         />
       ),
     },
@@ -173,14 +199,16 @@ export default function NoticeListPage() {
             <Button
               type="button"
               variant="inactive"
-              onClick={() => handleTogglePublic(row.no, false)}
+              onClick={() => handleTogglePublic(row.noticeId, false)}
             >
-              <X size={16} />
               비공개
             </Button>
           ) : (
-            <Button type="button" variant="active" onClick={() => handleTogglePublic(row.no, true)}>
-              <Check size={16} />
+            <Button
+              type="button"
+              variant="active"
+              onClick={() => handleTogglePublic(row.noticeId, true)}
+            >
               공개
             </Button>
           )}
