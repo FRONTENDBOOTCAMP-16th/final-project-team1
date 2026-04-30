@@ -14,7 +14,12 @@ import AdminLayout from '@/pages/sample/AdminLayout'
 
 // 페이지 내부 컴포넌트 / API / 스타일
 import NoticeFilterBar from './components/NoticeFilterBar'
-import { deleteNotice, getRecentNoticeRequests } from './api/noticeApi'
+import {
+  deleteNotice,
+  getRecentNoticeRequests,
+  getNoticeDetail,
+  updateNotice,
+} from './api/noticeApi'
 import S from './styles/notice.module.css'
 
 /** 한 페이지에 보여줄 개수 */
@@ -106,10 +111,28 @@ export default function NoticeListPage() {
   }
 
   /** 공개 / 비공개 토글 */
-  const handleTogglePublic = (noticeId: number, value: boolean) => {
-    setData((prev) =>
-      prev.map((notice) => (notice.noticeId === noticeId ? { ...notice, isOpen: value } : notice)),
-    )
+  const handleTogglePublic = async (noticeId: number, value: boolean) => {
+    try {
+      // 현재 데이터에서 기존 값 가져오기
+      const target = data.find((item) => item.noticeId === noticeId)
+      if (!target) return
+
+      const detail = await getNoticeDetail(noticeId)
+
+      await updateNotice(noticeId, {
+        title: detail.title,
+        content: detail.content,
+        isOpen: value,
+      })
+
+      // 성공하면 화면 업데이트
+      setData((prev) =>
+        prev.map((item) => (item.noticeId === noticeId ? { ...item, isOpen: value } : item)),
+      )
+    } catch (e) {
+      console.error(e)
+      alert('공개 상태 변경 실패')
+    }
   }
 
   /** 검색 */
@@ -129,9 +152,12 @@ export default function NoticeListPage() {
     if (!confirm('선택한 공지사항을 삭제하시겠습니까?')) return
 
     try {
+      // 선택된 noticeId들을 서버에서 삭제
       await Promise.all(selectedIds.map((noticeId) => deleteNotice(noticeId)))
 
+      // 삭제 성공 후 화면에서도 제거
       setData((prev) => prev.filter((notice) => !selectedIds.includes(notice.noticeId)))
+
       setSelectedIds([])
       setCurrentPage(1)
 
