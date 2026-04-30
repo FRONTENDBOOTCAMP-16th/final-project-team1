@@ -2,8 +2,8 @@ import StudentLayout from "@/pages/sample/StudentLayout"
 import Button from "@/components/common/button/ui/button"
 import CommonTable from "@/components/common/table/Table"
 import type { TableColumn } from "@/components/common/table/table.types"
-import { Plus, Check, X, Clock } from 'lucide-react'
-import type { ReactNode } from "react"
+import { Plus } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import S from './styles/leave.module.css'
 
 // ==========================================
@@ -23,17 +23,14 @@ interface VacationHistory {
 // ==========================================
 // 2. 처리상태 맵 (3가지 색상 구분)
 // ==========================================
-const statusMap: Record<VacationResultStatus, { icon: ReactNode; className: string }> = {
+const statusMap: Record<VacationResultStatus, { className: string }> = {
     '승인 대기': {
-        icon: <Clock size={14} />,
         className: S.statusPending,
     },
     '승인 완료': {
-        icon: <Check size={14} />,
         className: S.statusApproved,
     },
     '반려': {
-        icon: <X size={14} />,
         className: S.statusRejected,
     },
 }
@@ -42,6 +39,8 @@ const statusMap: Record<VacationResultStatus, { icon: ReactNode; className: stri
 // 3. 메인 컴포넌트
 // ==========================================
 function LeaveListPage() {
+   const navigate = useNavigate()   
+
     const historyColumns: TableColumn<VacationHistory>[] = [
         { key: 'studentNo', header: '학번' },
         {
@@ -61,7 +60,6 @@ function LeaveListPage() {
                 const result = statusMap[row.status]
                 return (
                     <span className={`${S.statusBadge} ${result.className}`}>
-                        {result.icon}
                         {row.status}
                     </span>
                 )
@@ -94,7 +92,7 @@ function LeaveListPage() {
     ]
 
     return (
-        <div className={S.leaveListContainer}>
+        <div className={S.leaveContainer}>
             <StudentLayout>
                 <div className={S.ButtonBox}>
                     <div className={S.leftButton}>
@@ -103,7 +101,7 @@ function LeaveListPage() {
                         <Button variant="blank">완료</Button>         
                     </div>
                     <div className={S.rightButton}>
-                        <Button variant="primary">
+                        <Button variant="primary" onClick={() => navigate('/student/leave/request')} >
                             <Plus size={16} />
                             휴가신청 하기
                         </Button>
