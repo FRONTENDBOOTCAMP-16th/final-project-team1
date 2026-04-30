@@ -181,7 +181,8 @@ export default function AdminDashboardPage() {
         </div>
 
         <section className={S.recentLeave}>
-          <h3>휴가 관리 테이블</h3>
+          <h3>최근 휴가 신청 내역</h3>
+
           <Table
             columns={vacationColumns}
             data={vacationData}
@@ -191,11 +192,13 @@ export default function AdminDashboardPage() {
             countLabel="명"
           />
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          <div className={S.paginationBox}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </section>
       </div>
     </AdminLayout>

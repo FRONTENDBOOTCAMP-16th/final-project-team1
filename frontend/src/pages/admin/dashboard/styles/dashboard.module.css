@@ -174,3 +174,21 @@
   align-items: center;
   gap: 6px;
 }
+
+.recentLeave {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 8px;
+}
+
+.recentLeave h3 {
+  margin: 0;
+  align-self: flex-start;
+}
+
+.paginationBox {
+  display: flex;
+  justify-content: center;
+}
