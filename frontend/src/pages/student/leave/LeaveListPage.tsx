@@ -1,5 +1,6 @@
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Button from "@/components/common/button/ui/button"
+import Pagination from "@/pages/admin/student/components/Pagination"
 import CommonTable from "@/components/common/table/Table"
 import type { TableColumn } from "@/components/common/table/table.types"
 import { Plus } from 'lucide-react'
@@ -20,6 +21,12 @@ interface VacationHistory {
     status: VacationResultStatus
 }
 
+interface PaginationProps {
+    currentPage: number      
+    totalPages: number     
+    onChangePage: (page: number) => void 
+}
+
 // ==========================================
 // 2. 처리상태 맵 (3가지 색상 구분)
 // ==========================================
@@ -33,6 +40,12 @@ const statusMap: Record<VacationResultStatus, { className: string }> = {
     '반려': {
         className: S.statusRejected,
     },
+}
+
+const paginationConfig: PaginationProps = {
+    currentPage: 1,
+    totalPages: 5,
+    onChangePage: () => {},
 }
 
 // ==========================================
@@ -113,6 +126,7 @@ function LeaveListPage() {
                     data={historyData}
                     rowKey={(row) => row.leaveRequestId}
                 />
+                <Pagination {...paginationConfig} />
             </StudentLayout>
         </div>
     )

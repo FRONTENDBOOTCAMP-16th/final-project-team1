@@ -21,8 +21,8 @@
 
 .tableBox {
   width: 100%;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
+  border: 2px solid #e5e5e5;
+  border-radius: 16px;
   overflow: hidden;
   background-color: #fff;
 }
