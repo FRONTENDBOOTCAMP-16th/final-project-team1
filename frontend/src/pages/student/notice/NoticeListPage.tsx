@@ -1,11 +1,14 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Table from "@/components/common/table/Table"
 import type { TableColumn } from "@/components/common/table/table.types"
-import S from './styles/noticeList.module.css'
 import { SearchBar } from "@/components"
+import Pagination from "@/pages/admin/student/components/Pagination"
+import S from './styles/noticeList.module.css'
 
 // ==========================================
-// 1. 타입 정의 (페이지 안에서)
+// 1. 타입 정의
 // ==========================================
 interface Notice {
     noticeId: number
@@ -17,14 +20,30 @@ interface Notice {
 // 2. 메인 컴포넌트
 // ==========================================
 function NoticeListPage() {
-    // 컬럼 정의 (페이지 안에서)
+    const navigate = useNavigate()
+    const [currentPage, setCurrentPage] = useState(1)
+
+    // 컬럼 정의
     const noticeColumns: TableColumn<Notice>[] = [
         { key: 'noticeId', header: '번호', width: '100px' },
-        { key: 'title', header: '제목', align: 'left' },
+        {
+            key: 'title',
+            header: '제목',
+            align: 'left',
+            render: (row) => (
+                <button
+                    type="button"
+                    className={S.TitleButton}
+                    onClick={() => navigate(`/student/notice/${row.noticeId}`)}
+                >
+                    {row.title}
+                </button>
+            ),
+        },
         { key: 'createdDate', header: '작성일', width: '150px' },
     ]
 
-    // 가상 데이터 (페이지 안에서, 나중에 API로 교체)
+    // 가상 데이터
     const noticeData: Notice[] = [
         {
             noticeId: 1,
@@ -51,7 +70,12 @@ function NoticeListPage() {
                     columns={noticeColumns} 
                     data={noticeData}
                     rowKey={(row) => row.noticeId}
-                />  
+                />
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={5}
+                    onChangePage={setCurrentPage}
+                />
             </StudentLayout>
         </div>
     )

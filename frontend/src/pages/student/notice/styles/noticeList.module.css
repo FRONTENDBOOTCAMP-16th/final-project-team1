@@ -1,0 +1,27 @@
+.noticeListContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    inline-size: 100%;
+}
+
+/* 제목 클릭 버튼 (link처럼 보이게) */
+.TitleButton {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--default-black);
+    text-align: left;
+    
+    transition: color 0.2s ease;
+}
+
+.TitleButton:hover {
+    color: var(--default-orange);
+    text-decoration: underline;
+}
