@@ -1,24 +1,23 @@
 import { FileText, Check, X } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import StatusSummary from '@/components/common/statusSummary/StatusSummary'
 import NoticeFilterBar from './components/NoticeFilterBar'
-
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 
 import S from './styles/notice.module.css'
-
 import AdminLayout from '@/pages/sample/AdminLayout'
 import { Button } from '@/components'
 
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 
-import type { Notice } from './data/noticeData'
-import { noticeData } from './data/noticeData'
+import { getRecentNoticeRequests } from './api/noticeApi'
 
+/** 한 페이지에 보여줄 개수 */
 const PAGE_SIZE = 10
 
+/** 요약 카드 */
 const noticeSummaryCards: SummaryCard[] = [
   {
     label: '전체 공지',
@@ -34,36 +33,114 @@ const noticeSummaryCards: SummaryCard[] = [
   },
 ]
 
+/** 서버 데이터 */
+type NoticeApiItem = {
+  noticeId: number
+  displayNo: number
+  title: string
+  createdDate: string
+  isOpen: boolean
+  openStatusName: string
+}
+
+/** 화면 데이터 */
+type Notice = {
+  noticeId: number
+  no: number
+  title: string
+  createdDate: string
+  isOpen: boolean
+  statusText: string
+}
+
+/** 변환 함수 */
+const mapToNotice = (item: NoticeApiItem): Notice => ({
+  noticeId: item.noticeId,
+  no: item.displayNo,
+  title: item.title,
+  createdDate: item.createdDate,
+  isOpen: item.isOpen,
+  statusText: item.openStatusName,
+})
+
 export default function NoticeListPage() {
+  const [data, setData] = useState<Notice[]>([])
   const [keyword, setKeyword] = useState('')
   const [searchKeyword, setSearchKeyword] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
-  const [notices, setNotices] = useState<Notice[]>(noticeData)
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
 
-  const handleSelect = (no: string) => {
+  /** API 호출 */
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getRecentNoticeRequests()
+        const mapped = result.map(mapToNotice)
+        setData(mapped)
+      } catch (e) {
+        console.error('데이터 조회 실패:', e)
+        alert('데이터를 불러오는데 실패했습니다.')
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  /** 체크박스 선택 */
+  const handleSelect = (no: number) => {
     setSelectedIds((prev) => (prev.includes(no) ? prev.filter((id) => id !== no) : [...prev, no]))
   }
 
-  const handleTogglePublic = (no: string, value: boolean) => {
-    setNotices((prev) =>
-      prev.map((notice) => (notice.no === no ? { ...notice, isPublic: value } : notice)),
+  /** 공개/비공개 토글 */
+  const handleTogglePublic = (no: number, value: boolean) => {
+    setData((prev) =>
+      prev.map((notice) => (notice.no === no ? { ...notice, isOpen: value } : notice)),
     )
   }
 
-  const filteredNotices = useMemo(() => {
-    return notices.filter((notice) => notice.title.includes(searchKeyword))
-  }, [notices, searchKeyword])
+  /** 검색 */
+  const handleSearch = () => {
+    setSearchKeyword(keyword)
+    setCurrentPage(1)
+  }
 
+  /** 필터링 */
+  const filteredNotices = useMemo(() => {
+    return data.filter((notice) => notice.title.includes(searchKeyword))
+  }, [data, searchKeyword])
+
+  /** 페이징 */
   const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE))
 
   const pagedNotices = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE
     const end = start + PAGE_SIZE
-    return filteredNotices.slice(start, end)
+    return filteredNotices
+    .slice(start, end)
+    .map((item, index) => ({
+      ...item,
+      no: start + index + 1,
+    }))
   }, [filteredNotices, currentPage])
 
+  /** 삭제 */
+  const handleDelete = () => {
+    if (selectedIds.length === 0) {
+      alert('삭제할 공지사항을 선택해주세요.')
+      return
+    }
+
+    setData((prev) => prev.filter((notice) => !selectedIds.includes(notice.no)))
+    setSelectedIds([])
+    setCurrentPage(1)
+  }
+
+  const handleCreate = () => {
+    console.log('등록')
+  }
+
+  /** 테이블 컬럼 */
   const noticeColumns: TableColumn<Notice>[] = [
     {
       key: 'checkbox',
@@ -85,14 +162,14 @@ export default function NoticeListPage() {
       width: '600px',
       render: (row) => <div className={S.ellipsis}>{row.title}</div>,
     },
-    { key: 'createdAt', header: '작성일', width: '200px' },
+    { key: 'createdDate', header: '작성일', width: '200px' },
     {
-      key: 'isPublic',
+      key: 'isOpen',
       header: '공개여부',
       width: '200px',
       render: (row) => (
         <div className={S.actionBox}>
-          {row.isPublic ? (
+          {row.isOpen ? (
             <Button
               type="button"
               variant="inactive"
@@ -112,26 +189,6 @@ export default function NoticeListPage() {
     },
   ]
 
-  const handleSearch = () => {
-    setSearchKeyword(keyword)
-    setCurrentPage(1)
-  }
-
-  const handleDelete = () => {
-    if (selectedIds.length === 0) {
-      alert('삭제할 공지사항을 선택해주세요.')
-      return
-    }
-
-    setNotices((prev) => prev.filter((notice) => !selectedIds.includes(notice.no)))
-    setSelectedIds([])
-    setCurrentPage(1)
-  }
-
-  const handleCreate = () => {
-    console.log('등록')
-  }
-
   return (
     <AdminLayout>
       <div className={S.page}>
@@ -149,16 +206,15 @@ export default function NoticeListPage() {
               onCreate={handleCreate}
             />
 
-            <Table
-              columns={noticeColumns}
-              data={pagedNotices}
-              totalCount={filteredNotices.length}
-              currentPage={currentPage}
-              pageSize={PAGE_SIZE}
-              countLabel="건"
-            />
+            <Table columns={noticeColumns} data={pagedNotices} />
 
-            <div className={S.paginationBox}>
+            <div className={S.table_footer}>
+              <span>
+                총 {filteredNotices.length}건 중{' '}
+                {filteredNotices.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
+                {Math.min(currentPage * PAGE_SIZE, filteredNotices.length)}건 표시
+              </span>
+
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
