@@ -57,11 +57,14 @@ export default function StudentFilterBar({
             onChange={(e) => onChangeKeyword(e.target.value)}
             placeholder="학생 이름 또는 학번 검색"
             className={searchStyle.searchInput}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSearch()
+            }}
           />
         </div>
       </div>
 
-      <button type="button" onClick={onSearch} className="search-button">
+      <button type="button" onClick={onSearch} className="button primary">
         <Search size={16} />
         검색
       </button>

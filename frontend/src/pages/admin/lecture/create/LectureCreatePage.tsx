@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import styles from './LectureCreatePage.module.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
-import { createLecture } from '../api/lecture.api'
+
+import styles from './LectureCreatePage.module.css'
+import AdminLayout from '@/pages/sample/AdminLayout'
+
 interface LectureCreateForm {
   className: string
   startDate: string
