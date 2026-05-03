@@ -22,6 +22,7 @@ import com.checkmate.team1.dto.CreateClassResponse;
 import com.checkmate.team1.dto.UpdateClassRequest;
 import com.checkmate.team1.dto.UpdateClassResponse;
 import com.checkmate.team1.dto.DeleteClassResponse;
+import org.springframework.data.domain.Sort;
 
 @Service
 @RequiredArgsConstructor
@@ -87,7 +88,14 @@ public class AdminClassService {
             int size
     ) {
 
-        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        PageRequest pageRequest = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(
+                        Sort.Order.desc("startDate"),
+                        Sort.Order.desc("endDate")
+                )
+        );
 
         Page<Classes> classPage;
 

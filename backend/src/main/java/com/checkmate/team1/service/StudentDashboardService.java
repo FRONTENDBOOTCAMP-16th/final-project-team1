@@ -1,7 +1,5 @@
 package com.checkmate.team1.service;
 
-import com.checkmate.team1.dto.ChangePasswordRequest;
-import com.checkmate.team1.dto.ChangePasswordResponse;
 import com.checkmate.team1.dto.StudentDashboardResponse;
 import com.checkmate.team1.entity.Attendance;
 import com.checkmate.team1.entity.Classes;
@@ -58,42 +56,6 @@ public class StudentDashboardService {
                 .studentId(student.getStudentId())
                 .className(classes != null ? classes.getClassName() : null)
                 .email(student.getEmail())
-                .build();
-    }
-
-    public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
-
-        Student student = studentRepository.findById(request.getStudentId())
-                .orElse(null);
-
-        if (student == null) {
-            return ChangePasswordResponse.builder()
-                    .changed(false)
-                    .message("학생 정보를 찾을 수 없습니다.")
-                    .build();
-        }
-
-        if (!student.getPassword().equals(request.getCurrentPassword())) {
-            return ChangePasswordResponse.builder()
-                    .changed(false)
-                    .message("현재 비밀번호가 일치하지 않습니다.")
-                    .build();
-        }
-
-        if (student.getPassword().equals(request.getNewPassword())) {
-            return ChangePasswordResponse.builder()
-                    .changed(false)
-                    .message("기존 비밀번호와 동일한 비밀번호입니다.")
-                    .build();
-        }
-
-        student.changePassword(request.getNewPassword());
-
-        studentRepository.save(student);
-
-        return ChangePasswordResponse.builder()
-                .changed(true)
-                .message("비밀번호가 변경되었습니다.")
                 .build();
     }
 }

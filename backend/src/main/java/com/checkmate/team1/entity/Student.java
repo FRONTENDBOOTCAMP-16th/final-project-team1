@@ -26,7 +26,7 @@ public class Student {
     @Column(name = "password_yn")
     private Boolean passwordYn;
 
-    @Column(name = "phone_number", length = 100)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 100)
     private String phoneNumber;
 
     @Column(name = "email", length = 100)
@@ -58,11 +58,6 @@ public class Student {
         this.studentStatusCode = studentStatusCode;
     }
 
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
-        this.passwordYn = false;
-    }
-
     public void updateStudent(
             String name,
             String phoneNumber,
@@ -75,5 +70,9 @@ public class Student {
         this.email = email;
         this.classId = classId;
         this.studentStatusCode = studentStatusCode;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
     }
 }
