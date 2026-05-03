@@ -68,10 +68,6 @@
   text-align: left;
 }
 
-.chartSection {
-  inline-size: 100%;
-}
-
 .chartPlaceholder {
   display: flex;
   justify-content: center;
@@ -191,4 +187,124 @@
 .paginationBox {
   display: flex;
   justify-content: center;
+}
+
+.chartSection {
+  inline-size: 100%;
+}
+
+.chartSection .container {
+  inline-size: 100%;
+}
+
+.chartItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barTrack {
+  display: flex;
+  overflow: hidden;
+
+  inline-size: 100%;
+  block-size: 14px;
+
+  background: #f1f3f5;
+  border-radius: 999px;
+}
+
+.attendanceChartSection {
+  display: flex;
+  flex-direction: column;
+
+  inline-size: 100%;
+}
+
+.sectionTitle {
+  margin: 0 0 18px;
+
+  font-weight: 800;
+  font-size: 22px;
+  color: #111111;
+  text-align: left;
+}
+
+.chartList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.courseName {
+  font-weight: 700;
+  font-size: 16px;
+  color: #333333;
+}
+
+.totalCount {
+  font-size: 14px;
+  color: #666666;
+}
+
+.presentBar,
+.lateBar,
+.absentBar {
+  block-size: 100%;
+}
+
+.presentBar {
+  background: #00b050;
+}
+
+.lateBar {
+  background: #ffc000;
+}
+
+.absentBar {
+  background: #e60000;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 2px;
+
+  font-size: 11px;
+  color: #777777;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend span::before {
+  content: '';
+
+  inline-size: 7px;
+  block-size: 7px;
+
+  border-radius: 50%;
+}
+
+.presentDot::before {
+  background: #00b050;
+}
+
+.lateDot::before {
+  background: #ffc000;
+}
+
+.absentDot::before {
+  background: #e60000;
 }
