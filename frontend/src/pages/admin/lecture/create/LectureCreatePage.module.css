@@ -1,0 +1,164 @@
+.page {
+  padding: 24px 32px;
+  background-color: #ffffff;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.formGroup label {
+  color: #111111;
+  text-align: left;
+  font-weight: 700;
+}
+
+.formGroup input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border: 2px solid #dedede;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #111111;
+  font-size: 15px;
+  outline: none;
+}
+
+.formGroup input::placeholder {
+  color: #9ca3af;
+}
+
+.formGroup input:focus {
+  border-color: #e7642a;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.buttonArea {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+
+.submitButton {
+  width: 135px;
+  height: 53px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e7642a;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #d95b22;
+}
+
+.statusBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 16px 0 48px;
+  padding: 24px 28px;
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  background-color: #fafafa;
+}
+
+.statusTitle {
+  display: block;
+  margin-bottom: 8px;
+  color: #111111;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.statusDesc {
+  margin: 0;
+  color: #777777;
+  font-size: 14px;
+}
+
+.statusAction {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progressBadge,
+.completedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.progressBadge {
+  border: 1.5px solid #f06b2f;
+  background-color: #fff7f2;
+  color: #e7642a;
+}
+
+.completedBadge {
+  border: 1.5px solid #4aa3ff;
+  background-color: #eef7ff;
+  color: #3b9af5;
+}
+
+.completeButton {
+  height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e7642a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.buttonArea {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelButton {
+  width: 120px;
+  height: 48px;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #444444;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton {
+  width: 120px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e7642a;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
