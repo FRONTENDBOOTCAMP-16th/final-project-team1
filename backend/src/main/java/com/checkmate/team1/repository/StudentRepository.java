@@ -42,4 +42,10 @@ public interface StudentRepository extends JpaRepository<Student, String> {
     );
 
     List<Student> findByClassId(Integer classId);
+
+    Optional<Student> findTopByStudentIdStartingWithOrderByStudentIdDesc(String prefix);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumberAndStudentIdNot(String phoneNumber, String studentId);
 }

@@ -26,7 +26,7 @@ public class Student {
     @Column(name = "password_yn")
     private Boolean passwordYn;
 
-    @Column(name = "phone_number", length = 100)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 100)
     private String phoneNumber;
 
     @Column(name = "email", length = 100)
