@@ -1,11 +1,12 @@
 package com.checkmate.team1.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-public class ChangePasswordRequest {
+@NoArgsConstructor
+public class ResetPasswordRequest {
 
     private String studentId;
-    private String currentPassword;
     private String newPassword;
 }
