@@ -7,7 +7,7 @@ import {
   getAdminDashboardSummary,
   type AdminDashboardData,
 } from '@/pages/admin/dashboard/api/dashboardApi'
-// import AttendanceStatusChart from './components/AttendanceStatusChart'
+import AttendanceStatusChart from '@/pages/admin/dashboard/components/AttendanceStatusChart'
 import SystemNoticeList from './components/NoticeList'
 import Table, { type TableColumn } from '@/components/common/table'
 import { Button } from '@/components'
@@ -172,7 +172,9 @@ export default function AdminDashboardPage() {
         </section>
         <div className={S.topGrid}>
           <section className={S.chartSection}>
-            <div className={S.chartPlaceholder}>출결 현황 차트 영역</div>
+            <div className={S.container}>
+              <AttendanceStatusChart />
+            </div>
           </section>
 
           <section className={S.noticeSection}>
