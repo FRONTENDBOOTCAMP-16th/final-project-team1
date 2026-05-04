@@ -1,5 +1,9 @@
 package com.checkmate.team1.exception;
 
+<<<<<<< HEAD
+public class GlobalExceptionHandler {
+}
+=======
 import com.checkmate.team1.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,3 +19,4 @@ public class GlobalExceptionHandler {
     }
 
 }
+>>>>>>> develop

@@ -15,7 +15,7 @@ import SettingsPage from '../pages/student/settings/SettingsPage'
 import AdminDashboardPage from '../pages/admin/dashboard/DashboardPage'
 import LectureListPage from '../pages/admin/lecture/LectureListPage'
 import LectureCreatePage from '../pages/admin/lecture/create/LectureCreatePage'
-import LectureEditPage from '../pages/admin/lecture/LectureEditPage'
+import LectureEditPage from '@/pages/admin/lecture/edit/LectureEditPage'
 
 import StudentListPage from '../pages/admin/student/StudentListPage'
 import StudentCreatePage from '../pages/admin/student/create/StudentCreatePage'
