@@ -6,7 +6,6 @@ import ResetPassword from './components/ResetPassword'
 import './styles/login.css'
 
 export default function LoginPage() {
-  // 현재 어떤 화면(학생로그인, 관리자로그인, 비번찾기 등)을 보여줄지 결정하는 상태
   const { view, set_view } = useAuthView()
 
   return (
