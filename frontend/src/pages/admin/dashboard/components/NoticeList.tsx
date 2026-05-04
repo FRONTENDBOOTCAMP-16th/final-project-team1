@@ -1,27 +1,29 @@
 import S from '@/pages/admin/dashboard/styles/dashboard.module.css'
+import type { NoticeItem } from '@/pages/admin/dashboard/api/dashboardApi'
+import { useNavigate } from 'react-router-dom'
 
-const notices = [
-  { id: 1, title: '4월 훈련평가 일정', date: '2026.04.20' },
-  { id: 2, title: '공결 신청 시 증빙서류 제출 항목', date: '2026.04.11' },
-  { id: 3, title: '공결 신청 시 증빙서류 제출 항목', date: '2026.04.11' },
-  { id: 4, title: '공결 신청 시 증빙서류 제출 항목', date: '2026.04.11' },
-  { id: 4, title: '공결 신청 시 증빙서류 제출 항목', date: '2026.04.11' },
-  { id: 4, title: '공결 신청 시 증빙서류 제출 항목', date: '2026.04.11' },
-]
+interface Props {
+  data: NoticeItem[]
+}
 
-export default function NoticeList() {
+export default function NoticeList({ data }: Props) {
+  const navigate = useNavigate()
   return (
-    <div className={S.container}>
-      <h2 className={S.title}>시스템 공지사항</h2>
+    <>
+      <h3 className={S.title}>시스템 공지사항</h3>
 
       <ul className={S.list}>
-        {notices.slice(0, 4).map((notice, index) => (
-          <li key={notice.id} className={`${S.item} ${index === 0 ? S.highlight : ''}`}>
-            <p className={S.noticeTitle}>{notice.title}</p>
-            <span className={S.date}>{notice.date}</span>
+        {data.slice(0, 5).map((item, index) => (
+          <li
+            key={item.noticeId}
+            className={`${S.item} ${index === 0 ? S.highlight : ''}`}
+            onClick={() => navigate('/admin/notice')}
+          >
+            <strong className={S.noticeTitle}>{item.title}</strong>
+            <span className={S.noticeDate}>{item.createdDate}</span>
           </li>
         ))}
       </ul>
-    </div>
+    </>
   )
 }
