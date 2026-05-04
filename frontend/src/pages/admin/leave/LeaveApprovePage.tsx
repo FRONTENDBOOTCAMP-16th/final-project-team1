@@ -252,7 +252,9 @@ export default function LeaveApprovePage() {
           <section className={S.content}>
             <LeaveStatusTabs activeTab={activeTab} onChange={handleChangeTab} />
 
-            <Table columns={vacationColumns} data={pagedData} />
+            <div className={S.table_box}>
+              <Table columns={vacationColumns} data={pagedData} />
+            </div>
 
             <div className={S.table_footer}>
               <span>

@@ -245,7 +245,9 @@ export default function NoticeListPage() {
               onCreate={handleCreate}
             />
 
-            <Table columns={noticeColumns} data={pagedNotices} />
+            <div className={S.table_box}>
+              <Table columns={noticeColumns} data={pagedNotices} />
+            </div>
 
             <div className={S.table_footer}>
               <span>
