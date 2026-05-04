@@ -23,7 +23,6 @@ export const post_login_api = async (studentId: string, password: string) => {
   const result = await response.json()
 
   if (!response.ok) {
-    // 통신은 성공했으나, 백엔드에서 에러(비밀번호 틀림 등)를 보낸 경우
     throw new Error(result.message || '로그인 실패')
   }
 

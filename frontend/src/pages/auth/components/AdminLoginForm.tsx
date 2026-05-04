@@ -9,7 +9,6 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
   const [admin_id, set_admin_id] = useState('')
   const [password, set_password] = useState('')
 
-  // 학생 로그인과 동일한 훅을 사용하되, 결과 처리에서 역할을 구분합니다.
   const { login_user, is_loading, error_message } = useLogin()
 
   const handle_admin_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
