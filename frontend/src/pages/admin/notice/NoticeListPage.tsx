@@ -8,6 +8,7 @@ import StatusSummary from '@/components/common/statusSummary/StatusSummary'
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
+import Modal from '@/components/common/modal/Modal'
 
 // 레이아웃
 import AdminLayout from '@/pages/sample/AdminLayout'
@@ -50,6 +51,10 @@ export default function NoticeListPage() {
 
   /** 선택된 공지사항 ID 목록 */
   const [selectedIds, setSelectedIds] = useState<number[]>([])
+
+  /** 공지사항 공개, 비공개 완료 팝업 */
+  const [open, setOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
 
   /** 공지사항 목록 조회 */
   useEffect(() => {
@@ -111,6 +116,9 @@ export default function NoticeListPage() {
             : item,
         ),
       )
+
+      setModalMessage(value ? '공개되었습니다.' : '비공개되었습니다.')
+      setOpen(true)
     } catch (e) {
       console.error('공개 상태 변경 실패:', e)
       alert('공개 상태 변경 실패')
@@ -202,7 +210,6 @@ export default function NoticeListPage() {
             <Button
               type="button"
               variant="inactive"
-              size="xs"
               onClick={() => handleTogglePublic(row.noticeId, false)}
             >
               비공개
@@ -211,7 +218,6 @@ export default function NoticeListPage() {
             <Button
               type="button"
               variant="active"
-              size="xs"
               onClick={() => handleTogglePublic(row.noticeId, true)}
             >
               공개
@@ -257,6 +263,14 @@ export default function NoticeListPage() {
           </section>
         </main>
       </div>
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={() => setOpen(false)}
+        buttonType="one"
+      >
+        {modalMessage}
+      </Modal>
     </AdminLayout>
   )
 }
