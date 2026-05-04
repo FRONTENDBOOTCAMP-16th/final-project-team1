@@ -1,0 +1,313 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  block-size: 100%;
+  padding: 24px 28px;
+
+  text-align: left;
+
+  background: #ffffff;
+  border: 2px solid #dddddd;
+  border-radius: 18px;
+}
+
+.title {
+  margin: 0 0 16px;
+
+  font-weight: 800;
+  font-size: 22px;
+  color: #111111;
+  text-align: left;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.item {
+  padding: 18px 22px;
+
+  text-align: left;
+
+  background: #f8f8f8;
+  border: 2px solid #dddddd;
+  border-radius: 10px;
+}
+
+.highlight {
+  background: #fff3eb;
+  border-color: #ff5a00;
+}
+
+.noticeTitle {
+  margin: 0 0 6px;
+
+  font-weight: 700;
+  font-size: 16px;
+  color: #666666;
+  text-align: left;
+}
+
+.highlight .noticeTitle {
+  color: #ff5a00;
+}
+
+.date {
+  display: block;
+
+  font-size: 14px;
+  color: #666666;
+  text-align: left;
+}
+
+.chartPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-block-size: 280px;
+  padding: 24px;
+
+  color: #999999;
+
+  background: #ffffff;
+  border: 2px dashed #dddddd;
+  border-radius: 18px;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  inline-size: 100%;
+}
+
+.topGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  gap: 24px;
+
+  inline-size: 100%;
+}
+
+.chartSection,
+.noticeSection {
+  min-inline-size: 0;
+}
+
+.chartPlaceholder {
+  block-size: 100%;
+  min-block-size: 360px;
+}
+
+.leaveSection {
+  inline-size: 100%;
+}
+
+.cardSection {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+
+  inline-size: 100%;
+}
+
+.cardSection > * {
+  flex: 0 0 220px;
+}
+
+/* table */
+.tit,
+.name {
+  color: var(--default-black);
+}
+
+.circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px 0 0;
+  border-radius: 50%;
+  background-color: var(--default-orange);
+  color: #fff;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 102px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 20px;
+  font-weight: var(--Md);
+  font-size: var(--sub-title);
+  line-height: var(--big-title);
+}
+
+.vacationSick,
+.vacationOfficial,
+.vacationPersonal {
+  color: #ff6b00;
+  border: 1px solid #ff6b00;
+  background-color: #fff4ed;
+}
+
+.actionBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recentLeave {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 8px;
+}
+
+.recentLeave h3 {
+  margin: 0;
+  align-self: flex-start;
+}
+
+.paginationBox {
+  display: flex;
+  justify-content: center;
+}
+
+.chartSection {
+  inline-size: 100%;
+}
+
+.chartSection .container {
+  inline-size: 100%;
+}
+
+.chartItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.barTrack {
+  display: flex;
+  overflow: hidden;
+
+  inline-size: 100%;
+  block-size: 14px;
+
+  background: #f1f3f5;
+  border-radius: 999px;
+}
+
+.attendanceChartSection {
+  display: flex;
+  flex-direction: column;
+
+  inline-size: 100%;
+}
+
+.sectionTitle {
+  margin: 0 0 18px;
+
+  font-weight: 600;
+  font-size: 22px;
+  color: #111111;
+  text-align: left;
+}
+
+.chartList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.courseName {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333333;
+}
+
+.totalCount {
+  font-size: 14px;
+  color: #666666;
+}
+
+.presentBar,
+.lateBar,
+.absentBar {
+  block-size: 100%;
+}
+
+.presentBar {
+  background: #00b050;
+}
+
+.lateBar {
+  background: #ffc000;
+}
+
+.absentBar {
+  background: #e60000;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 2px;
+
+  font-size: 11px;
+  color: #777777;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend span::before {
+  content: '';
+
+  inline-size: 7px;
+  block-size: 7px;
+
+  border-radius: 50%;
+}
+
+.presentDot::before {
+  background: #00b050;
+}
+
+.lateDot::before {
+  background: #ffc000;
+}
+
+.absentDot::before {
+  background: #e60000;
+}

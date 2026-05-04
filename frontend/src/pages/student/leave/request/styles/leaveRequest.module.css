@@ -1,120 +1,120 @@
 .leaveContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
 }
 
 .RequestForm {
+  inline-size: 100%;
+  margin-block-start: 30px;
+  border: var(--border-width-medium) solid #dddddd;
+  border-radius: var(--border-radius-xl);
+  padding: var(--basic-pd);
+
+  /* === 안내 메시지 박스 === */
+  .FormNotice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
     inline-size: 100%;
-    margin-block-start: 30px;
-    border: var(--border-width-medium) solid #dddddd;
-    border-radius: var(--border-radius-xl);
-    padding: var(--basic-pd);
+    padding: 17px;
+    color: var(--default-black);
+    background-color: var(--login-bg);
+    border: 2px solid var(--default-orange);
+    border-radius: var(--border-radius-md);
+  }
 
-    /* === 안내 메시지 박스 === */
-    .FormNotice {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        
-        inline-size: 100%;
-        padding: 17px;
-        color: var(--default-black);
-        background-color: var(--login-bg);
-        border: 2px solid var(--default-orange);
-        border-radius: var(--border-radius-md);
-    }
+  .NoticeContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-    .NoticeContent {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
+  .NoticeTitle {
+    margin: 0;
+    text-align: left;
+    color: var(--default-black);
+    font-size: 16px;
+    font-weight: 600;
+  }
 
-    .NoticeTitle {
-        margin: 0;
-        text-align: left;
-        color: var(--default-black);
-        font-size: 16px;
-        font-weight: 600;
-    }
+  .NoticeText {
+    margin: 0;
+    font-size: 12px;
+    color: var(--default-gray);
+    line-height: 1.5;
+  }
 
-    .NoticeText {
-        margin: 0;
-        font-size: 12px;
-        color: var(--default-gray);
-        line-height: 1.5;
-    }
+  /* === 폼 본체 === */
+  .FormFields {
+    display: flex;
+    flex-direction: column; /* 세로 배치로 변경! */
+    gap: 24px;
+    margin-block-start: 24px;
+  }
 
-    /* === 폼 본체 === */
-    .FormFields {
-        display: flex;
-        flex-direction: column;       /* 세로 배치로 변경! */
-        gap: 24px;
-        margin-block-start: 24px;
-    }
+  /* 시작일 + 종료일 (가로 2분할) */
+  .DateRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
 
-    /* 시작일 + 종료일 (가로 2분할) */
-    .DateRow {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
+  /* 입력 필드 그룹 (라벨 + 입력) */
+  .FieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-    /* 입력 필드 그룹 (라벨 + 입력) */
-    .FieldGroup {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+  .FieldLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 
-    .FieldLabel {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--default-black);
-    }
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--default-black);
+  }
 
-    /* 입력 필드 공통 스타일 */
-    .FormInput,
-    .FormSelect {
-        inline-size: 100%;
-        block-size: 40px;
-        padding: var(--semi-pd);
-        
-        font-family: 'Pretendard variable';
-        font-size: 14px;
-        color: var(--default-black);
-        background-color: var(--white);
-        
-        border: var(--border-width-thin) solid var(--border-gray);
-        border-radius: var(--border-radius-sm);
-        outline: none;
-        
-        transition: border-color 0.2s ease;
-    }
+  /* 입력 필드 공통 스타일 */
+  .FormInput,
+  .FormSelect {
+    inline-size: 100%;
+    block-size: 40px;
+    padding: var(--semi-pd);
 
-    .FormInput:focus,
-    .FormSelect:focus {
-        border-color: var(--default-orange);
-    }
+    font-family: 'Pretendard variable';
+    font-size: 14px;
+    color: var(--default-black);
+    background-color: var(--white);
 
-    .FormSelect {
-        cursor: pointer;
-    }
+    border: var(--border-width-thin) solid var(--border-gray);
+    border-radius: var(--border-radius-sm);
+    outline: none;
 
-    /* 버튼 행 */
-    .ButtonRow {
-        display: flex;
-        gap: 12px;
-        margin-block-start: 8px;
-    }
+    transition: border-color 0.2s ease;
+  }
 
-    .SubmitButton {
-        flex: 1;     /* 신청하기 버튼이 남은 공간 다 차지 */
-    }
+  .FormInput:focus,
+  .FormSelect:focus {
+    border-color: var(--default-orange);
+  }
+
+  .FormSelect {
+    cursor: pointer;
+  }
+
+  /* 버튼 행 */
+  .ButtonRow {
+    display: flex;
+    gap: 12px;
+    margin-block-start: 8px;
+  }
+
+  .SubmitButton {
+    flex: 1; /* 신청하기 버튼이 남은 공간 다 차지 */
+  }
 }
