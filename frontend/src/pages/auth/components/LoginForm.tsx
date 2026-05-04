@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
 
 interface LoginFormProps {
@@ -9,6 +10,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
   const [studentId, set_studentId] = useState('')
   const [password, set_password] = useState('')
 
+  const navigate = useNavigate()
   const { login_user, is_loading, error_message } = useLogin()
 
   const handle_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -19,6 +21,12 @@ function LoginForm({ onChangeView }: LoginFormProps) {
     if (result.success) {
       if (result.role === 'ADMIN') {
         alert('관리자 계정입니다. 관리자 로그인 탭을 이용해주세요.')
+        return
+      }
+
+      if (studentId === password) {
+        alert('초기 비밀번호를 사용 중입니다. 안전을 위해 비밀번호를 먼저 변경해 주세요.')
+        navigate('/student/settings')
         return
       }
 
