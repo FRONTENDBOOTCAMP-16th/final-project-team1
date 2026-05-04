@@ -8,6 +8,7 @@ import StatusSummary from '@/components/common/statusSummary/StatusSummary'
 import type { SummaryCard } from '@/components/common/statusSummary/statusSummary.type'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
+import Modal from '@/components/common/modal/Modal'
 
 // 레이아웃
 import AdminLayout from '@/pages/sample/AdminLayout'
@@ -59,6 +60,10 @@ export default function LeaveApprovePage() {
   /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
 
+  /** 승인 및 반려 처리 팝업 */
+  const [open, setOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+
   /** 휴가 신청 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +113,9 @@ export default function LeaveApprovePage() {
             : item,
         ),
       )
+
+      setModalMessage(nextStatus === 'approved' ? '승인 되었습니다.' : '반려 되었습니다.')
+      setOpen(true)
     } catch (e: unknown) {
       console.error('상태 변경 실패:', e)
 
@@ -262,6 +270,14 @@ export default function LeaveApprovePage() {
           </section>
         </main>
       </div>
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={() => setOpen(false)}
+        buttonType="one"
+      >
+        {modalMessage}
+      </Modal>
     </AdminLayout>
   )
 }
