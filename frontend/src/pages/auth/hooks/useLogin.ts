@@ -12,14 +12,14 @@ export const useLogin = () => {
     try {
       const data = await post_login_api(studentId, password)
 
-      localStorage.setItem('access_token', data.token)
-      localStorage.setItem('student_id', data.studentId)
-      localStorage.setItem('user_name', data.name)
-      localStorage.setItem('user_role', data.role)
+      localStorage.setItem('accessToken', data.token)
+      localStorage.setItem('studentId', data.studentId)
+      localStorage.setItem('userName', data.name)
+      localStorage.setItem('role', data.role)
 
       return {
         success: true,
-        password_yn: data.passwordYn,
+        passwordYn: data.passwordYn,
         role: data.role,
       }
     } catch (error) {

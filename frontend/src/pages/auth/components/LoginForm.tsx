@@ -22,7 +22,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
         return
       }
 
-      if (result.password_yn === 'N') {
+      if (result.passwordYn === 'N') {
         onChangeView('RESET_PASSWORD')
       } else {
         window.location.href = '/student/dashboard'
