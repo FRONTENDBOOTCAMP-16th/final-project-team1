@@ -13,6 +13,7 @@ import com.checkmate.team1.dto.AdminStudentDetailResponse;
 import com.checkmate.team1.dto.UpdateStudentRequest;
 import com.checkmate.team1.dto.UpdateStudentResponse;
 import com.checkmate.team1.dto.DeleteStudentResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -116,35 +117,26 @@ public class AdminStudentService {
                 .build();
     }
 
+    @Transactional
     public UpdateStudentResponse updateStudent(
             String studentId,
             UpdateStudentRequest request
     ) {
 
         Student student = studentRepository.findById(studentId)
-                .orElse(null);
-
-        if (student == null) {
-            return UpdateStudentResponse.builder()
-                    .studentId(studentId)
-                    .name(null)
-                    .classId(null)
-                    .studentStatusCode(null)
-                    .message("존재하지 않는 학생입니다.")
-                    .build();
-        }
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학생입니다."));
 
         Classes classes = classesRepository.findById(request.getClassId())
-                .orElse(null);
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 강의입니다."));
 
-        if (classes == null) {
-            return UpdateStudentResponse.builder()
-                    .studentId(student.getStudentId())
-                    .name(student.getName())
-                    .classId(student.getClassId())
-                    .studentStatusCode(student.getStudentStatusCode())
-                    .message("존재하지 않는 강의입니다.")
-                    .build();
+        boolean existsPhone =
+                studentRepository.existsByPhoneNumberAndStudentIdNot(
+                        request.getPhoneNumber(),
+                        studentId
+                );
+
+        if (existsPhone) {
+            throw new IllegalArgumentException("이미 등록된 핸드폰 번호입니다.");
         }
 
         student.updateStudent(

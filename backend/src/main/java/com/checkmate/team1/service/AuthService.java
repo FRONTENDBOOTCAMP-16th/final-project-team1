@@ -6,6 +6,11 @@ import com.checkmate.team1.entity.Student;
 import com.checkmate.team1.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.checkmate.team1.dto.FindPasswordRequest;
+import com.checkmate.team1.dto.FindPasswordResponse;
+import java.util.Optional;
+import com.checkmate.team1.dto.ResetPasswordRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +33,28 @@ public class AuthService {
                 student.getPasswordYn(),
                 "jwt-token"
         );
+    }
+
+    public Optional<FindPasswordResponse> findPassword(FindPasswordRequest request) {
+
+        return studentRepository
+                .findByNameAndPhoneNumber(
+                        request.getName(),
+                        request.getPhoneNumber()
+                )
+                .map(student ->
+                        new FindPasswordResponse(student.getStudentId())
+                );
+    }
+
+    @Transactional
+    public boolean resetPassword(ResetPasswordRequest request) {
+
+        return studentRepository.findById(request.getStudentId())
+                .map(student -> {
+                    student.changePassword(request.getNewPassword());
+                    return true;
+                })
+                .orElse(false);
     }
 }

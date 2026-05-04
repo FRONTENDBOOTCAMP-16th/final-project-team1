@@ -49,6 +49,10 @@ import com.checkmate.team1.dto.CreateNoticeResponse;
 import com.checkmate.team1.dto.UpdateNoticeRequest;
 import com.checkmate.team1.dto.UpdateNoticeResponse;
 import com.checkmate.team1.dto.DeleteNoticeResponse;
+import com.checkmate.team1.dto.AdminLoginRequest;
+import com.checkmate.team1.dto.AdminLoginResponse;
+import com.checkmate.team1.service.AdminService;
+import com.checkmate.team1.dto.AdminResetPasswordRequest;
 
 @Tag(name = "Admin", description = "관리자 기능 API")
 @RestController
@@ -63,6 +67,7 @@ public class AdminController {
     private final AdminStudentService adminStudentService;
     private final AdminAttendanceService adminAttendanceService;
     private final AdminNoticeService adminNoticeService;
+    private final AdminService adminService;
 
     @Operation(summary = "학생 등록", description = "관리자가 신규 학생을 등록합니다.")
     @PostMapping("/addStudent")
@@ -347,5 +352,32 @@ public class AdminController {
                 adminNoticeService.deleteNotice(noticeId);
 
         return ApiResponse.success(response.getMessage(), response);
+    }
+
+    @PostMapping("/login")
+    public ApiResponse<AdminLoginResponse> login(
+            @RequestBody AdminLoginRequest request
+    ) {
+
+        AdminLoginResponse response = adminService.login(request);
+
+        if (response == null) {
+            return ApiResponse.fail("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return ApiResponse.success("로그인 성공", response);
+    }
+
+    @PatchMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(
+            @RequestBody AdminResetPasswordRequest request
+    ) {
+        boolean result = adminService.resetPassword(request);
+
+        if (!result) {
+            return ApiResponse.fail("존재하지 않는 관리자입니다.");
+        }
+
+        return ApiResponse.success("비밀번호가 재설정되었습니다.", null);
     }
 }
