@@ -204,14 +204,14 @@ export default function LeaveApprovePage() {
 
       if (activeTab === 'approved') {
         return (
-          <Button type="button" variant="active">
+          <Button type="button" variant="active" disabled>
             <Check size={16} /> 승인
           </Button>
         )
       }
 
       return (
-        <Button type="button" variant="inactive">
+        <Button type="button" variant="inactive" disabled>
           <X size={16} /> 반려
         </Button>
       )
