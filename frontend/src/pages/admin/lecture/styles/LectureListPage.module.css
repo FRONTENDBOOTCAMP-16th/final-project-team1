@@ -1,0 +1,201 @@
+.page {
+  padding: 24px 32px;
+  background-color: #ffffff;
+}
+
+.topArea {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+/* .searchInput {
+  flex: 1;
+  height: 52px;
+  padding: 0 20px;
+  border: 2px solid #dedede;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border-color: #e5672d;
+} */
+
+.createButton {
+  width: 156px;
+  height: 54px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e7642a;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tableBox {
+  border: 2px solid #dedede;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+.tableBox {
+  width: 100%;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+}
+.circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px 0 0;
+  border-radius: 50%;
+  background-color: var(--default-orange);
+  color: #fff;
+}
+
+.tit,
+.name {
+  color: var(--default-black);
+}
+
+.progressBadge,
+.completedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 30px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.progressBadge {
+  border: 1.5px solid #f06b2f;
+  background-color: #fff7f2;
+  color: #e7642a;
+}
+
+.completedBadge {
+  border: 1.5px solid #4aa3ff;
+  background-color: #eef7ff;
+  color: #3b9af5;
+}
+
+.bottomArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88px;
+  padding: 0 24px;
+  border-top: 1px solid #e8e8e8;
+  color: #666666;
+  font-size: 14px;
+}
+
+.pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pageButton {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #e1e1e1;
+  border-radius: 9px;
+  background-color: #ffffff;
+  color: #111111;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.pageButton:hover {
+  background-color: #f5f5f5;
+}
+
+.activePageButton {
+  border-color: #e7642a;
+  background-color: #e7642a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.ellipsis {
+  padding: 0 6px;
+  color: #111111;
+}
+
+/* 하단 영역 */
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 4px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  thead {
+    height: 53px;
+    background: #f5f5f5;
+  }
+
+  tr {
+    border-top: 1px solid #e5e5e5;
+  }
+
+  th {
+    font-weight: 700;
+    font-size: 16px;
+    color: #111111;
+  }
+
+  td {
+    height: 73px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #666666;
+
+    .tit {
+      color: #111111;
+    }
+  }
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 40px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  inline-size: 100%;
+
+  .searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+  }
+}
