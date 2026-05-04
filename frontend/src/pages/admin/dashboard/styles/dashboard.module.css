@@ -3,9 +3,7 @@
   flex-direction: column;
 
   block-size: 100%;
-  padding: 24px 28px;
-
-  text-align: left;
+  padding: 56px 36px 32px;
 
   background: #ffffff;
   border: 2px solid #dddddd;
@@ -13,18 +11,19 @@
 }
 
 .title {
-  margin: 0 0 16px;
+  margin: 0 0 28px;
 
-  font-weight: 800;
-  font-size: 22px;
+  font-weight: 700;
+  font-size: 20px;
   color: #111111;
+
   text-align: left;
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 
   margin: 0;
   padding: 0;
@@ -33,13 +32,27 @@
 }
 
 .item {
-  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
+  align-items: flex-start;
   text-align: left;
 
-  background: #f8f8f8;
+  gap: 4px;
+
+  min-block-size: 52px;
+  padding: 10px 14px;
+
+  background: #ffffff;
   border: 2px solid #dddddd;
-  border-radius: 10px;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #f2f2f2;
 }
 
 .highlight {
@@ -48,16 +61,18 @@
 }
 
 .noticeTitle {
-  margin: 0 0 6px;
-
   font-weight: 700;
   font-size: 16px;
-  color: #666666;
-  text-align: left;
+  color: #333333;
 }
 
 .highlight .noticeTitle {
   color: #ff5a00;
+}
+
+.noticeDate {
+  font-size: 14px;
+  color: #777777;
 }
 
 .date {
@@ -194,7 +209,7 @@
 }
 
 .chartSection .container {
-  inline-size: 100%;
+  padding-top: 24px;
 }
 
 .chartItem {
@@ -219,6 +234,7 @@
   flex-direction: column;
 
   inline-size: 100%;
+  padding-top: 0;
 }
 
 .sectionTitle {
@@ -310,4 +326,9 @@
 
 .absentDot::before {
   background: #e60000;
+}
+
+.highlight {
+  background: #fff3eb;
+  border: 2px solid #ffb48a;
 }

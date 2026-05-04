@@ -36,3 +36,18 @@ export async function getAttendanceStatusByClass() {
 
   return response.data.data
 }
+
+export interface NoticeItem {
+  displayNo: number
+  noticeId: number
+  title: string
+  createdDate: string
+  isOpen: boolean
+  openStatusName: string
+}
+
+export async function getNoticeList() {
+  const response = await api.get('/api/admin/notices')
+
+  return response.data.data.items
+}
