@@ -5,6 +5,8 @@ import { Clock, ScrollText, TrendingUp, UserCheck, UserX, Check, X } from 'lucid
 import CountCard from '@/components/common/countCard/CountCard'
 import {
   getAdminDashboardSummary,
+  getAttendanceStatusByClass,
+  type AttendanceItem,
   type AdminDashboardData,
 } from '@/pages/admin/dashboard/api/dashboardApi'
 import AttendanceStatusChart from '@/pages/admin/dashboard/components/AttendanceStatusChart'
@@ -62,6 +64,7 @@ const vacationData: Vacation[] = [
 
 export default function AdminDashboardPage() {
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
+  const [attendanceData, setAttendanceData] = useState<AttendanceItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
@@ -75,6 +78,19 @@ export default function AdminDashboardPage() {
     }
 
     fetchSummary()
+  }, [])
+
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      try {
+        const data = await getAttendanceStatusByClass()
+        setAttendanceData(data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchAttendanceData()
   }, [])
 
   const handleApprove = (row: Vacation) => {
@@ -173,7 +189,7 @@ export default function AdminDashboardPage() {
         <div className={S.topGrid}>
           <section className={S.chartSection}>
             <div className={S.container}>
-              <AttendanceStatusChart />
+              <AttendanceStatusChart data={attendanceData} />
             </div>
           </section>
 
