@@ -1,18 +1,43 @@
 import StudentLayout from '@/pages/sample/StudentLayout'
 import AttendanceActionCard from '@/pages/student/dashboard/components/AttendanceActionCard'
 import { Clock } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import S from './styles/dashboard.module.css'
 
 function DashboardPage() {
+  const [now, setNow] = useState(new Date())
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setNow(new Date())
+    }, 1000)
+
+    return () => {
+      clearInterval(timerId)
+    }
+  }, [])
+
+  const dateText = now.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  })
+
+  const timeText = now.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
   return (
     <StudentLayout>
       <div className={S.page}>
         <section className={S.todayCard}>
           <div className={S.timeCard}>
             <div>
-              <p className={S.date}>2026년 4월 16일 목요일</p>
+              <p className={S.date}> {dateText}</p>
               <Clock size={40} />
-              <strong className={S.time}> 오후 01:08:27</strong>
+              <strong className={S.time}>{timeText}</strong>
             </div>
 
             <div className={S.monthRate}>
