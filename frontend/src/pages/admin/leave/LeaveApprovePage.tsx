@@ -18,23 +18,10 @@ import type { TabType } from '@/pages/admin/leave/components/leaveStatusTabs.typ
 import { getRecentLeaveRequests, updateLeaveRequestStatus } from './api/leaveApi'
 import S from '@/pages/admin/leave/styles/leave.module.css'
 
-/** 한 페이지에 보여줄 개수 */
+/** 한 페이지에 보여줄 데이터 개수 */
 const PAGE_SIZE = 10
 
-/** 화면에서 사용할 휴가 타입 */
-type VacationType = '병결' | '공결' | '개인사유'
-
-/** 화면에서 사용할 데이터 구조 */
-type Vacation = {
-  leaveRequestId: number
-  name: string
-  studentNo: string
-  vacationType: VacationType
-  period: string
-  status: TabType
-}
-
-/** 서버에서 내려오는 데이터 구조 */
+/** 서버에서 내려오는 휴가 신청 데이터 구조 */
 type LeaveApiItem = {
   leaveRequestId: number
   studentInitial: string
@@ -48,55 +35,36 @@ type LeaveApiItem = {
   approvalStatusName: string
 }
 
-/** 휴가 타입별 스타일 */
-const vacationTypeMap = {
+/** 휴가 종류별 배지 스타일 */
+const vacationTypeMap: Record<string, { label: string; className: string }> = {
   병결: { label: '병결', className: S.vacationSick },
   공결: { label: '공결', className: S.vacationOfficial },
   개인사유: { label: '개인사유', className: S.vacationPersonal },
 }
 
-/** 서버 승인 상태값 -> 프론트 탭 상태값 */
+/** 서버 상태명과 프론트 탭 값을 연결 */
 const statusMap: Record<string, TabType> = {
   '승인 대기': 'pending',
   '승인 완료': 'approved',
   반려: 'rejected',
 }
 
-/** 서버 휴가 타입값 -> 화면 휴가 타입값 */
-const vacationTypeMapSafe: Record<string, VacationType> = {
-  병결: '병결',
-  공결: '공결',
-  개인사유: '개인사유',
-}
-
-/** API 데이터 -> 화면용 데이터 변환 */
-const mapToVacation = (item: LeaveApiItem): Vacation => ({
-  leaveRequestId: item.leaveRequestId,
-  name: item.studentName,
-  studentNo: item.studentId,
-  vacationType: vacationTypeMapSafe[item.leaveTypeName] ?? '개인사유',
-  period: `${item.startDate} - ${item.endDate}`,
-  status: statusMap[item.approvalStatusName] ?? 'pending',
-})
-
 export default function LeaveApprovePage() {
-  /** 전체 휴가 신청 데이터 */
-  const [data, setData] = useState<Vacation[]>([])
+  /** 전체 휴가 신청 목록 */
+  const [data, setData] = useState<LeaveApiItem[]>([])
 
   /** 현재 선택된 탭 */
   const [activeTab, setActiveTab] = useState<TabType>('pending')
 
-  /** 현재 페이지 */
+  /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
 
-  /** 최초 진입 시 API 호출 */
+  /** 휴가 신청 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await getRecentLeaveRequests()
-        const mapped = result.map(mapToVacation)
-
-        setData(mapped)
+        setData(result)
       } catch (e: unknown) {
         console.error('데이터 조회 실패:', e)
         alert('데이터를 불러오는데 실패했습니다.')
@@ -106,13 +74,13 @@ export default function LeaveApprovePage() {
     fetchData()
   }, [])
 
-  /** 탭 변경 시 1페이지로 초기화 */
+  /** 탭 변경 시 첫 페이지로 이동 */
   const handleChangeTab = (tab: TabType) => {
     setActiveTab(tab)
     setCurrentPage(1)
   }
 
-  /** 상태 변경 처리 */
+  /** 승인 / 반려 상태 변경 */
   const handleUpdateStatus = async (leaveRequestId: number, nextStatus: TabType) => {
     try {
       const statusCodeMap: Record<TabType, string> = {
@@ -121,11 +89,23 @@ export default function LeaveApprovePage() {
         rejected: 'V003',
       }
 
+      const statusNameMap: Record<TabType, string> = {
+        pending: '승인 대기',
+        approved: '승인 완료',
+        rejected: '반려',
+      }
+
       await updateLeaveRequestStatus(leaveRequestId, statusCodeMap[nextStatus])
 
       setData((prev) =>
         prev.map((item) =>
-          item.leaveRequestId === leaveRequestId ? { ...item, status: nextStatus } : item,
+          item.leaveRequestId === leaveRequestId
+            ? {
+                ...item,
+                approvalStatusCode: statusCodeMap[nextStatus],
+                approvalStatusName: statusNameMap[nextStatus],
+              }
+            : item,
         ),
       )
     } catch (e: unknown) {
@@ -139,10 +119,16 @@ export default function LeaveApprovePage() {
     }
   }
 
-  /** 상태별 개수 계산 */
-  const pendingCount = data.filter((item) => item.status === 'pending').length
-  const approvedCount = data.filter((item) => item.status === 'approved').length
-  const rejectedCount = data.filter((item) => item.status === 'rejected').length
+  /** 상태별 신청 개수 */
+  const pendingCount = data.filter(
+    (item) => statusMap[item.approvalStatusName] === 'pending',
+  ).length
+  const approvedCount = data.filter(
+    (item) => statusMap[item.approvalStatusName] === 'approved',
+  ).length
+  const rejectedCount = data.filter(
+    (item) => statusMap[item.approvalStatusName] === 'rejected',
+  ).length
 
   /** 상단 요약 카드 데이터 */
   const noticeSummaryCards: SummaryCard[] = [
@@ -166,8 +152,8 @@ export default function LeaveApprovePage() {
     },
   ]
 
-  /** 현재 탭에 맞는 전체 데이터 */
-  const currentData = data.filter((item) => item.status === activeTab)
+  /** 현재 탭에 해당하는 데이터 */
+  const currentData = data.filter((item) => statusMap[item.approvalStatusName] === activeTab)
 
   /** 전체 페이지 수 */
   const totalPages = Math.max(1, Math.ceil(currentData.length / PAGE_SIZE))
@@ -175,8 +161,8 @@ export default function LeaveApprovePage() {
   /** 현재 페이지에 보여줄 데이터 */
   const pagedData = currentData.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  /** 처리 버튼 컬럼 */
-  const actionColumn: TableColumn<Vacation> = {
+  /** 처리 컬럼 */
+  const actionColumn: TableColumn<LeaveApiItem> = {
     key: 'action',
     header: '처리',
     render: (row) => {
@@ -219,27 +205,31 @@ export default function LeaveApprovePage() {
   }
 
   /** 테이블 컬럼 */
-  const vacationColumns: TableColumn<Vacation>[] = [
+  const vacationColumns: TableColumn<LeaveApiItem>[] = [
     {
-      key: 'name',
+      key: 'studentName',
       header: '신청자',
       render: (row) => (
         <div className={S.nameBox}>
-          <span className={S.tit}>{row.name}</span>
+          <span className={S.tit}>{row.studentName}</span>
         </div>
       ),
     },
-    { key: 'studentNo', header: '학번' },
+    { key: 'studentId', header: '학번' },
     {
-      key: 'vacationType',
+      key: 'leaveTypeName',
       header: '휴가종류',
       render: (row) => {
-        const vacation = vacationTypeMap[row.vacationType]
+        const vacation = vacationTypeMap[row.leaveTypeName] ?? vacationTypeMap['개인사유']
 
         return <span className={`${S.statusBadge} ${vacation.className}`}>{vacation.label}</span>
       },
     },
-    { key: 'period', header: '기간' },
+    {
+      key: 'startDate',
+      header: '기간',
+      render: (row) => `${row.startDate} - ${row.endDate}`,
+    },
     actionColumn,
   ]
 
@@ -254,10 +244,7 @@ export default function LeaveApprovePage() {
           <section className={S.content}>
             <LeaveStatusTabs activeTab={activeTab} onChange={handleChangeTab} />
 
-            <Table
-              columns={vacationColumns}
-              data={pagedData}
-            />
+            <Table columns={vacationColumns} data={pagedData} />
 
             <div className={S.table_footer}>
               <span>
