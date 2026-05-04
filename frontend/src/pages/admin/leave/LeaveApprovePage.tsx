@@ -164,7 +164,7 @@ export default function LeaveApprovePage() {
   /** 처리 컬럼 */
   const actionColumn: TableColumn<LeaveApiItem> = {
     key: 'action',
-    header: '처리',
+    header: activeTab === 'pending' ? '처리' : '처리내역',
     render: (row) => {
       if (activeTab === 'pending') {
         return (
