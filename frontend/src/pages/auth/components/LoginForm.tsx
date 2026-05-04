@@ -6,7 +6,7 @@ interface LoginFormProps {
 }
 
 function LoginForm({ onChangeView }: LoginFormProps) {
-  const [student_id, set_student_id] = useState('')
+  const [studentId, set_studentId] = useState('')
   const [password, set_password] = useState('')
 
   const { login_user, is_loading, error_message } = useLogin()
@@ -14,7 +14,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
   const handle_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const result = await login_user(student_id, password)
+    const result = await login_user(studentId, password)
 
     if (result.success) {
       if (result.role === 'ADMIN') {
@@ -40,8 +40,8 @@ function LoginForm({ onChangeView }: LoginFormProps) {
               type="text"
               placeholder="학번을 입력하세요"
               className="input_field"
-              value={student_id}
-              onChange={(event) => set_student_id(event.target.value)}
+              value={studentId}
+              onChange={(event) => set_studentId(event.target.value)}
               required
             />
           </label>

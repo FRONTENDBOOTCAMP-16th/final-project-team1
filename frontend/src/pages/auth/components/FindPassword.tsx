@@ -6,7 +6,7 @@ interface FindPasswordProps {
 
 function FindPassword({ onChangeView }: FindPasswordProps) {
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
 
   const handleVerify = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -14,11 +14,11 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
       const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/auth/find-password`
 
       const response = await fetch(API_URL, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, phone }),
+        body: JSON.stringify({ name, phoneNumber }),
       })
 
       const result = await response.json()
@@ -58,8 +58,8 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
               type="tel"
               placeholder="010-1234-5678"
               className="input_field"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
+              value={phoneNumber}
+              onChange={(event) => setPhoneNumber(event.target.value)}
               required
             />
           </label>

@@ -5,12 +5,12 @@ export const useLogin = () => {
   const [is_loading, set_is_loading] = useState<boolean>(false)
   const [error_message, set_error_message] = useState<string | null>(null)
 
-  const login_user = async (student_id: string, password: string) => {
+  const login_user = async (studentId: string, password: string) => {
     set_is_loading(true)
     set_error_message(null)
 
     try {
-      const data = await post_login_api(student_id, password)
+      const data = await post_login_api(studentId, password)
 
       localStorage.setItem('access_token', data.token)
       localStorage.setItem('student_id', data.studentId)
