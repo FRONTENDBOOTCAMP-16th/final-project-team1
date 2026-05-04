@@ -6,8 +6,10 @@ import CountCard from '@/components/common/countCard/CountCard'
 import {
   getAdminDashboardSummary,
   getAttendanceStatusByClass,
+  getNoticeList,
   type AttendanceItem,
   type AdminDashboardData,
+  type NoticeItem,
 } from '@/pages/admin/dashboard/api/dashboardApi'
 import AttendanceStatusChart from '@/pages/admin/dashboard/components/AttendanceStatusChart'
 import SystemNoticeList from './components/NoticeList'
@@ -66,6 +68,21 @@ export default function AdminDashboardPage() {
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
   const [attendanceData, setAttendanceData] = useState<AttendanceItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
+
+  const [noticeData, setNoticeData] = useState<NoticeItem[]>([])
+
+  useEffect(() => {
+    const fetchNoticeList = async () => {
+      try {
+        const data = await getNoticeList()
+        setNoticeData(data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchNoticeList()
+  }, [])
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -194,7 +211,9 @@ export default function AdminDashboardPage() {
           </section>
 
           <section className={S.noticeSection}>
-            <SystemNoticeList />
+            <div className={S.container}>
+              <SystemNoticeList data={noticeData} />
+            </div>
           </section>
         </div>
 
