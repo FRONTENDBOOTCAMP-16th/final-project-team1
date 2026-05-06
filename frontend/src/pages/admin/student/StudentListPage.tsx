@@ -63,6 +63,7 @@ export default function StudentListPage() {
         // 백엔드 학생 목록 API 호출
         const result = await getAdminStudents({
           keyword: searchKeyword,
+          // @ts-expect-error 백엔드 API 명세 확인 전 임시 처리
           className: selectedCourse,
           page: currentPage,
           size: PAGE_SIZE,
@@ -115,7 +116,7 @@ export default function StudentListPage() {
       {
         key: 'name',
         header: '이름',
-        render: (row) => (
+        render: (row: AdminStudent) => (
           <div className="name-box">
             <span className="tit">{row.name}</span>
           </div>
@@ -136,7 +137,7 @@ export default function StudentListPage() {
       {
         key: 'statusName',
         header: '상태',
-        render: (row) => <span className="status-badge">{row.statusName}</span>,
+        render: (row: AdminStudent) => <span className="status-badge">{row.statusName}</span>,
       },
       {
         key: 'detail',
