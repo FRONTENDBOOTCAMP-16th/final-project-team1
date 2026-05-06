@@ -1,20 +1,22 @@
 import { useState } from 'react'
-import { useLogin } from '../hooks/useLogin' // 동일한 로그인 훅 사용 (필요 시 관리자용 훅으로 교체)
+import { useNavigate } from 'react-router-dom'
+import { useAdminLogin } from '../hooks/useAdminLogin'
 
 interface AdminLoginFormProps {
   onChangeView: (view: 'LOGIN' | 'ADMIN_LOGIN' | 'FIND_PASSWORD' | 'RESET_PASSWORD') => void
 }
 
 function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
-  const [admin_id, set_admin_id] = useState('')
+  const [adminId, set_adminId] = useState('')
   const [password, set_password] = useState('')
 
-  const { login_user, is_loading, error_message } = useLogin()
+  const navigate = useNavigate()
+  const { login_admin, is_loading, error_message } = useAdminLogin()
 
   const handle_admin_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const result = await login_user(admin_id, password)
+    const result = await login_admin(adminId, password)
 
     if (result.success) {
       if (result.role === 'STUDENT') {
@@ -22,7 +24,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
         return
       }
 
-      window.location.href = '/admin/dashboard'
+      navigate('/admin/dashboard')
     }
   }
 
@@ -36,8 +38,8 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
               type="text"
               placeholder="관리자 아이디를 입력하세요"
               className="input_field"
-              value={admin_id}
-              onChange={(event) => set_admin_id(event.target.value)}
+              value={adminId}
+              onChange={(event) => set_adminId(event.target.value)}
               required
             />
           </label>
