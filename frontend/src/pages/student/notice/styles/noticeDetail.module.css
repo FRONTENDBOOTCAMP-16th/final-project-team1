@@ -1,0 +1,7 @@
+.noticeDetailContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    inline-size: 100%;
+    padding: 0px;
+}

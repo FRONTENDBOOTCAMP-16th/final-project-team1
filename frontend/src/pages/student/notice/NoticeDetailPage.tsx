@@ -1,32 +1,42 @@
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import NoticeBoard from '@/components/common/noticeBoard/noticeBoard'
-import S from './styles/noticeList.module.css'
+import { getNoticeDetail } from './api/noticeApi'
+import type { NoticeDetail } from './api/noticeApi'
+import S from './styles/noticeDetail.module.css'
 
 function NoticeDetailPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    
-    // 가상 데이터 (API 연동 시 교체)
-    const notice = {
-        noticeId: Number(id),
-        title: '봄학기 중간 평가 공지',
-        date: '2026.04.10',
-        content: `멋쟁이사자처럼 16기 수강생 여러분께,
 
-봄학기 중간 평가 일정을 안내드립니다.
+    const [notice, setNotice] = useState<NoticeDetail | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
-■ 평가 일정
-- 일시: 2026년 4월 25일(목) 오후 2시 ~ 5시
-- 장소: 온라인 (Zoom 링크는 별도 공지)`,
-    }
-    
+    useEffect(() => {
+        const fetchNotice = async () => {
+            try {
+                const data = await getNoticeDetail(Number(id))
+                setNotice(data)
+            } catch (err) {
+                console.error('공지사항 조회 실패:', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        if (id) fetchNotice()
+    }, [id])
+
+    if (isLoading) return null 
+    if (!notice) return <div>공지사항을 찾을 수 없습니다.</div>
+
     return (
         <div className={S.noticeDetailContainer}>
             <StudentLayout>
                 <NoticeBoard
                     title={notice.title}
-                    date={notice.date}
+                    date={notice.createdDate}
                     content={notice.content}
                     onBackClick={() => navigate('/student/notice')}
                 />
