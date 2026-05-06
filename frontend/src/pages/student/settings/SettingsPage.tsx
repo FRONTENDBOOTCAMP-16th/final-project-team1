@@ -14,6 +14,7 @@ function SettingPage() {
     console.log('비밀번호 변경 시도:', { currentPassword, newPassword, confirmPassword })
   }
 
+  // TODO: API 연동 후 더미 데이터 제거
   return (
     <StudentLayout>
       <div className="settingContainer">
@@ -31,12 +32,12 @@ function SettingPage() {
 
             <div className="inputGroup">
               <span className="label">전화번호</span>
-              <div className="valueBox">01011112222</div>
+              <div className="valueBox">010-1000-0001</div>
             </div>
 
             <div className="inputGroup">
               <span className="label">학번</span>
-              <div className="valueBox">2024001</div>
+              <div className="valueBox">20240001</div>
             </div>
 
             <div className="inputGroup">
