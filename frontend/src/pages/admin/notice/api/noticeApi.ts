@@ -35,3 +35,13 @@ export async function updateNotice(
 ) {
   return api.put(`/api/admin/notices/${noticeId}`, payload)
 }
+
+
+// 리스트 등록
+export async function createNotice(payload: {
+  title: string
+  content: string
+}) {
+  const res = await api.post('/api/admin/notices', payload)
+  return res.data
+}
