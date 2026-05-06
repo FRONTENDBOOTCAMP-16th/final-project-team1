@@ -1,0 +1,32 @@
+.table_box {
+  margin: 30px 0 0;
+}
+
+.table_footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4px 0;
+  font-weight: var(--Rg);
+  font-size: var(--md-text);
+  line-height: 20px;
+  color: #666666;
+}
+
+.content {
+  margin: 30px 0 0; 
+}
+
+.checkbox {
+  transform: scale(1.7);
+  cursor: pointer;
+}
+
+.ellipsis {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  cursor: pointer;
+}

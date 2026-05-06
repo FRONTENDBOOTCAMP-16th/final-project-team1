@@ -1,0 +1,190 @@
+.tableBox {
+  width: 100%;
+  /* margin: 30px 0; */
+  background-color: #fff;
+  border: 2px solid #e5e5e5;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 10px 0 0;
+  border-radius: 50%;
+  background-color: var(--default-orange);
+  color: #fff;;
+}
+
+.tit,
+.name {
+  color: var(--default-black);
+}
+  
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 102px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 20px;
+  font-weight: var(--Md);
+  font-size: var(--sub-title);
+  line-height: var(--big-title);
+}
+
+.statusProgress {
+  background: rgba(255, 96, 0, 0.1);
+  border: 1px solid var(--default-orange);
+  color: var(--default-orange);
+}
+
+.statusComplete {
+  background: rgba(18, 163, 226, 0.1);
+  border: 1px solid var(--finish-blue);
+  color: var(--finish-blue);
+}
+
+.statusDrop {
+  background: rgba(170, 170, 170, 0.1);
+  border: 1px solid var(--error-gray);
+  color: var(--error-gray);
+}
+
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 76px;
+  height: 28px;
+  padding: 0 14px;
+
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attendanceComplete {
+  color: #00a84f;
+  border: 1px solid #00c853;
+  background-color: #effff5;
+}
+
+.attendanceLate {
+  color: #f59f00;
+  border: 1px solid #ffb300;
+  background-color: #fffaf0;
+}
+
+.attendanceAbsent {
+  color: #ff3b30;
+  border: 1px solid #ff4d4f;
+  background-color: #fff1f0;
+}
+
+
+
+.vacationSick,
+.vacationOfficial,
+.vacationPersonal {
+  color: #ff6b00;
+  border: 1px solid #ff6b00;
+  background-color: #fff4ed;
+}
+
+.ellipsis {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.actionBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+
+.resultIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.resultSuccess {
+  background-color: #e8f5e9;
+  color: #00a84f;
+}
+
+.resultReject {
+  background-color: #fdecea;
+  color: #ff3b30;
+}
+
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  thead {
+    height: 53px;
+    background: #f5f5f5;
+  }
+
+  tr {
+    border-top: 1px solid #e5e5e5;
+    &:first-child {
+      border: none;
+    }
+  }
+
+  th {
+    font-weight: 700;
+    font-size: 16px;
+    color: #111111;
+  }
+
+  td {
+    height: 73px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #666666;
+
+    .tit {
+      color: #111111;
+    }
+  }
+}
+
+.tableFooter {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #666;
+}
+
+.empty {
+  height: 160px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+

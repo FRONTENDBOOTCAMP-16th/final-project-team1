@@ -1,0 +1,162 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border: none;
+  border-radius: 6px;
+
+  font-family: 'Pretendard variable';
+  font-size: var(--sub-title);
+  font-weight: 500;
+
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+
+  margin-left: 8px;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Variant: Primary (주황색)
+   ========================================= */
+.primary {
+  background-color: var(--default-orange);
+  color: var(--white);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--hover-orange, #e65700);
+}
+
+.primary:active:not(:disabled) {
+  background-color: var(--active-orange, #cc4d00);
+}
+
+/* =========================================
+   Variant: Dark (검정색)
+   ========================================= */
+.dark {
+  background-color: var(--default-black);
+  color: var(--white);
+}
+
+.dark:hover:not(:disabled) {
+  background-color: var(--hover-black, #2a2a2a);
+}
+
+.dark:active:not(:disabled) {
+  background-color: var(--active-black, #000);
+}
+
+/* =========================================
+   상태 Variant (출석/지각/결석/전체)
+   ========================================= */
+
+/* 출석 (성공 - 초록) */
+.success {
+  color: var(--success-green);
+  background-color: color-mix(in srgb, var(--success-green) 10%, transparent);
+  border: 2px solid var(--success-green);
+}
+
+/* 지각 (경고 - 노랑) */
+.warning {
+  color: var(--deep-yellow);
+  background-color: color-mix(in srgb, var(--wait-yellow) 10%, transparent);
+  border: 2px solid var(--wait-yellow);
+}
+
+/* 결석 (에러 - 빨강) */
+.error {
+  color: var(--danger-red);
+  background-color: color-mix(in srgb, var(--danger-red) 10%, transparent);
+  border: 2px solid var(--danger-red);
+}
+
+/* 전체 (기본 - 흰색) */
+.blank {
+  color: var(--default-black);
+  background-color: var(--white);
+  border: 2px solid var(--border-gray);
+}
+
+/* 승인 */
+.active {
+  color: var(--white);
+  background-color: var(--success-green);
+}
+
+/* 비승인 */
+.inactive {
+  color: var(--white);
+  background-color: var(--danger-red);
+}
+
+/* 상세보기 */
+.detail {
+  color: var(--default-orange);
+  background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
+}
+
+.detail:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--default-orange) 20%, transparent);
+}
+
+/* =========================================
+   Size
+   ========================================= */
+
+/* Small */
+
+.xs {
+  block-size: 30px;
+  padding-inline: 12px;
+  font-size: var(--sm-title);
+}
+
+.sm {
+  block-size: 36px;
+  padding-inline: 12px;
+  font-size: var(--sm-title);
+}
+
+/* Medium (기본) */
+.md {
+  block-size: 40px;
+  padding-inline: 16px;
+  font-size: var(--sub-title);
+}
+
+/* Large */
+.lg {
+  block-size: 50px;
+  padding-inline: 24px;
+  font-size: var(--sub-title);
+}
+
+/* =========================================
+   Icon
+   ========================================= */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg {
+  inline-size: 16px;
+  block-size: 16px;
+}

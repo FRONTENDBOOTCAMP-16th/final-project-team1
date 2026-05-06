@@ -1,0 +1,133 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import StudentLayout from "@/pages/sample/StudentLayout"
+import Button from '@/components/common/button/ui/button'
+import CustomComboBox from '@/components/common/comboBox/customComboBox'    // ← 추가
+import { Info, Calendar, FileText } from "lucide-react"
+import S from './styles/leaveRequest.module.css'
+
+const LEAVE_TYPE_LABELS = ['개인사유', '병결', '공결']
+const LEAVE_TYPE_CODE_MAP: Record<string, string> = {
+    '개인사유': 'H001',
+    '병결': 'H002',
+    '공결': 'H003',
+}
+
+function LeaveRequestPage() {
+    const navigate = useNavigate()
+
+    const [startDate, setStartDate] = useState<string>('')
+    const [endDate, setEndDate] = useState<string>('')
+    const [leaveType, setLeaveType] = useState<string>('')
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        if (!startDate || !endDate || !leaveType) {
+            alert('모든 항목을 입력해주세요.')
+            return
+        }
+
+        const requestData = {
+            startDate,
+            endDate,
+            leaveTypeCode: LEAVE_TYPE_CODE_MAP[leaveType],
+        }
+
+        console.log('휴가 신청 데이터:', requestData)
+    }
+
+    const handleCancel = () => {
+        navigate('/student/leave')
+    }
+
+    return (
+        <div className={S.leaveContainer}>
+            <StudentLayout>
+                <div className={S.RequestForm}>
+                    {/* 안내 메시지 */}
+                    <div className={S.FormNotice}>
+                        <Info size={16} color="var(--default-orange)" />
+                        <div className={S.NoticeContent}>
+                            <p className={S.NoticeTitle}>휴가 신청 안내</p>
+                            <p className={S.NoticeText}>
+                                휴가는 최소 3일 전에 신청해주세요.
+                                긴급한 경우 관리자에게 별도로 연락 부탁드립니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form className={S.FormFields} onSubmit={handleSubmit}>
+                        {/* 시작일 + 종료일 */}
+                        <div className={S.DateRow}>
+                            <div className={S.FieldGroup}>
+                                <label htmlFor="startDate" className={S.FieldLabel}>
+                                    <Calendar size={16} color="var(--default-orange)" />
+                                    시작일
+                                </label>
+                                <input
+                                    type="date"
+                                    id="startDate"
+                                    className={S.FormInput}
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                />
+                            </div>
+
+                            <div className={S.FieldGroup}>
+                                <label htmlFor="endDate" className={S.FieldLabel}>
+                                    <Calendar size={16} color="var(--default-orange)" />
+                                    종료일
+                                </label>
+                                <input
+                                    type="date"
+                                    id="endDate"
+                                    className={S.FormInput}
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    min={startDate || undefined}
+                                />
+                            </div>
+                        </div>
+
+                        {/* 휴가 사유 - ComboBox로 교체 */}
+                        <div className={S.FieldGroup}>
+                            <label className={S.FieldLabel}>
+                                <FileText size={16} color="var(--default-orange)" />
+                                휴가 사유
+                            </label>
+                            <CustomComboBox
+                                options={LEAVE_TYPE_LABELS}
+                                placeholder="휴가 사유를 선택하세요"
+                                value={leaveType}
+                                onChange={setLeaveType}
+                            />
+                        </div>
+
+                        {/* 버튼 */}
+                        <div className={S.ButtonRow}>
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                className={S.SubmitButton}
+                                size='lg'
+                            >
+                                신청하기
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="blank"
+                                size='lg'
+                                onClick={handleCancel}
+                            >
+                                취소
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            </StudentLayout>
+        </div>
+    )
+}
+
+export default LeaveRequestPage

@@ -1,0 +1,100 @@
+.page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+  gap: 30px;
+}
+
+.main {
+  flex: 1;
+}
+
+.content {
+  margin: 30px 0 0;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.table_box {
+  margin: 30px 0 0;
+}
+
+.table_footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4px 0;
+  font-weight: var(--Rg);
+  font-size: var(--md-text);
+  line-height: 20px;
+  color: #666666;
+}
+
+.tit,
+.name {
+  color: var(--default-black);
+}
+  
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 102px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 20px;
+  font-weight: var(--Md);
+  font-size: var(--sub-title);
+  line-height: var(--big-title);
+}
+
+.actionBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vacationSick,
+.vacationOfficial,
+.vacationPersonal {
+  color: var(--default-orange);
+  border: 1px solid var(--default-orange);
+  background-color: rgba(255, 96, 0, 0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  thead {
+    height: 53px;
+    background: #f5f5f5;
+  }
+
+  tr {
+    border-top: 1px solid #e5e5e5;
+  }
+
+  th {
+    font-weight: var(--Bd);
+    font-size: var(--border-radius-xl);
+    color: var(--default-black);
+  }
+
+  td {
+    height: 73px;
+    font-size: var(--border-radius-xl);
+    line-height: 20px;
+    color: #666666;
+
+    .tit {
+      color: var(--default-black);
+    }
+  }
+}
+
