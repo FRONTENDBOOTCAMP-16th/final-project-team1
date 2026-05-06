@@ -1,30 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Table from "@/components/common/table/Table"
+import Button from "@/components/common/button/ui/button"
 import type { TableColumn } from "@/components/common/table/table.types"
 import { SearchBar } from "@/components"
-import Pagination from "@/pages/admin/student/components/Pagination"
+import Pagination from "@/components/common/pagination"
+import { getNoticeList } from './api/noticeApi'
+import type { NoticeItem } from './api/noticeApi'
 import S from './styles/noticeList.module.css'
 
-// ==========================================
-// 1. 타입 정의
-// ==========================================
-interface Notice {
-    noticeId: number
-    title: string
-    createdDate: string
-}
-
-// ==========================================
-// 2. 메인 컴포넌트
-// ==========================================
 function NoticeListPage() {
     const navigate = useNavigate()
     const [currentPage, setCurrentPage] = useState(1)
+    const [noticeList, setNoticeList] = useState<NoticeItem[]>([])
+    const [totalCount, setTotalCount] = useState(0)
+    const [keyword, setKeyword] = useState('')
 
-    // 컬럼 정의
-    const noticeColumns: TableColumn<Notice>[] = [
+    const totalPages = Math.ceil(totalCount / 10)
+
+    useEffect(() => {
+        const fetchNoticeList = async () => {
+            try {
+                const data = await getNoticeList({
+                    keyword: keyword || undefined,
+                    page: currentPage,
+                    size: 10,
+                })
+                setNoticeList(data.items)
+                setTotalCount(data.totalCount)
+            } catch (err) {
+                console.error('공지사항 목록 조회 실패:', err)
+            }
+        }
+
+        fetchNoticeList()
+    }, [currentPage, keyword])
+
+    const noticeColumns: TableColumn<NoticeItem>[] = [
         { key: 'noticeId', header: '번호', width: '100px' },
         {
             key: 'title',
@@ -43,42 +56,38 @@ function NoticeListPage() {
         { key: 'createdDate', header: '작성일', width: '150px' },
     ]
 
-    // 가상 데이터
-    const noticeData: Notice[] = [
-        {
-            noticeId: 1,
-            title: '휴가 신청 안내',
-            createdDate: '2024.04.20',
-        },
-        {
-            noticeId: 2,
-            title: '시스템 점검 안내',
-            createdDate: '2024.04.18',
-        },
-        {
-            noticeId: 3,
-            title: '강의 일정 변경 공지',
-            createdDate: '2024.04.15',
-        },
-    ]
-
     return (
-        <div className={S.noticeListContainer}>
-            <StudentLayout>
-                <SearchBar placeholder="공지사항 검색" />
+    <div className={S.noticeListContainer}>
+        <StudentLayout>
+            <div className={S.searchBox}>
+    <SearchBar
+        placeholder="공지사항 검색"
+        onChange={(e) => {
+            setKeyword(e.target.value)
+            setCurrentPage(1)
+        }}
+    />
+    <Button variant="dark" onClick={() => setCurrentPage(1)}>
+        검색
+    </Button>
+</div>
+            <div className={S.tableBox}>
                 <Table 
                     columns={noticeColumns} 
-                    data={noticeData}
+                    data={noticeList}
                     rowKey={(row) => row.noticeId}
                 />
+            </div>
+            <div className={S.paginationBox}>
                 <Pagination 
                     currentPage={currentPage}
-                    totalPages={5}
-                    onChangePage={setCurrentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
                 />
-            </StudentLayout>
-        </div>
-    )
+            </div>
+        </StudentLayout>
+    </div>
+)
 }
 
 export default NoticeListPage
