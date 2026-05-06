@@ -6,6 +6,26 @@
     inline-size: 100%;
 }
 
+/* 검색바 */
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    inline-size: 100%;
+    margin-block-end: 30px;
+}
+
+/* 테이블 */
+.tableBox {
+    inline-size: 100%;
+    margin-block-end: 30px;
+}
+
+/* 페이지네이션 */
+.paginationBox {
+    inline-size: 100%;
+}
+
 /* 제목 클릭 버튼 (link처럼 보이게) */
 .TitleButton {
     background: none;
@@ -25,4 +45,3 @@
     color: var(--default-orange);
     text-decoration: underline;
 }
-
