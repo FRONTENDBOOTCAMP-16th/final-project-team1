@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { postLeaveRequest } from '../api/leaveApi'
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Button from '@/components/common/button/ui/button'
-import CustomComboBox from '@/components/common/comboBox/customComboBox'    // ← 추가
+import CustomComboBox from '@/components/common/comboBox/customComboBox'
+import Modal from '@/components/common/modal/Modal'
 import { Info, Calendar, FileText } from "lucide-react"
 import S from './styles/leaveRequest.module.css'
 
@@ -16,25 +18,50 @@ const LEAVE_TYPE_CODE_MAP: Record<string, string> = {
 function LeaveRequestPage() {
     const navigate = useNavigate()
 
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [startDate, setStartDate] = useState<string>('')
     const [endDate, setEndDate] = useState<string>('')
     const [leaveType, setLeaveType] = useState<string>('')
+    const [modalMessage, setModalMessage] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if (!startDate || !endDate || !leaveType) {
-            alert('모든 항목을 입력해주세요.')
+            setModalMessage('모든 항목을 입력해주세요.')
+            setIsSuccess(false)
+            setIsModalOpen(true)
             return
         }
 
-        const requestData = {
-            startDate,
-            endDate,
-            leaveTypeCode: LEAVE_TYPE_CODE_MAP[leaveType],
+        try {
+            setIsSubmitting(true)
+            await postLeaveRequest({
+                studentId: localStorage.getItem('studentId') || '',
+                leaveTypeCode: LEAVE_TYPE_CODE_MAP[leaveType],
+                startDate,
+                endDate,
+            })
+            setModalMessage('휴가 신청이 완료되었습니다.')
+            setIsSuccess(true)
+            setIsModalOpen(true)
+        } catch (err) {
+            console.error('휴가 신청 실패:', err)
+            setModalMessage('휴가 신청에 실패했습니다.')
+            setIsSuccess(false)
+            setIsModalOpen(true)
+        } finally {
+            setIsSubmitting(false)
         }
+    }
 
-        console.log('휴가 신청 데이터:', requestData)
+    const handleModalConfirm = () => {
+        setIsModalOpen(false)
+        if (isSuccess) {
+            navigate('/student/leave')
+        }
     }
 
     const handleCancel = () => {
@@ -90,7 +117,7 @@ function LeaveRequestPage() {
                             </div>
                         </div>
 
-                        {/* 휴가 사유 - ComboBox로 교체 */}
+                        {/* 휴가 사유 */}
                         <div className={S.FieldGroup}>
                             <label className={S.FieldLabel}>
                                 <FileText size={16} color="var(--default-orange)" />
@@ -111,8 +138,9 @@ function LeaveRequestPage() {
                                 variant="primary"
                                 className={S.SubmitButton}
                                 size='lg'
+                                disabled={isSubmitting}
                             >
-                                신청하기
+                                {isSubmitting ? '신청 중...' : '신청하기'}
                             </Button>
                             <Button
                                 type="button"
@@ -126,6 +154,17 @@ function LeaveRequestPage() {
                     </form>
                 </div>
             </StudentLayout>
+
+            {/* 모달 */}
+            <Modal
+                isOpen={isModalOpen}
+                title="내용을 확인해 주세요"
+                onClose={handleModalConfirm} 
+                onConfirm={handleModalConfirm}
+                buttonType="one"
+            >
+    <p>{modalMessage}</p>
+</Modal>
         </div>
     )
 }
