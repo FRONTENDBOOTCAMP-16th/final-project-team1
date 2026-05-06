@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 export interface LoginResponseData {
   studentId: string
   name: string
@@ -6,25 +8,20 @@ export interface LoginResponseData {
   token: string
 }
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const post_login_api = async (studentId: string, password: string) => {
-  const response = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      studentId: studentId,
-      password: password,
-    }),
-  })
+  try {
+    const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+      studentId,
+      password,
+    })
 
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.message || '로그인 실패')
+    return response.data.data as LoginResponseData
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || '로그인 실패')
+    }
+    throw new Error('서버와 연결할 수 없습니다.')
   }
-
-  return result.data as LoginResponseData
 }
