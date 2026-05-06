@@ -1,4 +1,6 @@
 import { LogIn, LogOut, TrendingUp, Award } from 'lucide-react'
+import { useState } from 'react'
+import Modal from '@/components/common/modal/Modal'
 
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 
@@ -8,9 +10,14 @@ interface AttendanceActionCardProps {
 
 function AttendanceActionCard({ type }: AttendanceActionCardProps) {
   const isCheckIn = type === 'checkIn'
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false)
 
   return (
-    <button className={`${S.actionCard} ${isCheckIn ? S.checkIn : S.checkOut}`}>
+    <button
+      type="button"
+      className={`${S.actionCard} ${isCheckIn ? S.checkIn : S.checkOut}`}
+      onClick={() => setIsCheckModalOpen(true)}
+    >
       <div className={S.actionIconBox}>
         {isCheckIn ? <LogIn size={32} /> : <LogOut size={32} />}
       </div>
@@ -24,6 +31,16 @@ function AttendanceActionCard({ type }: AttendanceActionCardProps) {
       <div className={S.actionRightIcon}>
         {isCheckIn ? <TrendingUp size={40} /> : <Award size={40} />}
       </div>
+      <Modal
+        isOpen={isCheckModalOpen}
+        title={isCheckIn ? '입실 확인' : '퇴실 확인'}
+        onClose={() => setIsCheckModalOpen(false)}
+        onConfirm={() => {
+          setIsCheckModalOpen(false)
+        }}
+      >
+        {isCheckIn ? '입실 처리하시겠습니까?' : '퇴실 처리하시겠습니까?'}
+      </Modal>
     </button>
   )
 }
