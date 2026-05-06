@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import styles from './LectureCreatePage.module.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
+import { createLecture } from '../api/lecture.api'
 
 interface LectureCreateForm {
   className: string
@@ -72,9 +74,13 @@ export default function LectureCreatePage() {
       })
 
       openModal(result.message || '강의 등록 성공', true, 'two')
-    } catch (error: any) {
-      const message = error.response?.data?.message || '강의 등록 중 오류가 발생했습니다.'
-      openModal(message)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || '강의 등록 중 오류가 발생했습니다.'
+        openModal(message)
+      } else {
+        openModal('강의 등록 중 알 수 없는 오류가 발생했습니다.')
+      }
     }
   }
 
