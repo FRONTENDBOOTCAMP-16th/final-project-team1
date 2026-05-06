@@ -1,106 +1,79 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Button from "@/components/common/button/ui/button"
-import Pagination from "@/pages/admin/student/components/Pagination"
 import CommonTable from "@/components/common/table/Table"
+import Pagination from "@/components/common/pagination"
 import type { TableColumn } from "@/components/common/table/table.types"
 import { Plus } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { getLeaveList } from './api/leaveApi'
+import type { LeaveItem } from './api/leaveApi'
 import S from './styles/leave.module.css'
 
-// ==========================================
-// 1. 타입 정의
-// ==========================================
-type VacationResultStatus = '승인 대기' | '승인 완료' | '반려'
-type LeaveReason = '병결' | '공결' | '개인사유'
-
-interface VacationHistory {
-    leaveRequestId: number
-    studentNo: string
-    reason: LeaveReason
-    period: string
-    status: VacationResultStatus
+const statusMap: Record<string, { className: string }> = {
+    'V001': { className: S.statusPending },
+    'V002': { className: S.statusApproved },
+    'V003': { className: S.statusRejected },
 }
 
-interface PaginationProps {
-    currentPage: number      
-    totalPages: number     
-    onChangePage: (page: number) => void 
-}
-
-// ==========================================
-// 2. 처리상태 맵 (3가지 색상 구분)
-// ==========================================
-const statusMap: Record<VacationResultStatus, { className: string }> = {
-    '승인 대기': {
-        className: S.statusPending,
-    },
-    '승인 완료': {
-        className: S.statusApproved,
-    },
-    '반려': {
-        className: S.statusRejected,
-    },
-}
-
-const paginationConfig: PaginationProps = {
-    currentPage: 1,
-    totalPages: 5,
-    onChangePage: () => {},
-}
-
-// ==========================================
-// 3. 메인 컴포넌트
-// ==========================================
 function LeaveListPage() {
-   const navigate = useNavigate()   
+    const navigate = useNavigate()
+    const [currentPage, setCurrentPage] = useState(1)
+    const [statusFilter, setStatusFilter] = useState('')
+    const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
+    const [totalCount, setTotalCount] = useState(0)
 
-    const historyColumns: TableColumn<VacationHistory>[] = [
-        { key: 'studentNo', header: '학번' },
+    const studentId = localStorage.getItem('studentId') || ''
+    const totalPages = Math.ceil(totalCount / 10)
+
+    useEffect(() => {
+        const fetchLeaveList = async () => {
+            try {
+                const data = await getLeaveList({
+                    studentId,
+                    page: currentPage,
+                    size: 10,
+                    statusCode: statusFilter || undefined,
+                })
+                setLeaveList(data.items)
+                setTotalCount(data.totalCount)
+            } catch (err) {
+                console.error('휴가 목록 조회 실패:', err)
+            }
+        }
+
+        if (studentId) fetchLeaveList()
+    }, [currentPage, statusFilter, studentId])
+
+    const historyColumns: TableColumn<LeaveItem>[] = [
+        { key: 'studentId', header: '학번' },
         {
-            key: 'reason',
+            key: 'leaveTypeName',
             header: '종류',
             render: (row) => (
                 <span className={`${S.statusBadge} ${S.reasonPersonal}`}>
-                    {row.reason}
+                    {row.leaveTypeName}
                 </span>
             ),
         },
-        { key: 'period', header: '휴가기간' },
         {
-            key: 'status',
+            key: 'startDate',
+            header: '휴가기간',
+            render: (row) => (
+                <span>{row.startDate} ~ {row.endDate}</span>
+            ),
+        },
+        {
+            key: 'approvalStatusName',
             header: '처리상태',
             render: (row) => {
-                const result = statusMap[row.status]
+                const result = statusMap[row.approvalStatusCode]
                 return (
-                    <span className={`${S.statusBadge} ${result.className}`}>
-                        {row.status}
+                    <span className={`${S.statusBadge} ${result?.className}`}>
+                        {row.approvalStatusName}
                     </span>
                 )
             },
-        },
-    ]
-
-    const historyData: VacationHistory[] = [
-        {
-            leaveRequestId: 1,
-            studentNo: '2024001',
-            reason: '공결',
-            period: '2024.04.20 - 2024.04.21',
-            status: '승인 완료',
-        },
-        {
-            leaveRequestId: 2,
-            studentNo: '2024001',
-            reason: '병결',
-            period: '2024.04.25 - 2024.04.25',
-            status: '반려',
-        },
-        {
-            leaveRequestId: 3,
-            studentNo: '2024001',
-            reason: '개인사유',
-            period: '2024.04.30 - 2024.05.02',
-            status: '승인 대기',
         },
     ]
 
@@ -109,24 +82,46 @@ function LeaveListPage() {
             <StudentLayout>
                 <div className={S.ButtonBox}>
                     <div className={S.leftButton}>
-                        <Button variant="dark">전체</Button>
-                        <Button variant="blank">승인 대기</Button>
-                        <Button variant="blank">완료</Button>         
+                        {[
+                            { label: '전체', code: '' },
+                            { label: '승인 대기', code: 'V001' },
+                            { label: '승인 완료', code: 'V002' },
+                            { label: '반려', code: 'V003' },
+                        ].map((option) => (
+                            <Button
+                                key={option.code}
+                                variant={statusFilter === option.code ? 'dark' : 'blank'}
+                                onClick={() => {
+                                    setStatusFilter(option.code)
+                                    setCurrentPage(1)
+                                }}
+                            >
+                                {option.label}
+                            </Button>
+                        ))}
                     </div>
                     <div className={S.rightButton}>
-                        <Button variant="primary" onClick={() => navigate('/student/leave/request')} >
+                        <Button
+                            variant="primary"
+                            onClick={() => navigate('/student/leave/request')}
+                        >
                             <Plus size={16} />
                             휴가신청 하기
                         </Button>
                     </div>
                 </div>
-                
-                <CommonTable 
-                    columns={historyColumns} 
-                    data={historyData}
+
+                <CommonTable
+                    columns={historyColumns}
+                    data={leaveList}
                     rowKey={(row) => row.leaveRequestId}
                 />
-                <Pagination {...paginationConfig} />
+
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             </StudentLayout>
         </div>
     )
