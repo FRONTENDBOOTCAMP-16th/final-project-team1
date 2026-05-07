@@ -1,0 +1,38 @@
+.notFoundContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  block-size: 100vh;
+  background-color: #FAFAFA;
+  gap: 24px;
+}
+
+.lionImage {
+  inline-size: 200px;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.notFoundTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.color {
+  color: var(--default-orange);
+}
+
+.notFoundText {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
