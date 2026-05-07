@@ -21,36 +21,32 @@
   block-size: 44px;
   padding-inline: 16px;
   padding-block: 0;
-  /* margin-block-start: 30px; */
 
   border: 2px solid #e5e5e5;
   border-radius: 8px;
+  
+  position: relative;    /* ← 추가 */
 
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease;
 }
 
-/* 포커스 시 강조 */
 .searchBar:focus-within {
   background-color: var(--white);
   border-color: var(--default-orange);
 }
 
-/* 돋보기 아이콘 */
 .searchBar > svg {
   flex-shrink: 0;
   color: #666;
 }
 
-/* input */
 .searchInput {
   flex: 1;
-
-  background: transparent; /* 부모 배경 보이게 */
+  background: transparent;
   border: none;
   outline: none;
-
   font-family: 'Pretendard variable';
   font-size: 14px;
   color: var(--default-black);
@@ -58,4 +54,46 @@
 
 .searchInput::placeholder {
   color: #666666;
+}
+
+/* 자동완성 드롭다운 */
+.suggestionList {
+  position: absolute;
+  inset-block-start: calc(100% + 4px);
+  inset-inline-start: 0;
+  inline-size: 100%;
+  z-index: 10;
+
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+
+  background-color: var(--white);
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  max-block-size: 240px;
+  overflow-y: auto;
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--default-black);
+  transition: background-color 0.15s ease;
+}
+
+.suggestionItem:hover {
+  background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
+  color: var(--default-orange);
+}
+
+.emptyMessage {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #999;
+  text-align: center;
 }
