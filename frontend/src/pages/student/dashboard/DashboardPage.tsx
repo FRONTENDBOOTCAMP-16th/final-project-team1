@@ -10,6 +10,7 @@ function DashboardPage() {
 
   const [checkInTime, setCheckInTime] = useState<string | null>(null)
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
+  const [attendanceRate, setAttendanceRate] = useState<number>(0)
 
   const formatApiTime = (time: string) => {
     return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
@@ -18,6 +19,28 @@ function DashboardPage() {
       hour12: false,
     })
   }
+
+  useEffect(() => {
+    const fetchStudentDashboard = async () => {
+      try {
+        const studentId = localStorage.getItem('studentId')
+
+        const response = await api.get('/api/student/dashboard', {
+          params: {
+            studentId,
+          },
+        })
+
+        console.log('학생 대시보드 응답:', response.data)
+
+        setAttendanceRate(response.data.data.attendanceRate)
+      } catch (error) {
+        console.error('학생 대시보드 조회 실패:', error)
+      }
+    }
+
+    fetchStudentDashboard()
+  }, [])
 
   const handleCheckIn = async () => {
     try {
@@ -91,7 +114,7 @@ function DashboardPage() {
 
             <div className={S.monthRate}>
               <span>이번 달 출석률</span>
-              <strong>95%</strong>
+              <strong>{attendanceRate}%</strong>
             </div>
           </div>
 
