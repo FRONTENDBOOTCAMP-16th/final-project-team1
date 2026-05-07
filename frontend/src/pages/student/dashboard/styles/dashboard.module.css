@@ -445,3 +445,15 @@
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
 }
+
+.present {
+  background: #e8f7ee;
+}
+
+.late {
+  background: #fff4e5;
+}
+
+.absent {
+  background: #ffeaea;
+}

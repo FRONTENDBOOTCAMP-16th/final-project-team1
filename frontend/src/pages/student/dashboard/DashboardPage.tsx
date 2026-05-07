@@ -1,9 +1,10 @@
 import StudentLayout from '@/pages/sample/StudentLayout'
 import AttendanceActionCard from '@/pages/student/dashboard/components/AttendanceActionCard'
+import AttendanceCalendar from '@/pages/student/dashboard/components/AttendanceCalendar'
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { api } from '@/api/axios'
-import S from './styles/dashboard.module.css'
+import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
@@ -12,6 +13,8 @@ function DashboardPage() {
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
   const [attendanceRate, setAttendanceRate] = useState<number>(0)
 
+  const [attendanceItems, setAttendanceItems] = useState([])
+
   const formatApiTime = (time: string) => {
     return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
       hour: '2-digit',
@@ -19,7 +22,6 @@ function DashboardPage() {
       hour12: false,
     })
   }
-
   useEffect(() => {
     const fetchStudentDashboard = async () => {
       try {
@@ -40,6 +42,39 @@ function DashboardPage() {
     }
 
     fetchStudentDashboard()
+  }, [])
+
+  useEffect(() => {
+    const fetchAttendanceItems = async () => {
+      try {
+        const response = await api.get('/api/admin/attendances', {
+          params: {
+            size: 40,
+          },
+        })
+
+        console.log('출결 목록 응답:', response.data)
+
+        console.log(
+          '전체 studentId 목록:',
+          response.data.data.items.map((item: { studentId: string }) => item.studentId),
+        )
+
+        const studentId = localStorage.getItem('studentId')
+
+        const myAttendanceItems = response.data.data.items.filter(
+          (item: { studentId: string }) => item.studentId === studentId,
+        )
+
+        console.log('내 출결 목록:', myAttendanceItems)
+
+        setAttendanceItems(myAttendanceItems)
+      } catch (error) {
+        console.error('출결 목록 조회 실패:', error)
+      }
+    }
+
+    fetchAttendanceItems()
   }, [])
 
   const handleCheckIn = async () => {
@@ -139,8 +174,7 @@ function DashboardPage() {
         </div>
 
         <div className={S.content}>
-          <AttendanceCalendar />
-
+          <AttendanceCalendar attendanceList={attendanceItems} />
           <div className={S.sideArea}>
             <LeaveStatus />
             <NoticeList />
@@ -148,68 +182,6 @@ function DashboardPage() {
         </div>
       </div>
     </StudentLayout>
-  )
-}
-
-function AttendanceCalendar() {
-  const year = 2026
-  const month = 4
-
-  const firstDay = new Date(year, month - 1, 1).getDay()
-  const lastDate = new Date(year, month, 0).getDate()
-
-  const days = [
-    ...Array.from({ length: firstDay }, () => null),
-    ...Array.from({ length: lastDate }, (_, index) => index + 1),
-  ]
-
-  return (
-    <section className={S.calendarCard}>
-      <div className={S.calendarHeader}>
-        <h3 className={S.sectionTitle}>출석현황 캘린더</h3>
-        <span className={S.calendarMonth}>2026년 4월</span>
-      </div>
-
-      <div className={S.weekGrid}>
-        {['일', '월', '화', '수', '목', '금', '토'].map((week) => (
-          <span key={week} className={S.week}>
-            {week}
-          </span>
-        ))}
-      </div>
-
-      <div className={S.calendarGrid}>
-        {days.map((day, index) =>
-          day ? (
-            <div key={index} className={S.day}>
-              {day}
-            </div>
-          ) : (
-            <div key={index} className={S.empty} />
-          ),
-        )}
-      </div>
-      <div className={S.legend}>
-        <h4 className={S.legendTitle}>출석현황</h4>
-
-        <div className={S.legendItems}>
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.green}`} />
-            <span>출석완료</span>
-          </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.orange}`} />
-            <span>훈련중</span>
-          </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.red}`} />
-            <span>결석</span>
-          </div>
-        </div>
-      </div>
-    </section>
   )
 }
 
