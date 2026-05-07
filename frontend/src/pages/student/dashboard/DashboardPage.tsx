@@ -2,10 +2,59 @@ import StudentLayout from '@/pages/sample/StudentLayout'
 import AttendanceActionCard from '@/pages/student/dashboard/components/AttendanceActionCard'
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { api } from '@/api/axios'
 import S from './styles/dashboard.module.css'
 
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
+
+  const [checkInTime, setCheckInTime] = useState<string | null>(null)
+  const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
+
+  const formatApiTime = (time: string) => {
+    return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  }
+
+  const handleCheckIn = async () => {
+    try {
+      const studentId = localStorage.getItem('studentId')
+
+      const response = await api.post('/api/student/attendance/check-in', {
+        studentId,
+      })
+
+      const time = response.data.data.checkInTime
+
+      setCheckInTime(formatApiTime(time))
+    } catch (error) {
+      console.error('입실 처리 실패', error)
+    }
+  }
+
+  const handleCheckOut = async () => {
+    console.log('퇴실 함수 실행됨')
+
+    try {
+      const studentId = localStorage.getItem('studentId')
+      console.log('studentId:', studentId)
+
+      const response = await api.post('/api/student/attendance/check-out', {
+        studentId,
+      })
+
+      console.log('퇴실 응답:', response.data)
+
+      const time = response.data.data.checkOutTime
+
+      setCheckOutTime(formatApiTime(time))
+    } catch (error) {
+      console.error('퇴실 처리 실패', error)
+    }
+  }
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -51,19 +100,19 @@ function DashboardPage() {
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>입실 시간</span>
-              <strong className={S.checkInTime}>09:15</strong>
+              <strong className={S.checkInTime}>{checkInTime ?? '--:--'}</strong>
             </div>
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>퇴실 시간</span>
-              <strong className={S.checkOutTime}>--:--</strong>
+              <strong className={S.checkOutTime}>{checkOutTime ?? '--:--'}</strong>
             </div>
           </div>
         </section>
 
-        <div className={S.action}>
-          <AttendanceActionCard type="checkIn" />
-          <AttendanceActionCard type="checkOut" />
+        <div className={S.actionCardList}>
+          <AttendanceActionCard type="checkIn" onClick={handleCheckIn} />
+          <AttendanceActionCard type="checkOut" onClick={handleCheckOut} />
         </div>
 
         <div className={S.content}>
