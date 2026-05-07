@@ -33,6 +33,9 @@ import AdminSettingsPage from '../pages/admin/settings/SettingsPage'
 // sample
 import Samplepage from '../pages/sample/Samplepage'
 
+// not found
+import NotFoundPage from '../pages/notfound/NotFoundPage'
+
 export const router = createBrowserRouter([
   // 로그인
   {
@@ -129,4 +132,10 @@ export const router = createBrowserRouter([
     path: '/sample/Samplepage',
     element: <Samplepage />,
   },
+
+  // 404 페이지 (선택 사항)
+  {
+    path: '*',
+    element: <NotFoundPage />,
+  }
 ])
