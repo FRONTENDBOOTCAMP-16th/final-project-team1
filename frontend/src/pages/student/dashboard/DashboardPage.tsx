@@ -3,8 +3,25 @@ import AttendanceActionCard from '@/pages/student/dashboard/components/Attendanc
 import AttendanceCalendar from '@/pages/student/dashboard/components/AttendanceCalendar'
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '@/api/axios'
+import {
+  getStudentNoticeList,
+  type StudentNoticeItem,
+} from '@/pages/student/dashboard/api/studentDashboardApi'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
+
+interface NoticeItem {
+  noticeId: number
+  title: string
+  createdDate: string
+  isOpen?: boolean
+}
+
+interface NoticeListProps {
+  notices: NoticeItem[]
+  onNoticeClick: (noticeId: number) => void
+}
 
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
@@ -14,6 +31,8 @@ function DashboardPage() {
   const [attendanceRate, setAttendanceRate] = useState<number>(0)
 
   const [attendanceItems, setAttendanceItems] = useState([])
+  const [notices, setNotices] = useState<StudentNoticeItem[]>([])
+  const navigate = useNavigate()
 
   const formatApiTime = (time: string) => {
     return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
@@ -41,7 +60,18 @@ function DashboardPage() {
       }
     }
 
+    const fetchNotices = async () => {
+      try {
+        const data = await getStudentNoticeList()
+
+        setNotices(data)
+      } catch (error) {
+        console.error('공지사항 조회 실패:', error)
+      }
+    }
+
     fetchStudentDashboard()
+    fetchNotices()
   }, [])
 
   useEffect(() => {
@@ -177,7 +207,10 @@ function DashboardPage() {
           <AttendanceCalendar attendanceList={attendanceItems} />
           <div className={S.sideArea}>
             <LeaveStatus />
-            <NoticeList />
+            <NoticeList
+              notices={notices}
+              onNoticeClick={(noticeId) => navigate(`/student/notice/${noticeId}`)}
+            />
           </div>
         </div>
       </div>
@@ -203,20 +236,21 @@ function LeaveStatus() {
   )
 }
 
-function NoticeList() {
+function NoticeList({ notices, onNoticeClick }: NoticeListProps) {
   return (
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>멋사 공지사항</h3>
 
-      <div className={`${S.listItem} ${S.noticeImportant}`}>
-        <strong>4월 정기 출석체크 일정 안내</strong>
-        <span>2026.04.15</span>
-      </div>
-
-      <div className={`${S.listItem} ${S.noticeNormal}`}>
-        <strong>봄학기 중간 평가 공지</strong>
-        <span>2026.04.10</span>
-      </div>
+      {notices.slice(0, 2).map((notice, index) => (
+        <div
+          key={notice.noticeId}
+          className={`${S.listItem} ${index === 0 ? S.noticeImportant : S.noticeNormal}`}
+          onClick={() => onNoticeClick(notice.noticeId)}
+        >
+          <strong>{notice.title}</strong>
+          <span>{notice.createdDate}</span>
+        </div>
+      ))}
     </section>
   )
 }
