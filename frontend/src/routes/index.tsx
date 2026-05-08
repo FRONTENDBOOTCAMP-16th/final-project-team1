@@ -3,6 +3,9 @@ import { createBrowserRouter } from 'react-router-dom'
 // auth
 import LoginPage from '../pages/auth/LoginPage'
 
+// route guard
+import ProtectedRoute from './ProtectedRoute'
+
 // student
 import DashboardPage from '../pages/student/dashboard/DashboardPage'
 import LeaveListPage from '../pages/student/leave/LeaveListPage'
@@ -45,86 +48,92 @@ export const router = createBrowserRouter([
 
   // 학생 영역
   {
-    path: '/student/dashboard',
-    element: <DashboardPage />,
-  },
-  {
-    path: '/student/leave',
-    element: <LeaveListPage />,
-  },
-  {
-    path: '/student/leave/request',
-    element: <LeaveRequestPage />,
-  },
-  {
-    path: '/student/notice',
-    element: <NoticeListPage />,
-  },
-  {
-    path: '/student/notice/:id',
-    element: <NoticeDetailPage />,
-  },
-  {
-    path: '/student/settings',
-    element: <SettingsPage />,
+    element: <ProtectedRoute allowedRole="STUDENT" />,
+    children: [
+      {
+        path: '/student/dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: '/student/leave',
+        element: <LeaveListPage />,
+      },
+      {
+        path: '/student/leave/request',
+        element: <LeaveRequestPage />,
+      },
+      {
+        path: '/student/notice',
+        element: <NoticeListPage />,
+      },
+      {
+        path: '/student/notice/:id',
+        element: <NoticeDetailPage />,
+      },
+      {
+        path: '/student/settings',
+        element: <SettingsPage />,
+      },
+    ],
   },
 
   // 관리자 영역
   {
-    path: '/admin/dashboard',
-    element: <AdminDashboardPage />,
-  },
-  {
-    path: '/admin/lecture',
-    element: <LectureListPage />,
-  },
-  {
-    path: '/admin/lecture/create',
-    element: <LectureCreatePage />,
-  },
-  {
-    path: '/admin/lecture/:id/edit',
-    element: <LectureEditPage />,
-  },
-
-  {
-    path: '/admin/student',
-    element: <StudentListPage />,
-  },
-  {
-    path: '/admin/student/create',
-    element: <StudentCreatePage />,
-  },
-  {
-    path: '/admin/student/:id/edit',
-    element: <StudentEditPage />,
-  },
-
-  {
-    path: '/admin/attendance',
-    element: <AttendanceListPage />,
-  },
-  {
-    path: '/admin/leave',
-    element: <LeaveApprovePage />,
-  },
-
-  {
-    path: '/admin/notice',
-    element: <AdminNoticeListPage />,
-  },
-  {
-    path: '/admin/notice/create',
-    element: <NoticeCreatePage />,
-  },
-  {
-    path: '/admin/notice/:id/edit',
-    element: <NoticeEditPage />,
-  },
-
-  {
-    path: '/admin/settings',
-    element: <AdminSettingsPage />,
+    element: <ProtectedRoute allowedRole="ADMIN" />,
+    children: [
+      {
+        path: '/admin/dashboard',
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: '/admin/lecture',
+        element: <LectureListPage />,
+      },
+      {
+        path: '/admin/lecture/create',
+        element: <LectureCreatePage />,
+      },
+      {
+        path: '/admin/lecture/:id/edit',
+        element: <LectureEditPage />,
+      },
+      {
+        path: '/admin/student',
+        element: <StudentListPage />,
+      },
+      {
+        path: '/admin/student/create',
+        element: <StudentCreatePage />,
+      },
+      {
+        path: '/admin/student/:id/edit',
+        element: <StudentEditPage />,
+      },
+      {
+        path: '/admin/attendance',
+        element: <AttendanceListPage />,
+      },
+      {
+        path: '/admin/leave',
+        element: <LeaveApprovePage />,
+      },
+      {
+        path: '/admin/notice',
+        element: <AdminNoticeListPage />,
+      },
+      {
+        path: '/admin/notice/create',
+        element: <NoticeCreatePage />,
+      },
+      {
+        path: '/admin/notice/:id/edit',
+        element: <NoticeEditPage />,
+      },
+      {
+        path: '/admin/settings',
+        element: <AdminSettingsPage />,
+      },
+    ],
   },
 
   // 샘플 페이지
@@ -133,9 +142,9 @@ export const router = createBrowserRouter([
     element: <Samplepage />,
   },
 
-  // 404 페이지 (선택 사항)
+  // 404 페이지
   {
     path: '*',
     element: <NotFoundPage />,
-  }
+  },
 ])
