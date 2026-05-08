@@ -1,3 +1,7 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { jwtDecode } from 'jwt-decode'
+
 import { useAuthView } from './hooks/useAuthView'
 import LoginForm from './components/LoginForm'
 import AdminLoginForm from './components/AdminLoginForm'
@@ -5,8 +9,46 @@ import FindPassword from './components/FindPassword'
 import ResetPassword from './components/ResetPassword'
 import './styles/login.css'
 
+interface JwtPayload {
+  exp: number
+  role: 'STUDENT' | 'ADMIN'
+}
+
 export default function LoginPage() {
   const { view, set_view } = useAuthView()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+
+    if (!token) return
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token)
+      const now = Math.floor(new Date().getTime() / 1000)
+
+      if (decoded.exp <= now) {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('userName')
+        localStorage.removeItem('role')
+        return
+      }
+
+      if (decoded.role === 'ADMIN') {
+        navigate('/admin/dashboard')
+        return
+      }
+
+      if (decoded.role === 'STUDENT') {
+        navigate('/student/dashboard')
+        return
+      }
+    } catch {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('role')
+    }
+  }, [navigate])
 
   return (
     <main className="login_page_wrapper">
@@ -15,6 +57,7 @@ export default function LoginPage() {
           <h1 className="service_title">CHECKMATE</h1>
           <p className="service_subtitle">멋사 출결관리 시스템</p>
         </header>
+
         {(view === 'LOGIN' || view === 'ADMIN_LOGIN') && (
           <nav className="auth_tabs">
             <button
