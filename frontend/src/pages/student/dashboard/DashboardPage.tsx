@@ -10,6 +10,7 @@ import {
   type StudentNoticeItem,
 } from '@/pages/student/dashboard/api/studentDashboardApi'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
+import { axiosInstance } from '@/api/axios'
 
 interface NoticeItem {
   noticeId: number
@@ -44,13 +45,15 @@ function DashboardPage() {
   useEffect(() => {
     const fetchStudentDashboard = async () => {
       try {
-        const studentId = localStorage.getItem('studentId')
+        // const studentId = localStorage.getItem('studentId')
 
-        const response = await api.get('/api/student/dashboard', {
-          params: {
-            studentId,
-          },
-        })
+        // const response = await api.get('/api/student/dashboard', {
+        //   params: {
+        //     studentId,
+        //   },
+        // })
+
+        const response = await axiosInstance.get('/api/student/dashboard')
 
         console.log('학생 대시보드 응답:', response.data)
 
@@ -109,11 +112,13 @@ function DashboardPage() {
 
   const handleCheckIn = async () => {
     try {
-      const studentId = localStorage.getItem('studentId')
+      // const studentId = localStorage.getItem('studentId')
 
-      const response = await api.post('/api/student/attendance/check-in', {
-        studentId,
-      })
+      // const response = await api.post('/api/student/attendance/check-in', {
+      //   studentId,
+      // })
+
+      const response = await axiosInstance.post('/api/student/attendance/check-in')
 
       const time = response.data.data.checkInTime
 
@@ -127,12 +132,14 @@ function DashboardPage() {
     console.log('퇴실 함수 실행됨')
 
     try {
-      const studentId = localStorage.getItem('studentId')
-      console.log('studentId:', studentId)
+      // const studentId = localStorage.getItem('studentId')
+      // console.log('studentId:', studentId)
 
-      const response = await api.post('/api/student/attendance/check-out', {
-        studentId,
-      })
+      // const response = await api.post('/api/student/attendance/check-out', {
+      //   studentId,
+      // })
+
+      const response = await axiosInstance.post('/api/student/attendance/check-out')
 
       console.log('퇴실 응답:', response.data)
 
