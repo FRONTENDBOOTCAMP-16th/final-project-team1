@@ -11,14 +11,17 @@ import com.checkmate.team1.dto.FindPasswordResponse;
 import java.util.Optional;
 import com.checkmate.team1.dto.ResetPasswordRequest;
 import org.springframework.transaction.annotation.Transactional;
+import com.checkmate.team1.security.JwtTokenProvider;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final StudentRepository studentRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public LoginResponse login(LoginRequest request) {
+
         Student student = studentRepository.findByStudentId(request.getStudentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학생입니다."));
 
@@ -26,12 +29,17 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        String accessToken = jwtTokenProvider.createToken(
+                student.getStudentId(),
+                "STUDENT"
+        );
+
         return new LoginResponse(
                 student.getStudentId(),
                 student.getName(),
                 "STUDENT",
                 student.getPasswordYn(),
-                "jwt-token"
+                accessToken
         );
     }
 
