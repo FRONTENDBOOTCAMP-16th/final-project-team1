@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
+import { useSettings } from './hooks/useSettings'
 import './styles/settings.css'
 
 function SettingPage() {
+  const { profile, isLoading, error } = useSettings()
+
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -14,7 +17,20 @@ function SettingPage() {
     console.log('비밀번호 변경 시도:', { currentPassword, newPassword, confirmPassword })
   }
 
-  // TODO: API 연동 후 더미 데이터 제거
+  if (isLoading)
+    return (
+      <StudentLayout>
+        <div className="settingContainer">정보를 불러오는 중입니다...</div>
+      </StudentLayout>
+    )
+  if (error)
+    return (
+      <StudentLayout>
+        <div className="settingContainer">에러: {error}</div>
+      </StudentLayout>
+    )
+  if (!profile) return null
+
   return (
     <StudentLayout>
       <div className="settingContainer">
@@ -27,28 +43,27 @@ function SettingPage() {
           <div className="infoGrid">
             <div className="inputGroup">
               <span className="label">이름</span>
-              <div className="valueBox">김민수</div>
+              <div className="valueBox">{profile.name}</div>
             </div>
 
             <div className="inputGroup">
               <span className="label">전화번호</span>
-              <div className="valueBox">010-1000-0001</div>
+              <div className="valueBox">{profile.phoneNumber}</div>
             </div>
 
             <div className="inputGroup">
               <span className="label">학번</span>
-              <div className="valueBox">20240001</div>
+              <div className="valueBox">{profile.studentId}</div>
             </div>
 
             <div className="inputGroup">
-              <span className="label">수강 과정</span>
-              <div className="valueBox">웹 개발 트랙</div>
+              <span className="label">소속</span>
+              <div className="valueBox">{profile.className}</div>
             </div>
 
             <div className="inputGroup">
               <span className="label">이메일</span>
-              <div className="valueBox">student@likelion.net</div>
-              <span className="noticeText">이메일 변경 시 관리자에게 문의해주세요</span>
+              <div className="valueBox">{profile.email}</div>
             </div>
           </div>
         </section>
