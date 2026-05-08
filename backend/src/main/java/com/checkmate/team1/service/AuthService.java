@@ -50,15 +50,28 @@ public class AuthService {
                         request.getName(),
                         request.getPhoneNumber()
                 )
-                .map(student ->
-                        new FindPasswordResponse(student.getStudentId())
-                );
+                .map(student -> {
+                    String resetToken =
+                            jwtTokenProvider.createPasswordResetToken(student.getStudentId());
+
+                    return new FindPasswordResponse(
+                            student.getStudentId(),
+                            resetToken
+                    );
+                });
     }
 
     @Transactional
-    public boolean resetPassword(ResetPasswordRequest request) {
+    public boolean resetPassword(
+            String authorizationHeader,
+            ResetPasswordRequest request
+    ) {
 
-        return studentRepository.findById(request.getStudentId())
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        String studentId = jwtTokenProvider.getStudentIdFromResetToken(token);
+
+        return studentRepository.findById(studentId)
                 .map(student -> {
                     student.changePassword(request.getNewPassword());
                     return true;

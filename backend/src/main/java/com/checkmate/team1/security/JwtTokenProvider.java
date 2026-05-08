@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtTokenProvider {
@@ -56,5 +57,35 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String createPasswordResetToken(String studentId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + 10 * 60 * 1000); // 10분
+
+        return Jwts.builder()
+                .setSubject(studentId)
+                .claim("purpose", "PASSWORD_RESET")
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String getStudentIdFromResetToken(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        String purpose = claims.get("purpose", String.class);
+
+        if (!"PASSWORD_RESET".equals(purpose)) {
+            throw new IllegalArgumentException("비밀번호 재설정용 토큰이 아닙니다.");
+        }
+
+        return claims.getSubject();
     }
 }
