@@ -23,9 +23,11 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
 
       const result = await response.json()
 
-      sessionStorage.setItem('reset_student_id', result.data.studentId)
+      // sessionStorage.setItem('reset_student_id', result.data.studentId)
 
       if (response.ok) {
+        sessionStorage.setItem('resetToken', result.data.resetToken)
+
         alert('본인 인증이 완료되었습니다. 새 비밀번호를 설정해 주세요.')
         onChangeView('RESET_PASSWORD')
       } else {

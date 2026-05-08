@@ -28,9 +28,13 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
     }
 
     try {
-      const target_student_id = sessionStorage.getItem('reset_student_id')
+      // const target_student_id = sessionStorage.getItem('reset_student_id')
 
-      if (!target_student_id) {
+      const resetToken = sessionStorage.getItem('resetToken')
+
+      // if (!target_student_id) {
+
+      if (!resetToken) {
         alert('인증 정보가 만료되었습니다. 다시 본인 인증을 진행해 주세요.')
         onChangeView('FIND_PASSWORD')
         return
@@ -42,19 +46,24 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+
+          // JWT 토큰 헤더 추가
+          Authorization: `Bearer ${resetToken}`,
         },
+
         body: JSON.stringify({
-          studentId: target_student_id,
+          // studentId: target_student_id,
           newPassword: new_password,
         }),
       })
 
       const result = await response.json()
 
-      if (response.ok) {
+      if (response.ok && result.success) {
         alert('비밀번호가 성공적으로 변경되었습니다! 새 비밀번호로 로그인해 주세요.')
 
-        sessionStorage.removeItem('reset_student_id')
+        // 기존 저장값 제거
+        sessionStorage.removeItem('resetToken')
 
         onChangeView('LOGIN')
       } else {
