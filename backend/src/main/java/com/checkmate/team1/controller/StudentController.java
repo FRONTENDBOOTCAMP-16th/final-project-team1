@@ -32,8 +32,9 @@ public class StudentController {
 
     @GetMapping("/api/student/settings")
     public ApiResponse<StudentSettingsResponse> getSettings(
-            @RequestParam String studentId
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         StudentSettingsResponse response =
                 studentDashboardService.getSettings(studentId);

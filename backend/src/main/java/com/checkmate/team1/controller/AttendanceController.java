@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.checkmate.team1.dto.CheckOutResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.Authentication;
 
 @Tag(name = "Attendance", description = "출결 API")
 @RestController
@@ -18,22 +19,24 @@ public class AttendanceController {
 
     @PostMapping("/api/student/attendance/check-in")
     public ApiResponse<CheckInResponse> checkIn(
-            @RequestBody CheckInRequest request
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         CheckInResponse response =
-                attendanceService.checkIn(request.getStudentId());
+                attendanceService.checkIn(studentId);
 
         return ApiResponse.success("입실 처리 완료", response);
     }
 
     @PostMapping("/api/student/attendance/check-out")
     public ApiResponse<CheckOutResponse> checkOut(
-            @RequestBody CheckInRequest request
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         CheckOutResponse response =
-                attendanceService.checkOut(request.getStudentId());
+                attendanceService.checkOut(studentId);
 
         return ApiResponse.success(response.getMessage(), response);
     }

@@ -49,11 +49,13 @@ public class StudentLeaveRequestService {
         );
     }
 
-    public CreateLeaveResponse createLeaveRequest(CreateLeaveRequest request) {
-
+    public CreateLeaveResponse createLeaveRequest(
+            String studentId,
+            CreateLeaveRequest request
+    ) {
         boolean exists =
                 leaveRequestRepository.existsByStudentIdAndStartDateAndEndDate(
-                        request.getStudentId(),
+                        studentId,
                         request.getStartDate(),
                         request.getEndDate()
                 );
@@ -66,7 +68,7 @@ public class StudentLeaveRequestService {
         }
 
         LeaveRequest leaveRequest = new LeaveRequest(
-                request.getStudentId(),
+                studentId,
                 request.getLeaveTypeCode(),
                 request.getStartDate(),
                 request.getEndDate(),

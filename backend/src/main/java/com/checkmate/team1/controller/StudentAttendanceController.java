@@ -4,6 +4,7 @@ import com.checkmate.team1.dto.ApiResponse;
 import com.checkmate.team1.dto.StudentAttendanceCalendarResponse;
 import com.checkmate.team1.service.StudentAttendanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +17,12 @@ public class StudentAttendanceController {
 
     @GetMapping("/api/student/attendance-calendar")
     public ApiResponse<StudentAttendanceCalendarResponse> getAttendanceCalendar(
-            @RequestParam String studentId,
+            Authentication authentication,
             @RequestParam int year,
             @RequestParam int month
     ) {
+        String studentId = authentication.getName();
+
         StudentAttendanceCalendarResponse response =
                 studentAttendanceService.getAttendanceCalendar(studentId, year, month);
 

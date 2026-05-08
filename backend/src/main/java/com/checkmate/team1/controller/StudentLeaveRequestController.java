@@ -4,6 +4,7 @@ import com.checkmate.team1.dto.ApiResponse;
 import com.checkmate.team1.dto.StudentLeaveRequestListResponse;
 import com.checkmate.team1.service.StudentLeaveRequestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.checkmate.team1.dto.CreateLeaveRequest;
 import com.checkmate.team1.dto.CreateLeaveResponse;
@@ -18,11 +19,12 @@ public class StudentLeaveRequestController {
 
     @GetMapping("/api/student/leave-requests")
     public ApiResponse<StudentLeaveRequestListResponse> getLeaveRequests(
-            @RequestParam String studentId,
+            Authentication authentication,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String statusCode
     ) {
+        String studentId = authentication.getName();
 
         StudentLeaveRequestListResponse response =
                 studentLeaveRequestService.getLeaveRequests(
@@ -37,11 +39,13 @@ public class StudentLeaveRequestController {
 
     @PostMapping("/api/student/leave-requests")
     public ApiResponse<CreateLeaveResponse> createLeaveRequest(
-            @RequestBody CreateLeaveRequest request
+            @RequestBody CreateLeaveRequest request,
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         CreateLeaveResponse response =
-                studentLeaveRequestService.createLeaveRequest(request);
+                studentLeaveRequestService.createLeaveRequest(studentId, request);
 
         return ApiResponse.success(response.getMessage(), response);
     }
