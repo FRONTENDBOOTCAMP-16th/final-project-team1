@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.checkmate.team1.dto.AdminResetPasswordRequest;
 import org.springframework.transaction.annotation.Transactional;
+import com.checkmate.team1.security.JwtTokenProvider;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AdminLoginResponse login(AdminLoginRequest request) {
 
@@ -28,17 +30,24 @@ public class AdminService {
             return null;
         }
 
+        String accessToken = jwtTokenProvider.createToken(
+                admin.getAdminId(),
+                "ADMIN"
+        );
+
         return new AdminLoginResponse(
                 admin.getAdminId(),
                 admin.getName(),
-                admin.getRole(),
-                "jwt-token"
+                "ADMIN",
+                accessToken
         );
     }
 
     @Transactional
-    public boolean resetPassword(AdminResetPasswordRequest request) {
-        return adminRepository.findById(request.getAdminId())
+    public boolean resetPassword(
+            String adminId,
+            AdminResetPasswordRequest request) {
+        return adminRepository.findById(adminId)
                 .map(admin -> {
                     admin.changePassword(request.getNewPassword());
                     return true;

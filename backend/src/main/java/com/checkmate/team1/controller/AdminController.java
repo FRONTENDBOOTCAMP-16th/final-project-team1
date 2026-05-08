@@ -7,6 +7,7 @@ import com.checkmate.team1.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.checkmate.team1.dto.AdminDashboardResponse;
 import com.checkmate.team1.service.AdminDashboardService;
@@ -370,9 +371,12 @@ public class AdminController {
 
     @PatchMapping("/reset-password")
     public ApiResponse<Void> resetPassword(
-            @RequestBody AdminResetPasswordRequest request
+            @RequestBody AdminResetPasswordRequest request,
+            Authentication authentication
     ) {
-        boolean result = adminService.resetPassword(request);
+        String adminId = authentication.getName();
+
+        boolean result = adminService.resetPassword(adminId, request);
 
         if (!result) {
             return ApiResponse.fail("존재하지 않는 관리자입니다.");

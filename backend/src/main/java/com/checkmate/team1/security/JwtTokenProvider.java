@@ -50,13 +50,22 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getStudentId(String token) {
+    public String getUserId(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
     }
 
     public String createPasswordResetToken(String studentId) {
