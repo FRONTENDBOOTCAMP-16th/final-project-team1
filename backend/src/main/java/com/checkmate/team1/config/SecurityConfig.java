@@ -30,12 +30,14 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/find-password",
                                 "/api/auth/reset-password",
+                                "/api/admin/login",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

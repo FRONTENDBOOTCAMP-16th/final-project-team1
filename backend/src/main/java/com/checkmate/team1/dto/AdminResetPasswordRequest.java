@@ -6,7 +6,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AdminResetPasswordRequest {
-
-    private String adminId;
     private String newPassword;
 }
