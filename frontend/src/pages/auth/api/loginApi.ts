@@ -4,8 +4,8 @@ export interface LoginResponseData {
   studentId: string
   name: string
   role: string
-  passwordYn: string
-  token: string
+  isPasswordChangeRequired: string
+  accessToken: string
 }
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''

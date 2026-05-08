@@ -7,14 +7,31 @@ export const axiosInstance = axios.create({
   },
 })
 
+// 요청 인터셉터 (JWT 토큰 자동 첨부)
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken')
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+  },
+
+  (error) => {
+    return Promise.reject(error)
+  },
+)
+
 // 요청 인터셉터 (토큰 자동 첨부)
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+// axiosInstance.interceptors.request.use((config) => {
+//   const token = localStorage.getItem('accessToken')
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`
+//   }
+//   return config
+// })
 
 // 응답 인터셉터 (401 처리)
 axiosInstance.interceptors.response.use(
@@ -28,7 +45,7 @@ axiosInstance.interceptors.response.use(
       window.location.href = '/'
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 export const api = axiosInstance
