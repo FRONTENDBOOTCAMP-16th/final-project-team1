@@ -51,3 +51,50 @@ export async function getNoticeList() {
 
   return response.data.data.items
 }
+
+export interface LeaveRequestItem {
+  leaveRequestId: number
+  studentId: string
+  studentName: string
+  studentInitial: string
+  leaveTypeCode: string
+  leaveTypeName: string
+  startDate: string
+  endDate: string
+  periodText: string
+  approvalStatusCode: string
+  approvalStatusName: string
+}
+
+export interface LeaveRequestData {
+  items: LeaveRequestItem[]
+  page: number
+  size: number
+  totalCount: number
+}
+
+export async function getLeaveRequestList(page = 1, size = 10) {
+  const response = await api.get<{
+    success: boolean
+    message: string
+    data: LeaveRequestData
+  }>('/api/admin/leave-requests', {
+    params: {
+      page,
+      size,
+    },
+  })
+
+  return response.data.data
+}
+
+export async function updateLeaveRequestStatus(
+  leaveRequestId: number,
+  approvalStatusCode: 'V002' | 'V003',
+) {
+  const response = await api.patch(`/api/admin/leave-requests/${leaveRequestId}/status`, {
+    approvalStatusCode,
+  })
+
+  return response.data
+}

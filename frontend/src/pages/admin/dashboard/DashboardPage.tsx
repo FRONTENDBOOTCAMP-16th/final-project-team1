@@ -7,26 +7,23 @@ import {
   getAdminDashboardSummary,
   getAttendanceStatusByClass,
   getNoticeList,
+  getLeaveRequestList,
+  updateLeaveRequestStatus,
   type AttendanceItem,
   type AdminDashboardData,
   type NoticeItem,
+  type LeaveRequestItem,
 } from '@/pages/admin/dashboard/api/dashboardApi'
 import AttendanceStatusChart from '@/pages/admin/dashboard/components/AttendanceStatusChart'
 import SystemNoticeList from './components/NoticeList'
 import Table, { type TableColumn } from '@/components/common/table'
 import { Button } from '@/components'
+
 import S from '@/pages/admin/dashboard/styles/dashboard.module.css'
 
 import Pagination from '@/components/common/pagination/Pagination'
 
 type VacationType = '병결' | '공결' | '개인사유'
-
-type Vacation = {
-  name: string
-  studentNo: string
-  vacationType: VacationType
-  period: string
-}
 
 const vacationTypeMap = {
   병결: {
@@ -43,33 +40,30 @@ const vacationTypeMap = {
   },
 }
 
-const vacationData: Vacation[] = [
-  {
-    name: '김민수',
-    studentNo: '2024001',
-    vacationType: '병결',
-    period: '00.00 - 00.00',
-  },
-  {
-    name: '황재호',
-    studentNo: '2024001',
-    vacationType: '공결',
-    period: '00.00 - 00.00',
-  },
-  {
-    name: '정호영',
-    studentNo: '2024001',
-    vacationType: '개인사유',
-    period: '00.00 - 00.00',
-  },
-]
-
 export default function AdminDashboardPage() {
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
   const [attendanceData, setAttendanceData] = useState<AttendanceItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
 
   const [noticeData, setNoticeData] = useState<NoticeItem[]>([])
+
+  const [vacationData, setVacationData] = useState<LeaveRequestItem[]>([])
+  const [leaveTotalCount, setLeaveTotalCount] = useState(0)
+
+  useEffect(() => {
+    const fetchLeaveRequestList = async () => {
+      try {
+        const data = await getLeaveRequestList(currentPage, pageSize)
+
+        setVacationData(data.items)
+        setLeaveTotalCount(data.totalCount)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchLeaveRequestList()
+  }, [currentPage])
 
   useEffect(() => {
     const fetchNoticeList = async () => {
@@ -110,56 +104,96 @@ export default function AdminDashboardPage() {
     fetchAttendanceData()
   }, [])
 
-  const handleApprove = (row: Vacation) => {
-    console.log('승인', row)
+  const handleApprove = async (row: LeaveRequestItem) => {
+    try {
+      await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
+
+      const data = await getLeaveRequestList(currentPage, pageSize)
+
+      setVacationData(data.items)
+      setLeaveTotalCount(data.totalCount)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  const handleReject = (row: Vacation) => {
-    console.log('반려', row)
+  const handleReject = async (row: LeaveRequestItem) => {
+    try {
+      await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
+
+      const data = await getLeaveRequestList(currentPage, pageSize)
+
+      setVacationData(data.items)
+      setLeaveTotalCount(data.totalCount)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  const pageSize = 12
-  const totalCount = 248
-  const totalPages = Math.ceil(totalCount / pageSize)
+  const pageSize = 10
+  const totalPages = Math.ceil(leaveTotalCount / pageSize)
 
-  const vacationColumns: TableColumn<Vacation>[] = [
+  const vacationColumns: TableColumn<LeaveRequestItem>[] = [
     {
-      key: 'name',
+      key: 'studentName',
       header: '신청자',
       render: (row) => (
         <div className={S.nameBox}>
-          <span className={S.circle}>{row.name[0]}</span>
-          <span className={S.tit}>{row.name}</span>
+          <span className={S.circle}>{row.studentInitial}</span>
+          <span className={S.tit}>{row.studentName}</span>
         </div>
       ),
     },
-    { key: 'studentNo', header: '학번' },
+    { key: 'studentId', header: '학번' },
     {
-      key: 'vacationType',
+      key: 'leaveTypeName',
       header: '휴가종류',
       render: (row) => {
-        const vacation = vacationTypeMap[row.vacationType]
+        const vacation = vacationTypeMap[row.leaveTypeName as VacationType]
 
-        return <span className={`${S.statusBadge} ${vacation.className}`}>{vacation.label}</span>
+        return (
+          <span className={`${S.statusBadge} ${vacation?.className ?? ''}`}>
+            {row.leaveTypeName || '기타'}
+          </span>
+        )
       },
     },
-    { key: 'period', header: '기간' },
+    { key: 'periodText', header: '기간' },
+    {
+      key: 'approvalStatusName',
+      header: '처리상태',
+      render: (row) => <span>{row.approvalStatusName}</span>,
+    },
     {
       key: 'action',
       header: '처리',
-      render: (row) => (
-        <div className={S.actionBox}>
-          <Button type="button" variant="active" onClick={() => handleApprove(row)}>
-            <Check size={16} />
-            승인
-          </Button>
+      render: (row) => {
+        const isCompleted = row.approvalStatusCode !== 'V001'
 
-          <Button type="button" variant="inactive" onClick={() => handleReject(row)}>
-            <X size={16} />
-            반려
-          </Button>
-        </div>
-      ),
+        return (
+          <div className={S.actionBox}>
+            <Button
+              type="button"
+              variant="active"
+              disabled={isCompleted}
+              onClick={() => handleApprove(row)}
+            >
+              <Check size={16} />
+              승인
+            </Button>
+
+            <Button
+              type="button"
+              variant="inactive"
+              disabled={isCompleted}
+              onClick={() => handleReject(row)}
+            >
+              <X size={16} />
+              반려
+            </Button>
+          </div>
+        )
+      },
     },
   ]
 
@@ -223,9 +257,9 @@ export default function AdminDashboardPage() {
           <Table
             columns={vacationColumns}
             data={vacationData}
-            totalCount={248}
-            currentPage={1}
-            pageSize={12}
+            totalCount={leaveTotalCount}
+            currentPage={currentPage}
+            pageSize={pageSize}
             countLabel="명"
           />
 
