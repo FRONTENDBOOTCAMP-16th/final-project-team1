@@ -6,8 +6,6 @@ import java.time.LocalDate;
 
 @Getter
 public class CreateLeaveRequest {
-
-    private String studentId;
     private String leaveTypeCode;
     private LocalDate startDate;
     private LocalDate endDate;
