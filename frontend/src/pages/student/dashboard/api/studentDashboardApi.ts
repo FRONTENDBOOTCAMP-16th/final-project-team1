@@ -16,3 +16,23 @@ export async function getStudentAttendanceCalendar(studentId: string) {
 
   return response.data.data
 }
+
+export interface StudentNoticeItem {
+  noticeId: number
+  title: string
+  createdDate: string
+  isOpen: boolean
+  openStatusName: string
+}
+
+export async function getStudentNoticeList() {
+  const response = await api.get<{
+    success: boolean
+    message: string
+    data: {
+      items: StudentNoticeItem[]
+    }
+  }>('/api/student/notices')
+
+  return response.data.data.items
+}
