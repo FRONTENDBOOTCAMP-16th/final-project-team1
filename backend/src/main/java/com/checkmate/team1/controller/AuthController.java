@@ -48,10 +48,11 @@ public class AuthController {
 
     @PatchMapping("/reset-password")
     public ApiResponse<Void> resetPassword(
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody ResetPasswordRequest request
     ) {
 
-        boolean result = authService.resetPassword(request);
+        boolean result = authService.resetPassword(authorizationHeader, request);
 
         if (!result) {
             return ApiResponse.fail("존재하지 않는 학생입니다.");
