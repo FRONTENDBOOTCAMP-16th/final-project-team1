@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styles from './StudentCreatePage.module.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
+import Modal from '@/components/common/modal/Modal'
+import { getLectureList } from '@/pages/admin/lecture/api/lecture.api'
+import { addStudent } from '../api/student.api'
 
 type StudentStatusCode = 'S001' | 'S002' | 'S003'
 
 interface StudentCreateForm {
-  studentId: string
   name: string
   password: string
   phoneNumber: string
@@ -14,9 +17,21 @@ interface StudentCreateForm {
   studentStatusCode: StudentStatusCode
 }
 
+function formatPhoneNumber(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 export default function StudentCreatePage() {
+  const navigate = useNavigate()
+
   const [form, setForm] = useState<StudentCreateForm>({
-    studentId: '',
     name: '',
     password: '1234',
     phoneNumber: '',
@@ -25,36 +40,76 @@ export default function StudentCreatePage() {
     studentStatusCode: 'S003',
   })
 
+  const [emailError, setEmailError] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [courses, setCourses] = useState<{ classId: number; className: string }[]>([])
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const result = await getLectureList({ page: 1, size: 1000 })
+        setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
+      } catch (error) {
+        console.error('강의 목록 조회 실패:', error)
+      }
+    }
+    fetchCourses()
+  }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, phoneNumber: formatPhoneNumber(e.target.value) }))
+  }
+
+  const handleEmailBlur = () => {
+    if (form.email && !isValidEmail(form.email)) {
+      setEmailError('올바른 이메일 형식이 아닙니다.')
+    } else {
+      setEmailError('')
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const requestBody = {
-      studentId: form.studentId,
-      name: form.name,
-      password: form.password,
-      phoneNumber: form.phoneNumber,
-      email: form.email,
-      classId: Number(form.classId),
-      studentStatusCode: form.studentStatusCode,
+    if (form.email && !isValidEmail(form.email)) {
+      setEmailError('올바른 이메일 형식이 아닙니다.')
+      return
     }
 
-    console.log('학생 등록 요청 데이터:', requestBody)
-
-    // TODO: API 연결
-    // await addStudent(requestBody)
+    try {
+      await addStudent({
+        name: form.name,
+        password: form.password,
+        phoneNumber: form.phoneNumber,
+        email: form.email,
+        classId: Number(form.classId),
+        studentStatusCode: form.studentStatusCode,
+      })
+      setShowModal(true)
+    } catch (error) {
+      console.error('학생 등록 실패:', error)
+    }
   }
+
+  const goToList = () => navigate('/admin/student')
 
   return (
     <AdminLayout>
+      <Modal
+        isOpen={showModal}
+        title="등록 완료"
+        onClose={goToList}
+        onConfirm={goToList}
+        buttonType="two"
+      >
+        등록이 완료되었습니다.
+      </Modal>
+
       <form className={styles.page} onSubmit={handleSubmit}>
         <div className={styles.formBox}>
           <div className={styles.formGroup}>
@@ -71,14 +126,13 @@ export default function StudentCreatePage() {
 
           <div className={styles.row}>
             <div className={styles.formGroup}>
-              <label>
-                학번 <span>*</span>
-              </label>
+              <label>학번</label>
               <input
-                name="studentId"
-                value={form.studentId}
-                onChange={handleChange}
-                placeholder="20240001"
+                value=""
+                readOnly
+                disabled
+                placeholder="자동 생성됩니다"
+                className={styles.disabledInput}
               />
             </div>
 
@@ -89,8 +143,9 @@ export default function StudentCreatePage() {
               <input
                 name="phoneNumber"
                 value={form.phoneNumber}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 placeholder="010-0000-0000"
+                maxLength={13}
               />
             </div>
           </div>
@@ -102,9 +157,14 @@ export default function StudentCreatePage() {
             <input
               name="email"
               value={form.email}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e)
+                if (emailError) setEmailError('')
+              }}
+              onBlur={handleEmailBlur}
               placeholder="student@likelion.net"
             />
+            {emailError && <p className={styles.errorText}>{emailError}</p>}
           </div>
 
           <div className={styles.row}>
@@ -114,9 +174,11 @@ export default function StudentCreatePage() {
               </label>
               <select name="classId" value={form.classId} onChange={handleChange}>
                 <option value="">수강 과정을 선택하세요</option>
-                <option value="1">웹 개발 기초 과정</option>
-                <option value="2">프론트엔드 프레임워크</option>
-                <option value="3">백엔드 개발 과정</option>
+                {courses.map((course) => (
+                  <option key={course.classId} value={course.classId}>
+                    {course.className}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -163,7 +225,7 @@ export default function StudentCreatePage() {
           </div>
 
           <div className={styles.buttonArea}>
-            <button type="button" className={styles.cancelButton}>
+            <button type="button" className={styles.cancelButton} onClick={goToList}>
               목록으로 돌아가기
             </button>
 
