@@ -41,7 +41,7 @@ public class StudentService {
             nextNumber = Integer.parseInt(lastNumberStr) + 1;
         }
 
-        String newStudentId = today + String.format("%04d", nextNumber);
+        String newStudentId = today + String.format("%03d", nextNumber);
 
         Student student = new Student(
                 newStudentId,
