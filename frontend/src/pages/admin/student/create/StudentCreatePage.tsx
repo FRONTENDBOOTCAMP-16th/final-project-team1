@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import styles from './StudentCreatePage.module.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
@@ -41,6 +42,7 @@ export default function StudentCreatePage() {
   })
 
   const [emailError, setEmailError] = useState('')
+  const [phoneError, setPhoneError] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [courses, setCourses] = useState<{ classId: number; className: string }[]>([])
 
@@ -62,6 +64,7 @@ export default function StudentCreatePage() {
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (phoneError) setPhoneError('')
     setForm((prev) => ({ ...prev, phoneNumber: formatPhoneNumber(e.target.value) }))
   }
 
@@ -92,6 +95,13 @@ export default function StudentCreatePage() {
       })
       setShowModal(true)
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message ?? ''
+        if (message.includes('핸드폰')) {
+          setPhoneError(message)
+          return
+        }
+      }
       console.error('학생 등록 실패:', error)
     }
   }
@@ -147,6 +157,7 @@ export default function StudentCreatePage() {
                 placeholder="010-0000-0000"
                 maxLength={13}
               />
+              {phoneError && <p className={styles.errorText}>{phoneError}</p>}
             </div>
           </div>
 
