@@ -34,6 +34,9 @@ import type { AdminStudent } from './api/student.types'
 // 학생 목록 조회 API 함수
 import { getAdminStudents } from './api/student.api'
 
+// 강의 목록 조회 API 함수
+import { getLectureList } from '../lecture/api/lecture.api'
+
 // 한 페이지에 보여줄 학생 수
 const PAGE_SIZE = 10
 
@@ -44,8 +47,8 @@ export default function StudentListPage() {
   // 실제 검색 버튼을 눌렀을 때 적용되는 검색어
   const [searchKeyword, setSearchKeyword] = useState('')
 
-  // 선택된 강의명
-  const [selectedCourse, setSelectedCourse] = useState('')
+  // 선택된 강의 ID
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
 
   // 현재 페이지 번호
   const [currentPage, setCurrentPage] = useState(1)
@@ -56,6 +59,22 @@ export default function StudentListPage() {
   // API에서 받아온 전체 학생 수
   const [totalCount, setTotalCount] = useState(0)
 
+  // 강의 목록
+  const [courses, setCourses] = useState<{ classId: number; className: string }[]>([])
+
+  // 컴포넌트 마운트 시 강의 목록 조회
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const result = await getLectureList({ page: 1, size: 1000 })
+        setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
+      } catch (error) {
+        console.error('강의 목록 조회 실패:', error)
+      }
+    }
+    fetchCourses()
+  }, [])
+
   // 검색어, 강의명, 페이지가 바뀔 때마다 학생 목록 다시 조회
   useEffect(() => {
     async function fetchStudents() {
@@ -63,8 +82,7 @@ export default function StudentListPage() {
         // 백엔드 학생 목록 API 호출
         const result = await getAdminStudents({
           keyword: searchKeyword,
-          // @ts-expect-error 백엔드 API 명세 확인 전 임시 처리
-          className: selectedCourse,
+          classId: selectedClassId ?? undefined,
           page: currentPage,
           size: PAGE_SIZE,
         })
@@ -86,7 +104,7 @@ export default function StudentListPage() {
 
     // 함수 실행
     fetchStudents()
-  }, [searchKeyword, selectedCourse, currentPage])
+  }, [searchKeyword, selectedClassId, currentPage])
 
   // 전체 페이지 수 계산
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -100,12 +118,9 @@ export default function StudentListPage() {
     setCurrentPage(1)
   }
 
-  // 강의명 select 변경 시 실행
-  const handleChangeCourse = (value: string) => {
-    // 선택한 강의명 저장
-    setSelectedCourse(value)
-
-    // 필터가 바뀌면 첫 페이지로 이동
+  // 강의 select 변경 시 실행
+  const handleChangeCourse = (classId: number | null) => {
+    setSelectedClassId(classId)
     setCurrentPage(1)
   }
 
@@ -137,7 +152,13 @@ export default function StudentListPage() {
       {
         key: 'statusName',
         header: '상태',
-        render: (row: AdminStudent) => <span className="status-badge">{row.statusName}</span>,
+        render: (row: AdminStudent) => {
+          const colorClass =
+            row.statusCode === 'S001' ? 'status-gray'
+            : row.statusCode === 'S002' ? 'status-blue'
+            : 'status-orange'
+          return <span className={`status ${colorClass}`}>{row.statusName}</span>
+        },
       },
       {
         key: 'detail',
@@ -158,7 +179,8 @@ export default function StudentListPage() {
       {/* 검색어 + 강의명 필터 영역 */}
       <StudentFilterBar
         keyword={keyword}
-        selectedCourse={selectedCourse}
+        selectedCourse={selectedClassId}
+        courses={courses}
         onChangeKeyword={setKeyword}
         onChangeCourse={handleChangeCourse}
         onSearch={handleSearch}

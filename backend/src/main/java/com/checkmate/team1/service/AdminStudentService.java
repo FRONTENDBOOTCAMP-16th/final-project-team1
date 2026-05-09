@@ -8,6 +8,7 @@ import com.checkmate.team1.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.checkmate.team1.dto.AdminStudentDetailResponse;
 import com.checkmate.team1.dto.UpdateStudentRequest;
@@ -30,7 +31,7 @@ public class AdminStudentService {
             int size
     ) {
 
-        PageRequest pageable = PageRequest.of(page - 1, size);
+        PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "studentId"));
 
         Page<Student> studentPage;
 

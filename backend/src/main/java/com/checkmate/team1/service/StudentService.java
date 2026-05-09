@@ -28,7 +28,7 @@ public class StudentService {
         }
 
         String today = LocalDate.now()
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                .format(DateTimeFormatter.ofPattern("yyMMdd"));
 
         Optional<Student> lastStudent =
                 studentRepository.findTopByStudentIdStartingWithOrderByStudentIdDesc(today);
@@ -37,11 +37,11 @@ public class StudentService {
 
         if (lastStudent.isPresent()) {
             String lastId = lastStudent.get().getStudentId();
-            String lastNumberStr = lastId.substring(8);
+            String lastNumberStr = lastId.substring(6);
             nextNumber = Integer.parseInt(lastNumberStr) + 1;
         }
 
-        String newStudentId = today + String.format("%03d", nextNumber);
+        String newStudentId = today + String.format("%04d", nextNumber);
 
         Student student = new Student(
                 newStudentId,
