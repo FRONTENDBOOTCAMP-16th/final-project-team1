@@ -4,17 +4,24 @@ import { useNavigate } from 'react-router-dom'
 import comboStyle from '@/components/common/comboBox/comboBox.module.css'
 import searchStyle from '@/components/common/search/search.module.css'
 
+interface Course {
+  classId: number
+  className: string
+}
+
 interface Props {
   keyword: string
-  selectedCourse: string
+  selectedCourse: number | null
+  courses: Course[]
   onChangeKeyword: (value: string) => void
-  onChangeCourse: (value: string) => void
+  onChangeCourse: (classId: number | null) => void
   onSearch: () => void
 }
 
 export default function StudentFilterBar({
   keyword,
   selectedCourse,
+  courses,
   onChangeKeyword,
   onChangeCourse,
   onSearch,
@@ -33,15 +40,16 @@ export default function StudentFilterBar({
       <div style={{ flex: 1 }}>
         <div className={comboStyle.comboBox}>
           <select
-            value={selectedCourse}
-            onChange={(e) => onChangeCourse(e.target.value)}
+            value={selectedCourse ?? ''}
+            onChange={(e) => onChangeCourse(e.target.value ? Number(e.target.value) : null)}
             className={comboStyle.comboSelect}
           >
             <option value="">전체 보기</option>
-            <option value="웹 개발 기초 과정">웹 개발 기초 과정</option>
-            <option value="모바일 앱 개발">모바일 앱 개발</option>
-            <option value="UI/UX 디자인 심화">UI/UX 디자인 심화</option>
-            <option value="프론트엔드 프레임워크">프론트엔드 프레임워크</option>
+            {courses.map((course) => (
+              <option key={course.classId} value={course.classId}>
+                {course.className}
+              </option>
+            ))}
           </select>
 
           <ChevronDown className={comboStyle.arrow} size={16} />

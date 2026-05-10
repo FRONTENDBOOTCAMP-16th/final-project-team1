@@ -1,11 +1,155 @@
 import StudentLayout from '@/pages/sample/StudentLayout'
 import AttendanceActionCard from '@/pages/student/dashboard/components/AttendanceActionCard'
+import AttendanceCalendar from '@/pages/student/dashboard/components/AttendanceCalendar'
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import S from './styles/dashboard.module.css'
+import { useNavigate } from 'react-router-dom'
+import { api } from '@/api/axios'
+import {
+  getStudentNoticeList,
+  type StudentNoticeItem,
+} from '@/pages/student/dashboard/api/studentDashboardApi'
+import S from '@/pages/student/dashboard/styles/dashboard.module.css'
+import { axiosInstance } from '@/api/axios'
+
+interface NoticeItem {
+  noticeId: number
+  title: string
+  createdDate: string
+  isOpen?: boolean
+}
+
+interface NoticeListProps {
+  notices: NoticeItem[]
+  onNoticeClick: (noticeId: number) => void
+}
 
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
+
+  const [checkInTime, setCheckInTime] = useState<string | null>(null)
+  const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
+  const [attendanceRate, setAttendanceRate] = useState<number>(0)
+
+  const [attendanceItems, setAttendanceItems] = useState([])
+  const [notices, setNotices] = useState<StudentNoticeItem[]>([])
+  const navigate = useNavigate()
+
+  const formatApiTime = (time: string) => {
+    return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  }
+  useEffect(() => {
+    const fetchStudentDashboard = async () => {
+      try {
+        // const studentId = localStorage.getItem('studentId')
+
+        // const response = await api.get('/api/student/dashboard', {
+        //   params: {
+        //     studentId,
+        //   },
+        // })
+
+        const response = await axiosInstance.get('/api/student/dashboard')
+
+        console.log('학생 대시보드 응답:', response.data)
+
+        setAttendanceRate(response.data.data.attendanceRate)
+      } catch (error) {
+        console.error('학생 대시보드 조회 실패:', error)
+      }
+    }
+
+    const fetchNotices = async () => {
+      try {
+        const data = await getStudentNoticeList()
+
+        setNotices(data)
+      } catch (error) {
+        console.error('공지사항 조회 실패:', error)
+      }
+    }
+
+    fetchStudentDashboard()
+    fetchNotices()
+  }, [])
+
+  useEffect(() => {
+    const fetchAttendanceItems = async () => {
+      try {
+        const response = await api.get('/api/admin/attendances', {
+          params: {
+            size: 40,
+          },
+        })
+
+        console.log('출결 목록 응답:', response.data)
+
+        console.log(
+          '전체 studentId 목록:',
+          response.data.data.items.map((item: { studentId: string }) => item.studentId),
+        )
+
+        const studentId = localStorage.getItem('studentId')
+
+        const myAttendanceItems = response.data.data.items.filter(
+          (item: { studentId: string }) => item.studentId === studentId,
+        )
+
+        console.log('내 출결 목록:', myAttendanceItems)
+
+        setAttendanceItems(myAttendanceItems)
+      } catch (error) {
+        console.error('출결 목록 조회 실패:', error)
+      }
+    }
+
+    fetchAttendanceItems()
+  }, [])
+
+  const handleCheckIn = async () => {
+    try {
+      // const studentId = localStorage.getItem('studentId')
+
+      // const response = await api.post('/api/student/attendance/check-in', {
+      //   studentId,
+      // })
+
+      const response = await axiosInstance.post('/api/student/attendance/check-in')
+
+      const time = response.data.data.checkInTime
+
+      setCheckInTime(formatApiTime(time))
+    } catch (error) {
+      console.error('입실 처리 실패', error)
+    }
+  }
+
+  const handleCheckOut = async () => {
+    console.log('퇴실 함수 실행됨')
+
+    try {
+      // const studentId = localStorage.getItem('studentId')
+      // console.log('studentId:', studentId)
+
+      // const response = await api.post('/api/student/attendance/check-out', {
+      //   studentId,
+      // })
+
+      const response = await axiosInstance.post('/api/student/attendance/check-out')
+
+      console.log('퇴실 응답:', response.data)
+
+      const time = response.data.data.checkOutTime
+
+      setCheckOutTime(formatApiTime(time))
+    } catch (error) {
+      console.error('퇴실 처리 실패', error)
+    }
+  }
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -42,7 +186,7 @@ function DashboardPage() {
 
             <div className={S.monthRate}>
               <span>이번 달 출석률</span>
-              <strong>95%</strong>
+              <strong>{attendanceRate}%</strong>
             </div>
           </div>
 
@@ -51,93 +195,33 @@ function DashboardPage() {
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>입실 시간</span>
-              <strong className={S.checkInTime}>09:15</strong>
+              <strong className={S.checkInTime}>{checkInTime ?? '--:--'}</strong>
             </div>
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>퇴실 시간</span>
-              <strong className={S.checkOutTime}>--:--</strong>
+              <strong className={S.checkOutTime}>{checkOutTime ?? '--:--'}</strong>
             </div>
           </div>
         </section>
 
-        <div className={S.action}>
-          <AttendanceActionCard type="checkIn" />
-          <AttendanceActionCard type="checkOut" />
+        <div className={S.actionCardList}>
+          <AttendanceActionCard type="checkIn" onClick={handleCheckIn} />
+          <AttendanceActionCard type="checkOut" onClick={handleCheckOut} />
         </div>
 
         <div className={S.content}>
-          <AttendanceCalendar />
-
+          <AttendanceCalendar attendanceList={attendanceItems} />
           <div className={S.sideArea}>
             <LeaveStatus />
-            <NoticeList />
+            <NoticeList
+              notices={notices}
+              onNoticeClick={(noticeId) => navigate(`/student/notice/${noticeId}`)}
+            />
           </div>
         </div>
       </div>
     </StudentLayout>
-  )
-}
-
-function AttendanceCalendar() {
-  const year = 2026
-  const month = 4
-
-  const firstDay = new Date(year, month - 1, 1).getDay()
-  const lastDate = new Date(year, month, 0).getDate()
-
-  const days = [
-    ...Array.from({ length: firstDay }, () => null),
-    ...Array.from({ length: lastDate }, (_, index) => index + 1),
-  ]
-
-  return (
-    <section className={S.calendarCard}>
-      <div className={S.calendarHeader}>
-        <h3 className={S.sectionTitle}>출석현황 캘린더</h3>
-        <span className={S.calendarMonth}>2026년 4월</span>
-      </div>
-
-      <div className={S.weekGrid}>
-        {['일', '월', '화', '수', '목', '금', '토'].map((week) => (
-          <span key={week} className={S.week}>
-            {week}
-          </span>
-        ))}
-      </div>
-
-      <div className={S.calendarGrid}>
-        {days.map((day, index) =>
-          day ? (
-            <div key={index} className={S.day}>
-              {day}
-            </div>
-          ) : (
-            <div key={index} className={S.empty} />
-          ),
-        )}
-      </div>
-      <div className={S.legend}>
-        <h4 className={S.legendTitle}>출석현황</h4>
-
-        <div className={S.legendItems}>
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.green}`} />
-            <span>출석완료</span>
-          </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.orange}`} />
-            <span>훈련중</span>
-          </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.red}`} />
-            <span>결석</span>
-          </div>
-        </div>
-      </div>
-    </section>
   )
 }
 
@@ -159,20 +243,21 @@ function LeaveStatus() {
   )
 }
 
-function NoticeList() {
+function NoticeList({ notices, onNoticeClick }: NoticeListProps) {
   return (
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>멋사 공지사항</h3>
 
-      <div className={`${S.listItem} ${S.noticeImportant}`}>
-        <strong>4월 정기 출석체크 일정 안내</strong>
-        <span>2026.04.15</span>
-      </div>
-
-      <div className={`${S.listItem} ${S.noticeNormal}`}>
-        <strong>봄학기 중간 평가 공지</strong>
-        <span>2026.04.10</span>
-      </div>
+      {notices.slice(0, 2).map((notice, index) => (
+        <div
+          key={notice.noticeId}
+          className={`${S.listItem} ${index === 0 ? S.noticeImportant : S.noticeNormal}`}
+          onClick={() => onNoticeClick(notice.noticeId)}
+        >
+          <strong>{notice.title}</strong>
+          <span>{notice.createdDate}</span>
+        </div>
+      ))}
     </section>
   )
 }

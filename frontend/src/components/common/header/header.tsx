@@ -38,10 +38,7 @@ function Header() {
 
   // 로그아웃
   const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('userName')
-    localStorage.removeItem('studentId')
-    localStorage.removeItem('role')
+    localStorage.clear()
     navigate('/')
   }
 

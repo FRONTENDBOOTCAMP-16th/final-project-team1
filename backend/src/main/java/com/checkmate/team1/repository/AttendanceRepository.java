@@ -71,4 +71,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     );
 
     List<Attendance> findByAttendanceDate(LocalDate attendanceDate);
+
+    List<Attendance> findByStudent_StudentIdAndAttendanceDateBetweenOrderByAttendanceDateAsc(
+            String studentId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
 }

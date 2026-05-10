@@ -25,3 +25,48 @@ export interface GetStudentsResponse {
     totalCount: number
   }
 }
+
+export interface AddStudentRequest {
+  name: string
+  password: string
+  phoneNumber: string
+  email: string
+  classId: number
+  studentStatusCode: string
+}
+
+export interface StudentDetail {
+  studentId: string
+  name: string
+  phoneNumber: string
+  email: string
+  classId: number
+  className: string
+  statusCode: string
+  statusName: string
+}
+
+export interface StudentDetailResponse {
+  success: boolean
+  message: string
+  data: StudentDetail
+}
+
+export interface UpdateStudentRequest {
+  name: string
+  phoneNumber: string
+  email: string
+  classId: number
+  studentStatusCode: string
+}
+
+export interface AddStudentResponse {
+  success: boolean
+  message: string
+  data: {
+    studentId: string
+    name: string
+    classId: number
+    studentStatusCode: string
+  }
+}

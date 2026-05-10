@@ -6,11 +6,10 @@ import com.checkmate.team1.dto.StudentSettingsResponse;
 import com.checkmate.team1.service.StudentDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.Authentication;
 
 @Tag(name = "Student", description = "학생 정보 API")
 @RestController
@@ -21,8 +20,9 @@ public class StudentController {
 
     @GetMapping("/api/student/dashboard")
     public ApiResponse<StudentDashboardResponse> getDashboard(
-            @RequestParam String studentId
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         StudentDashboardResponse response =
                 studentDashboardService.getDashboard(studentId);
@@ -32,8 +32,9 @@ public class StudentController {
 
     @GetMapping("/api/student/settings")
     public ApiResponse<StudentSettingsResponse> getSettings(
-            @RequestParam String studentId
+            Authentication authentication
     ) {
+        String studentId = authentication.getName();
 
         StudentSettingsResponse response =
                 studentDashboardService.getSettings(studentId);

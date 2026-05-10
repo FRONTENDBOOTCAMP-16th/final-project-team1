@@ -1,6 +1,7 @@
 // 외부 라이브러리
 import { useEffect, useMemo, useState } from 'react'
 import { FileText, Check } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 // 공통 컴포넌트
 import { Button } from '@/components'
@@ -155,10 +156,13 @@ export default function NoticeListPage() {
       alert('삭제에 실패했습니다.')
     }
   }
+  /** 라우팅 이동 */
+  const navigate = useNavigate()
 
   /** 등록 */
   const handleCreate = () => {
     console.log('등록')
+    navigate('/admin/notice/create')
   }
 
   /** 검색어에 맞는 공지사항 목록 */
