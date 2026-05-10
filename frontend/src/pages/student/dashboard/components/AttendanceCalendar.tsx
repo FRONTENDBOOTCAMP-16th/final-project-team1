@@ -2,7 +2,7 @@ import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 
 interface AttendanceCalendarItem {
   attendanceDate: string
-  attendanceStatus: 'PRESENT' | 'LATE' | 'ABSENT' | 'ONGOING'
+  attendanceStatus: 'PRESENT' | 'ABSENT' | 'ONGOING'
 }
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 function AttendanceCalendar({ attendanceList }: Props) {
   const year = 2026
-  const month = 5
+  const month = 4
 
   const firstDay = new Date(year, month - 1, 1).getDay()
   const lastDate = new Date(year, month, 0).getDate()
@@ -52,8 +52,7 @@ function AttendanceCalendar({ attendanceList }: Props) {
               className={`${S.day} ${
                 attendance?.attendanceStatus === 'PRESENT'
                   ? S.present
-                  : attendance?.attendanceStatus === 'LATE' ||
-                      attendance?.attendanceStatus === 'ONGOING'
+                  : attendance?.attendanceStatus === 'ONGOING'
                     ? S.ongoing
                     : attendance?.attendanceStatus === 'ABSENT'
                       ? S.absent
