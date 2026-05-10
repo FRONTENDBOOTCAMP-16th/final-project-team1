@@ -24,6 +24,17 @@ interface NoticeListProps {
   onNoticeClick: (noticeId: number) => void
 }
 
+interface LeaveItem {
+  leaveRequestId: number
+  studentId: string
+  leaveTypeCode: string
+  leaveTypeName: string
+  startDate: string
+  endDate: string
+  approvalStatusCode: string
+  approvalStatusName: string
+}
+
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
 
@@ -80,30 +91,24 @@ function DashboardPage() {
   useEffect(() => {
     const fetchAttendanceItems = async () => {
       try {
-        const response = await api.get('/api/admin/attendances', {
+        const response = await api.get('/api/student/attendance-calendar', {
           params: {
-            size: 40,
+            year: 2026,
+            month: 4,
           },
         })
 
-        console.log('출결 목록 응답:', response.data)
+        console.log('출결 캘린더 응답:', response.data)
 
-        console.log(
-          '전체 studentId 목록:',
-          response.data.data.items.map((item: { studentId: string }) => item.studentId),
-        )
+        if (!response.data.success) {
+          setAttendanceItems([])
+          return
+        }
 
-        const studentId = localStorage.getItem('studentId')
-
-        const myAttendanceItems = response.data.data.items.filter(
-          (item: { studentId: string }) => item.studentId === studentId,
-        )
-
-        console.log('내 출결 목록:', myAttendanceItems)
-
-        setAttendanceItems(myAttendanceItems)
+        setAttendanceItems(response.data.data.items ?? [])
       } catch (error) {
-        console.error('출결 목록 조회 실패:', error)
+        console.error('출결 캘린더 조회 실패:', error)
+        setAttendanceItems([])
       }
     }
 
@@ -226,19 +231,69 @@ function DashboardPage() {
 }
 
 function LeaveStatus() {
+  const navigate = useNavigate()
+
+  const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
+
+  useEffect(() => {
+    const fetchLeaveList = async () => {
+      try {
+        const response = await api.get('/api/student/leave-requests', {
+          params: {
+            page: 1,
+            size: 10,
+          },
+        })
+
+        console.log('휴가 목록 응답 전체:', response.data)
+        console.log('휴가 items:', response.data.data?.items)
+
+        console.log('휴가 목록 응답:', response.data)
+
+        if (!response.data.success) {
+          setLeaveList([])
+          return
+        }
+
+        setLeaveList(response.data.data.items ?? [])
+      } catch (error) {
+        console.error('휴가 목록 조회 실패:', error)
+        setLeaveList([])
+      }
+    }
+
+    fetchLeaveList()
+  }, [])
+
+  const statusMessageMap: Record<string, string> = {
+    '승인 대기': '휴가 승인 대기 중입니다.',
+    '승인 완료': '휴가 승인이 완료되었습니다.',
+    반려: '휴가 승인이 반려되었습니다.',
+  }
+
   return (
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>휴가승인 현황</h3>
 
-      <div className={`${S.listItem} ${S.rejected}`}>
-        <strong>휴가 승인이 반려되었습니다.</strong>
-        <span>2026.04.10 - 2026.04.12</span>
-      </div>
+      {leaveList.slice(0, 3).map((item) => (
+        <div
+          key={item.leaveRequestId}
+          className={`${S.listItem} ${
+            item.approvalStatusName === '승인 완료'
+              ? S.approved
+              : item.approvalStatusName === '반려'
+                ? S.rejected
+                : S.pending
+          }`}
+          onClick={() => navigate('/student/leave')}
+        >
+          <strong>{statusMessageMap[item.approvalStatusName]}</strong>
 
-      <div className={`${S.listItem} ${S.approved}`}>
-        <strong>휴가 승인이 완료되었습니다.</strong>
-        <span>2026.04.10 - 2026.04.10</span>
-      </div>
+          <span>
+            {item.startDate} - {item.endDate}
+          </span>
+        </div>
+      ))}
     </section>
   )
 }
