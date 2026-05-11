@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
 import CommonTable from '@/components/common/table/Table'
 import Pagination from '@/components/common/pagination'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
+import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import type { TableColumn } from '@/components/common/table/table.types'
 import { Plus } from 'lucide-react'
 import { getLeaveList } from './api/leaveApi'
@@ -18,6 +19,7 @@ const statusMap: Record<string, { className: string }> = {
 
 function LeaveListPage() {
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('')
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
@@ -29,6 +31,7 @@ function LeaveListPage() {
   useEffect(() => {
     const fetchLeaveList = async () => {
       try {
+        setIsLoading(true)
         const data = await getLeaveList({
           // studentId,
           page: currentPage,
@@ -39,6 +42,8 @@ function LeaveListPage() {
         setTotalCount(data.totalCount)
       } catch (err) {
         console.error('휴가 목록 조회 실패:', err)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -106,11 +111,15 @@ function LeaveListPage() {
           </div>
         </div>
 
-        <CommonTable
-          columns={historyColumns}
-          data={leaveList}
-          rowKey={(row) => row.leaveRequestId}
-        />
+        {isLoading ? (
+          <TableSkeleton rows={10} columns={4} />
+        ) : (
+          <CommonTable
+              columns={historyColumns}
+              data={leaveList}
+              rowKey={(row) => row.leaveRequestId}
+          />
+        )}
 
         <Pagination
           currentPage={currentPage}

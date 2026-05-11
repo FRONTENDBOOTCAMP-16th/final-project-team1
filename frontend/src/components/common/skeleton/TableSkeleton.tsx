@@ -1,60 +1,48 @@
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-interface Column {
-  header: string
-  width?: string
+interface ColumnDef {
+    header: string
+    width?: string
 }
 
-interface Props {
-  columns: Column[]
-  rows?: number
+interface TableSkeletonProps {
+    rows?: number
+    columns?: number | ColumnDef[]
 }
 
-export default function TableSkeleton({ columns, rows = 8 }: Props) {
-  return (
-    <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th
-                key={col.header}
-                style={{
-                  padding: '14px 16px',
-                  background: '#fafafa',
-                  borderBottom: '1px solid #efefef',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  color: '#222',
-                  textAlign: 'center',
-                  width: col.width,
-                }}
-              >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: rows }).map((_, rowIdx) => (
-            <tr key={rowIdx}>
-              {columns.map((col) => (
-                <td
-                  key={col.header}
-                  style={{
-                    padding: '18px 16px',
-                    borderBottom: '1px solid #efefef',
-                    textAlign: 'center',
-                  }}
-                >
-                  <Skeleton height={16} borderRadius={6} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </SkeletonTheme>
-  )
+export default function TableSkeleton({
+    rows = 10,
+    columns = 4,
+}: TableSkeletonProps) {
+    // columns가 숫자면 그 숫자만큼, 배열이면 배열 길이만큼
+    const columnCount = typeof columns === 'number' ? columns : columns.length
+
+    // columns가 배열이면 width 활용, 숫자면 균등 분배
+    const gridTemplateColumns = typeof columns === 'number'
+        ? `repeat(${columns}, 1fr)`
+        : columns.map((col) => col.width ?? '1fr').join(' ')
+
+    return (
+        <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+            <div>
+                {Array.from({ length: rows }).map((_, rowIndex) => (
+                    <div
+                        key={rowIndex}
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns,
+                            gap: '16px',
+                            padding: '16px 24px',
+                            borderBottom: '1px solid #e5e5e5',
+                        }}
+                    >
+                        {Array.from({ length: columnCount }).map((_, colIndex) => (
+                            <Skeleton key={colIndex} height={16} />
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </SkeletonTheme>
+    )
 }

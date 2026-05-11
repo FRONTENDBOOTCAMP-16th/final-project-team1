@@ -4,7 +4,7 @@ import { Button } from '@/components'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 import S from './styles/attendance.module.css'
-
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import DatePicker from '@/components/common/datePicker'
 import CountCard from '@/components/common/countCard/CountCard'
@@ -37,17 +37,23 @@ export default function AttendanceListPage() {
   const [attendanceData, setAttendanceData] = useState<AttendanceApiItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
 
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
 
   useEffect(() => {
     const fetchAttendanceList = async () => {
+      setIsLoading(true)
       try {
         const data = await getAttendanceList()
         console.log('출결 목록 API 데이터:', data)
         setAttendanceData(data)
       } catch (error) {
         console.error('출결 목록 API 실패:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -132,7 +138,22 @@ export default function AttendanceListPage() {
       </section>
 
       <section className={S.tableBox}>
-        <Table columns={attendanceColumns} data={pagedAttendances} />
+        {isLoading ? (
+          <TableSkeleton
+            columns={[
+              { header: '이름', width: '15%' },
+              { header: '학번', width: '20%' },
+              { header: '입실시간', width: '25%' },
+              { header: '퇴실시간', width: '25%' },
+              { header: '출결상태', width: '15%' },
+            ]}
+            rows={PAGE_SIZE}
+          />
+        ) : (
+          <Table columns={attendanceColumns} data={pagedAttendances} />
+        )}
+        
+        
         <div className={S.table_footer}>
           <span>
             총 {filteredAttendances.length}건 중{' '}

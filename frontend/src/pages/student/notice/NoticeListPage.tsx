@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import Pagination from "@/components/common/pagination"
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import StudentLayout from "@/pages/sample/StudentLayout"
 import Table from "@/components/common/table/Table"
-import type { TableColumn } from "@/components/common/table/table.types"
-import { SearchBar } from "@/components"
-import Pagination from "@/components/common/pagination"
 import Button from "@/components/common/button/ui/button"
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { SearchBar } from "@/components"
 import { getNoticeList } from './api/noticeApi'
 import type { NoticeItem } from './api/noticeApi'
+import type { TableColumn } from "@/components/common/table/table.types"
 import S from './styles/noticeList.module.css'
 
 function NoticeListPage() {
     const navigate = useNavigate()
+    const [isLoading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [noticeList, setNoticeList] = useState<NoticeItem[]>([])
     const [totalCount, setTotalCount] = useState(0)
@@ -26,6 +28,7 @@ function NoticeListPage() {
     useEffect(() => {
         const fetchNoticeList = async () => {
             try {
+                setLoading(true)
                 const data = await getNoticeList({
                     keyword: searchKeyword || undefined,
                     page: currentPage,
@@ -35,6 +38,8 @@ function NoticeListPage() {
                 setTotalCount(data.totalCount)
             } catch (err) {
                 console.error('공지사항 목록 조회 실패:', err)
+            } finally {
+                setLoading(false)
             }
         }
 
@@ -129,11 +134,15 @@ function NoticeListPage() {
                     </Button>
                 </div>
                 <div className={S.tableBox}>
+                    {isLoading ? (
+                    <TableSkeleton rows={10} columns={3} />
+                ) : (
                     <Table
                         columns={noticeColumns}
                         data={noticeList}
                         rowKey={(row) => row.noticeId}
                     />
+                )}
                 </div>
                 <div className={S.paginationBox}>
                     <Pagination

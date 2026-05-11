@@ -6,6 +6,7 @@ import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
 import { getLectureList } from '@/pages/admin/lecture/api/lecture.api'
 import { addStudent } from '../api/student.api'
+import Skeleton from 'react-loading-skeleton'
 
 type StudentStatusCode = 'S001' | 'S002' | 'S003'
 
@@ -41,6 +42,7 @@ export default function StudentCreatePage() {
     studentStatusCode: 'S003',
   })
 
+  const [isCoursesLoading, setIsCoursesLoading] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [phoneError, setPhoneError] = useState('')
   const [showModal, setShowModal] = useState(false)
@@ -48,15 +50,18 @@ export default function StudentCreatePage() {
 
   useEffect(() => {
     async function fetchCourses() {
-      try {
-        const result = await getLectureList({ page: 1, size: 1000 })
-        setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
-      } catch (error) {
-        console.error('강의 목록 조회 실패:', error)
-      }
+        setIsCoursesLoading(true)
+        try {
+            const result = await getLectureList({ page: 1, size: 1000 })
+            setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
+        } catch (error) {
+            console.error('강의 목록 조회 실패:', error)
+        } finally {
+            setIsCoursesLoading(false)
+        }
     }
     fetchCourses()
-  }, [])
+}, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -183,14 +188,18 @@ export default function StudentCreatePage() {
               <label>
                 수강목록 <span>*</span>
               </label>
-              <select name="classId" value={form.classId} onChange={handleChange}>
-                <option value="">수강 과정을 선택하세요</option>
-                {courses.map((course) => (
-                  <option key={course.classId} value={course.classId}>
+              {isCoursesLoading ? (
+        <Skeleton height={40} />
+    ) : (
+        <select name="classId" value={form.classId} onChange={handleChange}>
+            <option value="">수강 과정을 선택하세요</option>
+            {courses.map((course) => (
+                <option key={course.classId} value={course.classId}>
                     {course.className}
-                  </option>
-                ))}
-              </select>
+                </option>
+            ))}
+        </select>
+    )}
             </div>
 
             <div className={styles.formGroup}>

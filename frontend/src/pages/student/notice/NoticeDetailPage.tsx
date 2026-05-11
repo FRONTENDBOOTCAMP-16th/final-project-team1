@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import NoticeBoard from '@/components/common/noticeBoard/noticeBoard'
 import { getNoticeDetail } from './api/noticeApi'
@@ -28,7 +30,19 @@ function NoticeDetailPage() {
         if (id) fetchNotice()
     }, [id])
 
-    if (isLoading) return null 
+    if (isLoading) return (
+        <div className={S.noticeDetailContainer}>
+            <StudentLayout>
+                <div style={{ padding: '30px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <Skeleton height={32} width="50%" />
+                    <Skeleton height={16} width="20%" />
+                    <Skeleton height={200} />
+                    <Skeleton height={48} width="30%" style={{ margin: '0 auto' }} />
+                </div>
+            </StudentLayout>
+        </div>
+    )
+
     if (!notice) return <div>공지사항을 찾을 수 없습니다.</div>
 
     return (
