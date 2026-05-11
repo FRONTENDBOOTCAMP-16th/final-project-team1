@@ -9,6 +9,8 @@ import com.checkmate.team1.repository.ClassesRepository;
 import com.checkmate.team1.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.checkmate.team1.dto.StudentResetPasswordRequest;
 import com.checkmate.team1.dto.StudentSettingsResponse;
 import java.time.LocalDate;
 
@@ -53,5 +55,15 @@ public class StudentDashboardService {
                 .className(classes != null ? classes.getClassName() : null)
                 .email(student.getEmail())
                 .build();
+    }
+
+    @Transactional
+    public boolean resetPassword(String studentId, StudentResetPasswordRequest request) {
+        return studentRepository.findById(studentId)
+                .map(student -> {
+                    student.changePassword(request.getNewPassword());
+                    return true;
+                })
+                .orElse(false);
     }
 }
