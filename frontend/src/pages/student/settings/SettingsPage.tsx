@@ -22,25 +22,28 @@ function SettingPage() {
   const handlePasswordChange = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert('모든 필드를 입력해 주세요.')
+      return
+    }
+
     if (!currentPassword) {
       alert('현재 비밀번호를 입력해 주세요.')
       return
     }
+
     if (currentPassword === newPassword) {
       alert('새 비밀번호가 현재 비밀번호와 동일합니다. 다른 비밀번호를 입력해 주세요.')
       return
     }
-    if (!newPassword || !confirmPassword) {
-      alert('새 비밀번호와 비밀번호 확인을 모두 입력해 주세요.')
+
+    if (!passwordRegex.test(newPassword)) {
+      alert('비밀번호는 영문, 숫자를 포함하여 8~16자로 입력해 주세요.')
       return
     }
 
-    if (!passwordRegex.test(newPassword)) {
-      alert('비밀번호는 영문, 숫자, 특수문자를 포함하여 8~16자로 입력해 주세요.')
-      return
-    }
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.')
+      alert('새 비밀번호 확인이 일치하지 않습니다.')
       return
     }
 
@@ -54,6 +57,7 @@ function SettingPage() {
       alert(result.message)
     }
   }
+
   if (isLoading)
     return (
       <StudentLayout>

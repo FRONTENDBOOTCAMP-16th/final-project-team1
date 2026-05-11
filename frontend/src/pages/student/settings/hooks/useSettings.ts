@@ -26,7 +26,7 @@ export const useSettings = () => {
         setProfile(data)
       } catch (error) {
         console.error('학생 상세 조회 실패', error)
-        setError(error instanceof Error ? error.message : '알 수 없는 에러')
+        setError(error instanceof Error ? error.message : '오류가 발생했습니다.')
       } finally {
         setIsLoading(false)
       }

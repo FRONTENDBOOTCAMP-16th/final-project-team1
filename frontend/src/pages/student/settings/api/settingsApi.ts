@@ -84,7 +84,7 @@ export const updatePassword = async (studentId: string, newPassword: string): Pr
   const result = await response.json()
 
   if (!result.success) {
-    throw new Error(result.message || '비밀번호 변경에 실패했습니다.')
+    throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
   }
 
   return true
