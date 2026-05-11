@@ -1,5 +1,10 @@
 .table_box {
   margin: 30px 0 0;
+
+  .btn {
+    border: none;
+    background: none;
+  }
 }
 
 .table_footer {
@@ -30,3 +35,4 @@
   display: block;
   cursor: pointer;
 }
+

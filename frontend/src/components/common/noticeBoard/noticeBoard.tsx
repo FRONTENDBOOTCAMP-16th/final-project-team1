@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'
 import Button from '../button/ui/button'
 import S from './noticeBoard.module.css'
 
@@ -21,7 +22,10 @@ export default function NoticeBoard({
                 <p className={S.noticeDate}>작성일 {date}</p>
             </div>
             <div className={S.noticeContent}>
-                <p className={S.noticeText}>{content}</p>
+                <div
+                    className={S.noticeText}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
+                />
             </div>
             <div className={S.returnList}>
                 <Button 
