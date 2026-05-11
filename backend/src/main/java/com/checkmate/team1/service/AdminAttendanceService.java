@@ -143,18 +143,24 @@ public class AdminAttendanceService {
             LocalDate attendanceDate
     ) {
 
-        if (attendance == null || attendance.getCheckInTime() == null) {
+        if (attendance == null
+                || attendance.getCheckInTime() == null
+                || attendance.getCheckOutTime() == null) {
             return "ABSENT";
         }
 
-        LocalDateTime lateBaseTime =
+        LocalDateTime checkInBaseTime =
                 LocalDateTime.of(attendanceDate, LocalTime.of(9, 10));
 
-        if (attendance.getCheckInTime().isAfter(lateBaseTime)) {
-            return "LATE";
+        LocalDateTime checkOutBaseTime =
+                LocalDateTime.of(attendanceDate, LocalTime.of(18, 0));
+
+        if (!attendance.getCheckInTime().isAfter(checkInBaseTime)
+                && !attendance.getCheckOutTime().isBefore(checkOutBaseTime)) {
+            return "PRESENT";
         }
 
-        return "PRESENT";
+        return "LATE";
     }
 
     private String getAttendanceStatusName(String status) {
