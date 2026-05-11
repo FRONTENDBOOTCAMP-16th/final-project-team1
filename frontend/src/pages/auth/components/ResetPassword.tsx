@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import eyeIcon from '@/assets/eye.svg'
+import eyeOffIcon from '@/assets/eye-off.svg'
 
 interface ResetPasswordProps {
   onChangeView: (view: 'LOGIN' | 'ADMIN_LOGIN' | 'FIND_PASSWORD' | 'RESET_PASSWORD') => void
@@ -7,6 +9,9 @@ interface ResetPasswordProps {
 function ResetPassword({ onChangeView }: ResetPasswordProps) {
   const [new_password, set_new_password] = useState('')
   const [confirm_password, set_confirm_password] = useState('')
+
+  const [show_new_password, set_show_new_password] = useState(false)
+  const [show_confirm_password, set_show_confirm_password] = useState(false)
 
   const handle_reset = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -76,28 +81,48 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
         <fieldset className="input_group">
           <label className="input_label">
             <span>새 비밀번호</span>
-            <input
-              type="password"
-              placeholder="비밀번호 8자 이상 영문+숫자 조합"
-              className="input_field"
-              value={new_password}
-              onChange={(event) => set_new_password(event.target.value)}
-              required
-            />
+            <div className="password_input_wrapper">
+              <input
+                type={show_new_password ? 'text' : 'password'}
+                placeholder="비밀번호 8자 이상 영문+숫자 조합"
+                className="input_field"
+                value={new_password}
+                onChange={(event) => set_new_password(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password_view_button"
+                onClick={() => set_show_new_password(!show_new_password)}
+                tabIndex={-1}
+              >
+                <img src={show_new_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+              </button>
+            </div>
           </label>
         </fieldset>
 
         <fieldset className="input_group">
           <label className="input_label">
             <span>새 비밀번호 확인</span>
-            <input
-              type="password"
-              placeholder="새 비밀번호를 다시 입력하세요"
-              className="input_field"
-              value={confirm_password}
-              onChange={(event) => set_confirm_password(event.target.value)}
-              required
-            />
+            <div className="password_input_wrapper">
+              <input
+                type={show_confirm_password ? 'text' : 'password'}
+                placeholder="새 비밀번호를 다시 입력하세요"
+                className="input_field"
+                value={confirm_password}
+                onChange={(event) => set_confirm_password(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password_view_button"
+                onClick={() => set_show_confirm_password(!show_confirm_password)}
+                tabIndex={-1}
+              >
+                <img src={show_confirm_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+              </button>
+            </div>
           </label>
         </fieldset>
 
