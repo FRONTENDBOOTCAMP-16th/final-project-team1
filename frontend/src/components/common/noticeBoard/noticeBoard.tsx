@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify'
 import Button from '../button/ui/button'
 import S from './noticeBoard.module.css'
 
@@ -23,7 +24,7 @@ export default function NoticeBoard({
             <div className={S.noticeContent}>
                 <div
                     className={S.noticeText}
-                    dangerouslySetInnerHTML={{ __html: content }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
                 />
             </div>
             <div className={S.returnList}>
