@@ -2,10 +2,13 @@ package com.checkmate.team1.controller;
 
 import com.checkmate.team1.dto.ApiResponse;
 import com.checkmate.team1.dto.StudentDashboardResponse;
+import com.checkmate.team1.dto.StudentResetPasswordRequest;
 import com.checkmate.team1.dto.StudentSettingsResponse;
 import com.checkmate.team1.service.StudentDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,5 +43,21 @@ public class StudentController {
                 studentDashboardService.getSettings(studentId);
 
         return ApiResponse.success("학생 설정 조회 성공", response);
+    }
+
+    @PatchMapping("/api/student/reset-password")
+    public ApiResponse<Void> resetPassword(
+            @RequestBody StudentResetPasswordRequest request,
+            Authentication authentication
+    ) {
+        String studentId = authentication.getName();
+
+        boolean result = studentDashboardService.resetPassword(studentId, request);
+
+        if (!result) {
+            return ApiResponse.fail("존재하지 않는 학생입니다.");
+        }
+
+        return ApiResponse.success("비밀번호가 재설정되었습니다.", null);
     }
 }
