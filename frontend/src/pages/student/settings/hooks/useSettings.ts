@@ -37,12 +37,9 @@ export const useSettings = () => {
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
     try {
-      const savedStudentId = localStorage.getItem('studentId')
-      if (!savedStudentId) throw new Error('로그인 정보가 없습니다.')
+      await verifyCurrentPassword(currentPassword)
 
-      await verifyCurrentPassword(savedStudentId, currentPassword)
-
-      await updatePassword(savedStudentId, newPassword)
+      await updatePassword(newPassword)
 
       return { success: true }
     } catch (error) {

@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import S from './header.module.css'
+import { useAuthStore } from '@/store'
 
 const Title_label: Record<string, Record<string, string>> = {
   student: {
@@ -23,22 +24,23 @@ function Header() {
   const location = useLocation()
   const navigate = useNavigate()
 
+  // Zustand에서 user 정보와 로그아웃 함수 가져오기
+  const { user, setLogout } = useAuthStore()
+
   const pathSegment = location.pathname.split('/')
   const menuRole = pathSegment[1] || 'student'
   const category = pathSegment[2] || 'dashboard'
 
   const pageTitle = Title_label[menuRole]?.[category] || '대시보드'
-
   const subTitle = menuRole === 'admin' ? '관리자님 환영합니다.' : '오늘도 멋사와 함께 열공하세요!'
 
-  // localStorage에서 유저 정보 읽기
-  const userName = localStorage.getItem('userName') || '이름 없음'
-
+  // 로컬스토리지 대신 Zustand 상태 사용
+  const userName = user?.name || '이름 없음'
   const userInitials = menuRole === 'admin' ? '관' : userName ? userName[0] : '학'
 
   // 로그아웃
   const handleLogout = () => {
-    localStorage.clear()
+    setLogout() // Zustand에서 만든 setLogout 실행 (내부에서 localStorage.clear() 자동 수행)
     navigate('/')
   }
 

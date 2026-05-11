@@ -3,11 +3,9 @@ import { resetAdminPassword, verifyAdminPassword } from '../api/settingsApi'
 export const useAdminSettings = () => {
   const changePassword = async (currentPassword: string, newPassword: string) => {
     try {
-      const adminId = localStorage.getItem('adminId') || 'admin'
+      await verifyAdminPassword(currentPassword)
 
-      await verifyAdminPassword(adminId, currentPassword)
-
-      await resetAdminPassword(adminId, newPassword)
+      await resetAdminPassword(newPassword)
 
       return { success: true }
     } catch (error) {
