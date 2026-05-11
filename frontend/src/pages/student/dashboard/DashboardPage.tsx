@@ -14,6 +14,7 @@ import { axiosInstance } from '@/api/axios'
 
 interface AttendanceItem {
   attendanceDate: string
+  attendanceStatus: string
   checkInTime: string | null
   checkOutTime: string | null
 }
@@ -126,7 +127,13 @@ function DashboardPage() {
           return
         }
 
-        setAttendanceItems(response.data.data.items ?? [])
+        const items: AttendanceItem[] = response.data.data.items ?? []
+
+        const totalDays = new Date(calendarYear, calendarMonth, 0).getDate()
+        const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
+
+        setAttendanceRate(rate)
+        setAttendanceItems(items)
       } catch (error) {
         console.error('출결 캘린더 조회 실패:', error)
         setAttendanceItems([])
