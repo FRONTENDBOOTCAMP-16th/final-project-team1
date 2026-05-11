@@ -10,11 +10,19 @@ interface Props {
   year: number
   month: number
   attendanceList: AttendanceCalendarItem[]
+  isLoading: boolean
   onPrevMonth: () => void
   onNextMonth: () => void
 }
 
-function AttendanceCalendar({ year, month, attendanceList, onPrevMonth, onNextMonth }: Props) {
+function AttendanceCalendar({
+  year,
+  month,
+  attendanceList,
+  isLoading,
+  onPrevMonth,
+  onNextMonth,
+}: Props) {
   const firstDay = new Date(year, month - 1, 1).getDay()
   const lastDate = new Date(year, month, 0).getDate()
 
@@ -52,16 +60,31 @@ function AttendanceCalendar({ year, month, attendanceList, onPrevMonth, onNextMo
           const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 
           const attendance = attendanceList.find((item) => item.attendanceDate === dateString)
+          const weekDay = new Date(year, month - 1, day).getDay()
+          const isWeekday = weekDay !== 0 && weekDay !== 6
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+
+          const currentDate = new Date(year, month - 1, day)
+          currentDate.setHours(0, 0, 0, 0)
+
+          const isFutureDate = currentDate > today
+
+          const status = attendance
+            ? attendance.attendanceStatus
+            : !isLoading && isWeekday && !isFutureDate
+              ? 'ABSENT'
+              : undefined
 
           return (
             <div
               key={index}
               className={`${S.day} ${
-                attendance?.attendanceStatus === 'PRESENT'
+                status === 'PRESENT'
                   ? S.present
-                  : attendance?.attendanceStatus === 'ONGOING'
+                  : status === 'ONGOING'
                     ? S.ongoing
-                    : attendance?.attendanceStatus === 'ABSENT'
+                    : status === 'ABSENT'
                       ? S.absent
                       : ''
               }`}

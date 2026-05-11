@@ -56,6 +56,7 @@ function DashboardPage() {
   const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
   const navigate = useNavigate()
+  const [isAttendanceLoading, setIsAttendanceLoading] = useState(true)
 
   const handlePrevMonth = () => {
     if (calendarMonth === 1) {
@@ -129,6 +130,8 @@ function DashboardPage() {
   useEffect(() => {
     const fetchAttendanceItems = async () => {
       try {
+        setIsAttendanceLoading(true)
+
         const response = await api.get('/api/student/attendance-calendar', {
           params: {
             year: calendarYear,
@@ -144,6 +147,7 @@ function DashboardPage() {
         }
 
         const items: AttendanceItem[] = response.data.data.items ?? []
+        console.log('캘린더 변환 데이터:', calendarAttendanceList)
 
         const totalDays = getWeekdayCount(calendarYear, calendarMonth)
         const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
@@ -159,9 +163,12 @@ function DashboardPage() {
 
         setAttendanceRate(rate)
         setAttendanceItems(items)
+
+        setIsAttendanceLoading(false)
       } catch (error) {
         console.error('출결 캘린더 조회 실패:', error)
         setAttendanceItems([])
+        setIsAttendanceLoading(false)
       }
     }
 
@@ -221,11 +228,12 @@ function DashboardPage() {
 
   const calendarAttendanceList = attendanceItems.map((item) => ({
     attendanceDate: item.attendanceDate,
-    attendanceStatus: item.checkOutTime
-      ? ('PRESENT' as const)
-      : item.checkInTime
+    attendanceStatus:
+      item.checkInTime && !item.checkOutTime
         ? ('ONGOING' as const)
-        : ('ABSENT' as const),
+        : item.checkOutTime
+          ? ('PRESENT' as const)
+          : ('ABSENT' as const),
   }))
 
   return (
@@ -270,10 +278,10 @@ function DashboardPage() {
             year={calendarYear}
             month={calendarMonth}
             attendanceList={calendarAttendanceList}
+            isLoading={isAttendanceLoading}
             onPrevMonth={handlePrevMonth}
             onNextMonth={handleNextMonth}
           />
-
           <div className={S.sideArea}>
             <LeaveStatus />
 
