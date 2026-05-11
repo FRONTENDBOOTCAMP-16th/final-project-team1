@@ -204,7 +204,7 @@ export default function NoticeListPage() {
       render: (row) => (
         <button
           type="button"
-          className={S.ellipsis}
+          className={`${S.ellipsis} ${S.btn}`}
           onClick={() => navigate(`/admin/notice/${row.noticeId}/edit`)}
         >
           {row.title}
