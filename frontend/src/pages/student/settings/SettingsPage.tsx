@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
 import { useSettings } from './hooks/useSettings'
+import { useState } from 'react'
 import './styles/settings.css'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
@@ -61,7 +63,22 @@ function SettingPage() {
   if (isLoading)
     return (
       <StudentLayout>
-        <div className="settingContainer">정보를 불러오는 중입니다...</div>
+        <div className="settingContainer">
+          <Skeleton count={24} width="20%"/>
+          <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px'}}>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+          </div>
+          <Skeleton height={24} width="20%" style={{marginTop: '32px'}} />
+          <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px'}}>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+            <Skeleton height={40}/>
+          </div>
+        </div>
       </StudentLayout>
     )
   if (error)

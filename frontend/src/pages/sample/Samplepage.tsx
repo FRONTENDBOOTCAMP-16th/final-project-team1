@@ -3,6 +3,8 @@ import Sidebar from '@/components/common/sidebar/Sidebar'
 import SearchBar from '@/components/common/search/search'
 import ComboBox from '@/components/common/comboBox/customComboBox'
 import NoticeBoard from '@/components/common/noticeBoard/noticeBoard'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { Header, Button } from '@/components'
 import {
   Plus,
@@ -691,6 +693,10 @@ export default function LoginPage() {
       {/* 공지사항 게시판 */}
       <h3 style={{ textAlign: 'left' }}>9. 공지사항 게시판</h3>
       <NoticeBoard title="봄학기 중간 평가 공지" date="2026.04.10" content="멋쟁이사자처럼 16기 수강생 여러분께,\n\n봄학기 중간 평가 일정을 안내드립니다." onBackClick={() => {}} />
+    
+      {/* 스켈레톤 UI */}
+      <h3 style={{ textAlign: 'left' }}>10. 스켈레톤 UI</h3>
+      <Skeleton width={200} height={30} />
     </div>
   )
 }
