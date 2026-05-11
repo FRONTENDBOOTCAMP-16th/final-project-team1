@@ -22,6 +22,8 @@
 | 데이터 통신   | Axios                          |
 | 폼/검증       | React Hook Form, Zod           |
 | 데이터 시각화 | Recharts                       |
+| 에디터        | React Quill                    |
+| 보안          | DOMPurify                      |
 | 코드 품질     | ESLint, Prettier               |
 | 협업 도구     | GitHub, Notion, Figma, Discord |
 
