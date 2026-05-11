@@ -249,8 +249,6 @@
 }
 
 .calendarMonth {
-  margin-right: 12px;
-
   font-weight: 700;
   font-size: 14px;
   color: #6b7280;
@@ -456,4 +454,22 @@
 
 .absent {
   background: #ffeaea;
+}
+
+.monthButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  cursor: pointer;
+}
+
+.monthController {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

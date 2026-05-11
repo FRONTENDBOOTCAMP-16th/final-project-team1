@@ -12,6 +12,12 @@ import {
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 import { axiosInstance } from '@/api/axios'
 
+interface AttendanceItem {
+  attendanceDate: string
+  checkInTime: string | null
+  checkOutTime: string | null
+}
+
 interface NoticeItem {
   noticeId: number
   title: string
@@ -42,9 +48,32 @@ function DashboardPage() {
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
   const [attendanceRate, setAttendanceRate] = useState<number>(0)
 
-  const [attendanceItems, setAttendanceItems] = useState([])
+  const [calendarYear, setCalendarYear] = useState(2026)
+  const [calendarMonth, setCalendarMonth] = useState(5)
+
+  const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
   const navigate = useNavigate()
+
+  const handlePrevMonth = () => {
+    if (calendarMonth === 1) {
+      setCalendarYear((prev) => prev - 1)
+      setCalendarMonth(12)
+      return
+    }
+
+    setCalendarMonth((prev) => prev - 1)
+  }
+
+  const handleNextMonth = () => {
+    if (calendarMonth === 12) {
+      setCalendarYear((prev) => prev + 1)
+      setCalendarMonth(1)
+      return
+    }
+
+    setCalendarMonth((prev) => prev + 1)
+  }
 
   const formatApiTime = (time: string) => {
     return new Date(`${time}Z`).toLocaleTimeString('ko-KR', {
@@ -56,14 +85,6 @@ function DashboardPage() {
   useEffect(() => {
     const fetchStudentDashboard = async () => {
       try {
-        // const studentId = localStorage.getItem('studentId')
-
-        // const response = await api.get('/api/student/dashboard', {
-        //   params: {
-        //     studentId,
-        //   },
-        // })
-
         const response = await axiosInstance.get('/api/student/dashboard')
 
         console.log('학생 대시보드 응답:', response.data)
@@ -93,8 +114,8 @@ function DashboardPage() {
       try {
         const response = await api.get('/api/student/attendance-calendar', {
           params: {
-            year: 2026,
-            month: 4,
+            year: calendarYear,
+            month: calendarMonth,
           },
         })
 
@@ -113,16 +134,10 @@ function DashboardPage() {
     }
 
     fetchAttendanceItems()
-  }, [])
+  }, [calendarYear, calendarMonth])
 
   const handleCheckIn = async () => {
     try {
-      // const studentId = localStorage.getItem('studentId')
-
-      // const response = await api.post('/api/student/attendance/check-in', {
-      //   studentId,
-      // })
-
       const response = await axiosInstance.post('/api/student/attendance/check-in')
 
       const time = response.data.data.checkInTime
@@ -137,13 +152,6 @@ function DashboardPage() {
     console.log('퇴실 함수 실행됨')
 
     try {
-      // const studentId = localStorage.getItem('studentId')
-      // console.log('studentId:', studentId)
-
-      // const response = await api.post('/api/student/attendance/check-out', {
-      //   studentId,
-      // })
-
       const response = await axiosInstance.post('/api/student/attendance/check-out')
 
       console.log('퇴실 응답:', response.data)
@@ -178,6 +186,16 @@ function DashboardPage() {
     minute: '2-digit',
     second: '2-digit',
   })
+
+  const calendarAttendanceList = attendanceItems.map((item) => ({
+    attendanceDate: item.attendanceDate,
+    attendanceStatus: item.checkOutTime
+      ? ('PRESENT' as const)
+      : item.checkInTime
+        ? ('ONGOING' as const)
+        : ('ABSENT' as const),
+  }))
+
   return (
     <StudentLayout>
       <div className={S.page}>
@@ -216,9 +234,17 @@ function DashboardPage() {
         </div>
 
         <div className={S.content}>
-          <AttendanceCalendar attendanceList={attendanceItems} />
+          <AttendanceCalendar
+            year={calendarYear}
+            month={calendarMonth}
+            attendanceList={calendarAttendanceList}
+            onPrevMonth={handlePrevMonth}
+            onNextMonth={handleNextMonth}
+          />
+
           <div className={S.sideArea}>
             <LeaveStatus />
+
             <NoticeList
               notices={notices}
               onNoticeClick={(noticeId) => navigate(`/student/notice/${noticeId}`)}
