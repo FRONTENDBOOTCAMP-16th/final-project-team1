@@ -49,8 +49,9 @@ function DashboardPage() {
   const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
   const [attendanceRate, setAttendanceRate] = useState<number>(0)
 
-  const [calendarYear, setCalendarYear] = useState(2026)
-  const [calendarMonth, setCalendarMonth] = useState(5)
+  const today = new Date()
+  const [calendarYear, setCalendarYear] = useState(today.getFullYear())
+  const [calendarMonth, setCalendarMonth] = useState(today.getMonth() + 1)
 
   const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
@@ -89,8 +90,6 @@ function DashboardPage() {
         const response = await axiosInstance.get('/api/student/dashboard')
 
         console.log('학생 대시보드 응답:', response.data)
-
-        setAttendanceRate(response.data.data.attendanceRate)
       } catch (error) {
         console.error('학생 대시보드 조회 실패:', error)
       }
@@ -109,6 +108,23 @@ function DashboardPage() {
     fetchStudentDashboard()
     fetchNotices()
   }, [])
+
+  const getWeekdayCount = (year: number, month: number) => {
+    const lastDate = new Date(year, month, 0).getDate()
+
+    let weekdayCount = 0
+
+    for (let day = 1; day <= lastDate; day++) {
+      const date = new Date(year, month - 1, day)
+      const weekDay = date.getDay()
+
+      if (weekDay !== 0 && weekDay !== 6) {
+        weekdayCount += 1
+      }
+    }
+
+    return weekdayCount
+  }
 
   useEffect(() => {
     const fetchAttendanceItems = async () => {
@@ -129,8 +145,17 @@ function DashboardPage() {
 
         const items: AttendanceItem[] = response.data.data.items ?? []
 
-        const totalDays = new Date(calendarYear, calendarMonth, 0).getDate()
+        const totalDays = getWeekdayCount(calendarYear, calendarMonth)
         const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
+
+        console.log('출석률 계산용 items:', items)
+        console.log('출석률 계산:', {
+          calendarYear,
+          calendarMonth,
+          totalDays,
+          attendanceCount: items.length,
+          rate,
+        })
 
         setAttendanceRate(rate)
         setAttendanceItems(items)
