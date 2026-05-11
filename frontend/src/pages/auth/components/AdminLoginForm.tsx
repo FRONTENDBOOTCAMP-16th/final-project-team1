@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdminLogin } from '../hooks/useAdminLogin'
+import eyeIcon from '@/assets/eye.svg'
+import eyeOffIcon from '@/assets/eye-off.svg'
 
 interface AdminLoginFormProps {
   onChangeView: (view: 'LOGIN' | 'ADMIN_LOGIN' | 'FIND_PASSWORD' | 'RESET_PASSWORD') => void
@@ -9,6 +11,8 @@ interface AdminLoginFormProps {
 function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
   const [adminId, set_adminId] = useState('')
   const [password, set_password] = useState('')
+
+  const [show_password, set_show_password] = useState(false)
 
   const navigate = useNavigate()
   const { login_admin, is_loading, error_message } = useAdminLogin()
@@ -48,14 +52,24 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
         <fieldset className="input_group">
           <label className="input_label">
             <span>비밀번호</span>
-            <input
-              type="password"
-              placeholder="비밀번호를 입력하세요"
-              className="input_field"
-              value={password}
-              onChange={(event) => set_password(event.target.value)}
-              required
-            />
+            <div className="password_input_wrapper">
+              <input
+                type={show_password ? 'text' : 'password'}
+                placeholder="비밀번호를 입력하세요"
+                className="input_field"
+                value={password}
+                onChange={(event) => set_password(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password_view_button"
+                onClick={() => set_show_password(!show_password)}
+                tabIndex={-1}
+              >
+                <img src={show_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+              </button>
+            </div>
           </label>
         </fieldset>
 

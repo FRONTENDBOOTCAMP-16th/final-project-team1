@@ -22,15 +22,12 @@ public class StudentDashboardService {
 
     public StudentDashboardResponse getDashboard(String studentId) {
 
-        // 1️⃣ 학생 조회
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("학생 없음"));
 
-        // 2️⃣ 강의 조회
         Classes classes = classesRepository.findById(student.getClassId())
                 .orElse(null);
 
-        // 3️⃣ 오늘 출결 조회
         LocalDate today = LocalDate.now();
 
         Attendance attendance =
@@ -38,7 +35,6 @@ public class StudentDashboardService {
                         .findByStudent_StudentIdAndAttendanceDate(studentId, today)
                         .orElse(null);
 
-        // 4️⃣ DTO 변환
         return StudentDashboardResponse.from(student, classes, attendance);
     }
 

@@ -10,6 +10,7 @@ import { Plus } from 'lucide-react'
 
 // 공통 페이지네이션 컴포넌트
 import Pagination from '@/components/common/pagination/Pagination'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import { Search } from 'lucide-react'
 const PAGE_SIZE = 10
 
@@ -19,12 +20,14 @@ export default function LectureListPage() {
   const [searchKeyword, setSearchKeyword] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
 
   // 전체 페이지 수 계산
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   useEffect(() => {
     async function fetchLectures() {
+      setIsLoading(true)
       try {
         const result = await getLectureList({
           keyword: searchKeyword,
@@ -38,6 +41,8 @@ export default function LectureListPage() {
         console.error('강의 목록 조회 실패:', error)
         setLectures([])
         setTotalCount(0)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -92,36 +97,58 @@ export default function LectureListPage() {
 
       {/* 테이블 */}
       <div className={styles.tableBox}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>강의명</th>
-              <th>시작일자</th>
-              <th>종료일자</th>
-              <th>수료여부</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lectures.map((lecture) => (
-              <tr
-                key={lecture.classId}
-                onClick={() => navigate(`/admin/lecture/${lecture.classId}/edit`)}
-                style={{ cursor: 'pointer' }}
-              >
-                <td>{lecture.className}</td>
-                <td>{lecture.startDate}</td>
-                <td>{lecture.endDate}</td>
-                <td>
-                  <span
-                    className={lecture.isCompleted ? styles.completedBadge : styles.progressBadge}
-                  >
-                    {lecture.completedStatusName}
-                  </span>
-                </td>
+        {isLoading ? (
+          <TableSkeleton
+            columns={[
+              { header: '강의명', width: '40%' },
+              { header: '시작일자', width: '20%' },
+              { header: '종료일자', width: '20%' },
+              { header: '수료여부', width: '20%' },
+            ]}
+            rows={PAGE_SIZE}
+          />
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>강의명</th>
+                <th>시작일자</th>
+                <th>종료일자</th>
+                <th>수료여부</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {lectures.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                    검색 결과가 없습니다.
+                  </td>
+                </tr>
+              ) : (
+                lectures.map((lecture) => (
+                  <tr
+                    key={lecture.classId}
+                    onClick={() => navigate(`/admin/lecture/${lecture.classId}/edit`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td>{lecture.className}</td>
+                    <td>{lecture.startDate}</td>
+                    <td>{lecture.endDate}</td>
+                    <td>
+                      <span
+                        className={
+                          lecture.isCompleted ? styles.completedBadge : styles.progressBadge
+                        }
+                      >
+                        {lecture.completedStatusName}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
       {/* 하단 총 개수 + 페이지네이션 영역 */}
       <div className={styles['table-footer']}>

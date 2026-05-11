@@ -1,11 +1,13 @@
 package com.checkmate.team1.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class FindPasswordResponse {
 
     private String studentId;
+    private String resetToken;
 }

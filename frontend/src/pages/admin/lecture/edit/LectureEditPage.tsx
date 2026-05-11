@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -108,8 +109,10 @@ export default function LectureEditPage() {
       })
 
       openModal(result.message || '강의 수정 성공', true)
-    } catch (error: any) {
-      const message = error.response?.data?.message || '강의 수정 중 오류가 발생했습니다.'
+    } catch (error: unknown) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message ?? '강의 수정 중 오류가 발생했습니다.'
+        : '강의 수정 중 오류가 발생했습니다.'
       openModal(message)
     }
   }
