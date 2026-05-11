@@ -19,6 +19,7 @@ import AdminDashboardPage from '../pages/admin/dashboard/DashboardPage'
 import LectureListPage from '../pages/admin/lecture/LectureListPage'
 import LectureCreatePage from '../pages/admin/lecture/create/LectureCreatePage'
 import LectureEditPage from '@/pages/admin/lecture/edit/LectureEditPage'
+import AdminNoticeDetailPage from '@/pages/admin/notice/NoticeEditPage'
 
 import StudentListPage from '../pages/admin/student/StudentListPage'
 import StudentCreatePage from '../pages/admin/student/create/StudentCreatePage'
@@ -92,6 +93,10 @@ export const router = createBrowserRouter([
       {
         path: '/admin/lecture/create',
         element: <LectureCreatePage />,
+      },
+      {
+        path: '/admin/notice/:id',
+        element: <AdminNoticeDetailPage />,
       },
       {
         path: '/admin/lecture/:id/edit',

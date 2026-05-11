@@ -17,7 +17,7 @@ export default function NoticeList({ data }: Props) {
           <li
             key={item.noticeId}
             className={`${S.item} ${index === 0 ? S.highlight : ''}`}
-            onClick={() => navigate('/admin/notice')}
+            onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
           >
             <strong className={S.noticeTitle}>{item.title}</strong>
             <span className={S.noticeDate}>{item.createdDate}</span>

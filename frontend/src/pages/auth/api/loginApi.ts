@@ -3,7 +3,7 @@ import axios from 'axios'
 export interface LoginResponseData {
   studentId: string
   name: string
-  role: string
+  role: 'STUDENT' | 'ADMIN'
   isPasswordChangeRequired: string
   accessToken: string
 }
