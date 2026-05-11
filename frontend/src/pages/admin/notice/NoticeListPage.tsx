@@ -201,7 +201,15 @@ export default function NoticeListPage() {
       key: 'title',
       header: '제목',
       width: '600px',
-      render: (row) => <div className={S.ellipsis}>{row.title}</div>,
+      render: (row) => (
+        <button
+          type="button"
+          className={S.ellipsis}
+          onClick={() => navigate(`/admin/notice/${row.noticeId}/edit`)}
+        >
+          {row.title}
+        </button>
+      ),
     },
     { key: 'createdDate', header: '작성일', width: '200px' },
     {
