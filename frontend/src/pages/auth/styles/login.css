@@ -138,3 +138,39 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+.password_input_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+}
+
+.password_input_wrapper .input_field {
+  padding-inline-end: 44px;
+}
+
+.password_view_button {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.password_view_button:hover {
+  opacity: 1;
+}
+
+.password_view_button img {
+  inline-size: 20px;
+  block-size: 20px;
+  pointer-events: none;
+}

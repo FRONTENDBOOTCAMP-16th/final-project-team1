@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components'
 import { SquarePen } from 'lucide-react'
 
@@ -6,12 +7,70 @@ import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 
 import AdminLayout from '@/pages/sample/AdminLayout'
+import { getNoticeDetail, updateNotice } from './api/noticeApi'
 import S from './styles/noticeEditor.module.css'
 
 export default function NoticeEditPage() {
+  /** 제목 상태 */
   const [title, setTitle] = useState('')
+
+  /** 본문 상태 */
   const [content, setContent] = useState('')
 
+  /** 공개 여부 상태 */
+  const [isOpen, setIsOpen] = useState(true)
+
+  /** URL 파라미터 가져오기 */
+  const { id } = useParams()
+
+  /** 페이지 이동 */
+  const navigate = useNavigate()
+
+  /** 공지 상세 조회 */
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        // id 없으면 종료
+        if (!id) return
+
+        // 상세 조회 API 호출
+        const detail = await getNoticeDetail(Number(id))
+
+        // state 세팅
+        setTitle(detail.title)
+        setContent(detail.content)
+        setIsOpen(detail.isOpen)
+      } catch (error) {
+        console.error('공지 상세 조회 실패:', error)
+        alert('공지 데이터를 불러오지 못했습니다.')
+      }
+    }
+
+    fetchDetail()
+  }, [id])
+
+  /** 공지 수정 */
+  const handleUpdateNotice = async () => {
+    try {
+      if (!id) return
+
+      await updateNotice(Number(id), {
+        title,
+        content,
+        isOpen,
+      })
+
+      alert('수정되었습니다.')
+
+      // 목록 페이지 이동
+      navigate('/admin/notice')
+    } catch (error) {
+      console.error('공지 수정 실패:', error)
+      alert('공지 수정에 실패했습니다.')
+    }
+  }
+
+  /** ReactQuill 툴바 설정 */
   const modules = {
     toolbar: [
       ['bold', 'italic', 'underline'],
@@ -23,8 +82,10 @@ export default function NoticeEditPage() {
   return (
     <AdminLayout>
       <div className={S.page}>
+        {/* 제목 입력 */}
         <div className={S.formGroup}>
           <label className={S.title}>본문 제목</label>
+
           <input
             className={S.input}
             value={title}
@@ -33,6 +94,7 @@ export default function NoticeEditPage() {
           />
         </div>
 
+        {/* 본문 입력 */}
         <div className={S.formGroup}>
           <label className={S.title}>본문 내용</label>
 
@@ -45,8 +107,10 @@ export default function NoticeEditPage() {
             className={S.editor}
           />
         </div>
+
+        {/* 수정 버튼 */}
         <div className={S.btn}>
-          <Button variant="primary">
+          <Button variant="primary" onClick={handleUpdateNotice}>
             <SquarePen size={16} />
             수정 하기
           </Button>

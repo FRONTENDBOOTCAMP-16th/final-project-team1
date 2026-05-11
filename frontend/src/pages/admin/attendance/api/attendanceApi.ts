@@ -1,13 +1,21 @@
 import { api } from '@/api/axios'
 
-export interface AttendanceSummaryData {
-  attendanceRate: number
-  presentCount: number
-  lateCount: number
-  absentCount: number
+export type AttendanceApiItem = {
+  attendanceId: number
+  studentId: string
+  studentName: string
+  checkInTime: string
+  checkOutTime: string
+  attendanceStatusName: string
 }
 
-export async function getAttendanceSummary() {
-  const response = await api.get('/api/admin/dashboard')
-  return response.data.data
+export async function getAttendanceList() {
+  const res = await api.get('/api/admin/attendances', {
+    params: {
+      page: 1,
+      size: 12,
+    },
+  })
+
+  return res.data.data.items
 }
