@@ -2,10 +2,8 @@ package com.checkmate.team1.service;
 
 import com.checkmate.team1.dto.AdminAttendanceListResponse;
 import com.checkmate.team1.entity.Attendance;
-import com.checkmate.team1.entity.Classes;
 import com.checkmate.team1.entity.Student;
 import com.checkmate.team1.repository.AttendanceRepository;
-import com.checkmate.team1.repository.ClassesRepository;
 import com.checkmate.team1.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ public class AdminAttendanceService {
 
     private final StudentRepository studentRepository;
     private final AttendanceRepository attendanceRepository;
-    private final ClassesRepository classesRepository;
 
     public AdminAttendanceListResponse getAttendances(
             String studentId,
@@ -38,18 +35,22 @@ public class AdminAttendanceService {
             int size
     ) {
 
-        LocalDate targetDate = attendanceDate;
+        LocalDate fromDate;
+        LocalDate toDate;
 
-        if (targetDate == null && startDate != null) {
-            targetDate = startDate;
+        if (attendanceDate != null) {
+            fromDate = attendanceDate;
+            toDate = attendanceDate;
+        } else if (startDate != null && endDate != null) {
+            fromDate = startDate;
+            toDate = endDate;
+        } else if (startDate != null) {
+            fromDate = startDate;
+            toDate = startDate;
+        } else {
+            fromDate = LocalDate.now();
+            toDate = LocalDate.now();
         }
-
-        if (targetDate == null) {
-            targetDate = LocalDate.now();
-        }
-
-        LocalDateTime lateBaseTime =
-                LocalDateTime.of(targetDate, LocalTime.of(9, 10));
 
         List<Student> students;
 
@@ -59,58 +60,66 @@ public class AdminAttendanceService {
             students = studentRepository.findAll();
         }
 
+        List<Student> filteredStudents = students;
+
         if (studentId != null && !studentId.isBlank()) {
-            students = students.stream()
+            filteredStudents = students.stream()
                     .filter(student -> student.getStudentId().equals(studentId))
                     .toList();
         }
 
+        final List<Student> finalStudents = filteredStudents;
+
         List<Attendance> attendances =
-                attendanceRepository.findByAttendanceDate(targetDate);
+                attendanceRepository.findByAttendanceDateBetween(fromDate, toDate);
 
         Map<String, Attendance> attendanceMap =
                 attendances.stream()
                         .collect(Collectors.toMap(
-                                attendance -> attendance.getStudent().getStudentId(),
+                                attendance -> attendance.getStudent().getStudentId()
+                                        + "_"
+                                        + attendance.getAttendanceDate(),
                                 attendance -> attendance,
                                 (oldValue, newValue) -> oldValue
                         ));
 
-        LocalDate finalTargetDate = targetDate;
-
         List<AdminAttendanceListResponse.Item> allItems =
-                students.stream()
-                        .map(student -> {
-                            Attendance attendance =
-                                    attendanceMap.get(student.getStudentId());
+                fromDate.datesUntil(toDate.plusDays(1))
+                        .flatMap(date ->
+                                finalStudents.stream().map(student -> {
 
-                            Classes classes = classesRepository
-                                    .findById(student.getClassId())
-                                    .orElse(null);
+                                    String key = student.getStudentId() + "_" + date;
 
-                            String status = getAttendanceStatus(attendance, lateBaseTime);
-                            String statusName = getAttendanceStatusName(status);
+                                    Attendance attendance = attendanceMap.get(key);
 
-                            return AdminAttendanceListResponse.Item.builder()
-                                    .attendanceId(attendance != null ? attendance.getAttendanceId() : null)
-                                    .studentId(student.getStudentId())
-                                    .studentName(student.getName())
-                                    .studentInitial(getInitial(student.getName()))
-                                    .classId(student.getClassId())
-                                    .className(classes != null ? classes.getClassName() : null)
-                                    .attendanceDate(finalTargetDate.toString())
-                                    .checkInTime(formatTime(attendance != null ? attendance.getCheckInTime() : null))
-                                    .checkOutTime(formatTime(attendance != null ? attendance.getCheckOutTime() : null))
-                                    .attendanceStatus(status)
-                                    .attendanceStatusName(statusName)
-                                    .build();
-                        })
+                                    String status = getAttendanceStatus(attendance, date);
+                                    String statusName = getAttendanceStatusName(status);
+
+                                    return AdminAttendanceListResponse.Item.builder()
+                                            .attendanceId(attendance != null ? attendance.getAttendanceId() : null)
+                                            .studentId(student.getStudentId())
+                                            .studentName(student.getName())
+                                            .studentInitial(getInitial(student.getName()))
+                                            .classId(student.getClassId())
+                                            .className("")
+                                            .attendanceDate(date.toString())
+                                            .checkInTime(formatTime(attendance != null ? attendance.getCheckInTime() : null))
+                                            .checkOutTime(formatTime(attendance != null ? attendance.getCheckOutTime() : null))
+                                            .attendanceStatus(status)
+                                            .attendanceStatusName(statusName)
+                                            .build();
+                                })
+                        )
                         .filter(item ->
                                 attendanceStatus == null
                                         || attendanceStatus.isBlank()
                                         || item.getAttendanceStatus().equals(attendanceStatus)
                         )
-                        .sorted(Comparator.comparing(AdminAttendanceListResponse.Item::getStudentId))
+                        .sorted(
+                                Comparator.comparing(AdminAttendanceListResponse.Item::getAttendanceDate)
+                                        .reversed()
+                                        .thenComparing(AdminAttendanceListResponse.Item::getStudentId)
+                        )
                         .toList();
 
         int startIndex = (page - 1) * size;
@@ -131,12 +140,15 @@ public class AdminAttendanceService {
 
     private String getAttendanceStatus(
             Attendance attendance,
-            LocalDateTime lateBaseTime
+            LocalDate attendanceDate
     ) {
 
         if (attendance == null || attendance.getCheckInTime() == null) {
             return "ABSENT";
         }
+
+        LocalDateTime lateBaseTime =
+                LocalDateTime.of(attendanceDate, LocalTime.of(9, 10));
 
         if (attendance.getCheckInTime().isAfter(lateBaseTime)) {
             return "LATE";
