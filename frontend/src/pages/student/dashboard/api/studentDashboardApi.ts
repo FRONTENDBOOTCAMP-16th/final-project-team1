@@ -36,3 +36,24 @@ export async function getStudentNoticeList() {
 
   return response.data.data.items
 }
+
+export async function getStudentDashboard() {
+  const response = await api.get<{
+    success: boolean
+    message: string
+    data: {
+      studentInfo: {
+        studentId: string
+        name: string
+        className: string
+      }
+      todayAttendance: {
+        attendanceDate: string
+        checkInTime: string | null
+        checkOutTime: string | null
+      } | null
+    }
+  }>('/api/student/dashboard')
+
+  return response.data
+}

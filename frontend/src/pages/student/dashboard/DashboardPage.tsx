@@ -4,6 +4,7 @@ import AttendanceCalendar from '@/pages/student/dashboard/components/AttendanceC
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getStudentDashboard } from '@/pages/student/dashboard/api/studentDashboardApi'
 import { api } from '@/api/axios'
 import {
   getStudentNoticeList,
@@ -176,6 +177,11 @@ function DashboardPage() {
   }, [calendarYear, calendarMonth])
 
   const handleCheckIn = async () => {
+    if (checkInTime) {
+      alert('이미 입실 처리되었습니다.')
+      return
+    }
+
     try {
       const response = await axiosInstance.post('/api/student/attendance/check-in')
 
@@ -189,6 +195,10 @@ function DashboardPage() {
 
   const handleCheckOut = async () => {
     console.log('퇴실 함수 실행됨')
+    if (checkOutTime) {
+      alert('이미 퇴실 처리되었습니다.')
+      return
+    }
 
     try {
       const response = await axiosInstance.post('/api/student/attendance/check-out')
@@ -211,6 +221,26 @@ function DashboardPage() {
     return () => {
       clearInterval(timerId)
     }
+  }, [])
+
+  useEffect(() => {
+    const fetchTodayAttendance = async () => {
+      try {
+        const response = await getStudentDashboard()
+
+        const todayAttendance = response.data.todayAttendance
+
+        console.log('입실 원본 시간:', todayAttendance?.checkInTime)
+        console.log('퇴실 원본 시간:', todayAttendance?.checkOutTime)
+
+        setCheckInTime(todayAttendance?.checkInTime ?? null)
+        setCheckOutTime(todayAttendance?.checkOutTime ?? null)
+      } catch (error) {
+        console.error('오늘 출석 정보 조회 실패:', error)
+      }
+    }
+
+    fetchTodayAttendance()
   }, [])
 
   const dateText = now.toLocaleDateString('ko-KR', {
@@ -236,6 +266,16 @@ function DashboardPage() {
           : ('ABSENT' as const),
   }))
 
+  const formatTime = (time: string | null) => {
+    if (!time) return '--:--'
+
+    if (time.includes('T')) {
+      return time.split('T')[1].slice(0, 5)
+    }
+
+    return time.slice(0, 5)
+  }
+
   return (
     <StudentLayout>
       <div className={S.page}>
@@ -258,12 +298,12 @@ function DashboardPage() {
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>입실 시간</span>
-              <strong className={S.checkInTime}>{checkInTime ?? '--:--'}</strong>
+              <strong className={S.checkInTime}>{formatTime(checkInTime)}</strong>
             </div>
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>퇴실 시간</span>
-              <strong className={S.checkOutTime}>{checkOutTime ?? '--:--'}</strong>
+              <strong className={S.checkOutTime}>{formatTime(checkOutTime)}</strong>
             </div>
           </div>
         </section>
