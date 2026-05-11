@@ -1,19 +1,38 @@
 package com.checkmate.team1.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
 
+    private static final String SECURITY_SCHEME_NAME = "Bearer Authentication";
+
     @Bean
     public OpenAPI openAPI() {
+
+        SecurityScheme securityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .in(SecurityScheme.In.HEADER)
+                .name("Authorization");
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList(SECURITY_SCHEME_NAME);
+
         return new OpenAPI()
                 .info(new Info()
                         .title("Checkmate API")
-                        .description("학생 출결, 휴가, 공지사항 관리 API 문서")
-                        .version("v1.0.0"));
+                        .description("출결관리 시스템 API 문서")
+                        .version("1.0.0"))
+                .components(new Components()
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, securityScheme))
+                .addSecurityItem(securityRequirement);
     }
 }
