@@ -21,7 +21,10 @@ export default function NoticeBoard({
                 <p className={S.noticeDate}>작성일 {date}</p>
             </div>
             <div className={S.noticeContent}>
-                <p className={S.noticeText}>{content}</p>
+                <div
+                    className={S.noticeText}
+                    dangerouslySetInnerHTML={{ __html: content }}
+                />
             </div>
             <div className={S.returnList}>
                 <Button 
