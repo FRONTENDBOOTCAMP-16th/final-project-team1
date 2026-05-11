@@ -11,7 +11,6 @@ import com.checkmate.team1.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.checkmate.team1.dto.StudentResetPasswordRequest;
 import com.checkmate.team1.dto.StudentSettingsResponse;
 import java.time.LocalDate;
 
