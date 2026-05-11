@@ -70,13 +70,13 @@ public class JwtTokenProvider {
 
     public String createPasswordResetToken(String studentId) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + 10 * 60 * 1000); // 10분
+        Date expiryDate = new Date(now.getTime() + 10 * 60 * 1000);
 
         return Jwts.builder()
-                .setSubject(studentId)
+                .subject(studentId)
                 .claim("purpose", "PASSWORD_RESET")
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
+                .issuedAt(now)
+                .expiration(expiryDate)
                 .signWith(secretKey)
                 .compact();
     }

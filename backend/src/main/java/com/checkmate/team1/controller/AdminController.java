@@ -179,7 +179,6 @@ public class AdminController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-
         AdminAttendanceListResponse response =
                 adminAttendanceService.getAttendances(
                         studentId,
@@ -374,6 +373,8 @@ public class AdminController {
             @RequestBody AdminResetPasswordRequest request,
             Authentication authentication
     ) {
+
+        // 로그인된 관리자 ID 추출
         String adminId = authentication.getName();
 
         boolean result = adminService.resetPassword(adminId, request);
@@ -382,6 +383,6 @@ public class AdminController {
             return ApiResponse.fail("존재하지 않는 관리자입니다.");
         }
 
-        return ApiResponse.success("비밀번호가 재설정되었습니다.", null);
+        return ApiResponse.success("비밀번호가 변경되었습니다.", null);
     }
 }
