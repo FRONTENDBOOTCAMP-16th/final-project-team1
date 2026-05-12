@@ -21,20 +21,24 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
         body: JSON.stringify({ name, phoneNumber }),
       })
 
-      const result = await response.json()
+      const text = await response.text()
+      const result = text ? JSON.parse(text) : {}
 
       // sessionStorage.setItem('reset_student_id', result.data.studentId)
 
-      if (response.ok) {
+      if (response.ok && result.success !== false) {
         sessionStorage.setItem('resetToken', result.data.resetToken)
-
         alert('본인 인증이 완료되었습니다. 새 비밀번호를 설정해 주세요.')
         onChangeView('RESET_PASSWORD')
       } else {
-        alert(result.message || '입력하신 정보와 일치하는 학생이 없습니다.')
+        alert(
+          result.message ||
+            '입력하신 정보와 일치하는 계정이 없습니다. 이름과 전화번호를 다시 확인해 주세요.',
+        )
       }
     } catch (error) {
       console.error('본인 인증 에러:', error)
+      alert('인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
     }
   }
 
