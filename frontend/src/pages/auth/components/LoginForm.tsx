@@ -53,7 +53,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
               placeholder="학번을 입력하세요"
               className="input_field"
               value={studentId}
-              onChange={(event) => set_studentId(event.target.value)}
+              onChange={(event) => set_studentId(event.target.value.replace(/\s/g, ''))}
               required
             />
           </label>
@@ -68,7 +68,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
                 placeholder="비밀번호를 입력하세요"
                 className="input_field"
                 value={password}
-                onChange={(event) => set_password(event.target.value)}
+                onChange={(event) => set_password(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button

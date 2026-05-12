@@ -43,7 +43,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
               placeholder="관리자 아이디를 입력하세요"
               className="input_field"
               value={adminId}
-              onChange={(event) => set_adminId(event.target.value)}
+              onChange={(event) => set_adminId(event.target.value.replace(/\s/g, ''))}
               required
             />
           </label>
@@ -58,7 +58,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
                 placeholder="비밀번호를 입력하세요"
                 className="input_field"
                 value={password}
-                onChange={(event) => set_password(event.target.value)}
+                onChange={(event) => set_password(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button

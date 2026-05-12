@@ -87,7 +87,7 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
                 placeholder="비밀번호 8자 이상 영문+숫자 조합"
                 className="input_field"
                 value={new_password}
-                onChange={(event) => set_new_password(event.target.value)}
+                onChange={(event) => set_new_password(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button
@@ -111,7 +111,7 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
                 placeholder="새 비밀번호를 다시 입력하세요"
                 className="input_field"
                 value={confirm_password}
-                onChange={(event) => set_confirm_password(event.target.value)}
+                onChange={(event) => set_confirm_password(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button
