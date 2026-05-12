@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdminLogin } from '../hooks/useAdminLogin'
+import Modal from '@/components/common/modal/Modal'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
 
@@ -11,11 +12,26 @@ interface AdminLoginFormProps {
 function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
   const [adminId, set_adminId] = useState('')
   const [password, set_password] = useState('')
-
   const [show_password, set_show_password] = useState(false)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
 
   const navigate = useNavigate()
   const { login_admin, is_loading, error_message } = useAdminLogin()
+
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({
+      title,
+      content,
+      onConfirm,
+    })
+    setIsModalOpen(true)
+  }
 
   const handle_admin_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -24,11 +40,13 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
 
     if (result.success) {
       if (result.role === 'STUDENT') {
-        alert('학생 계정입니다. 학생 로그인 탭을 이용해주세요.')
+        showAlert('로그인 제한', '학생 계정입니다. 학생 로그인 탭을 이용해주세요.')
         return
       }
 
-      navigate('/admin/dashboard')
+      showAlert('로그인 성공', '관리자 계정으로 로그인되었습니다.', () =>
+        navigate('/admin/dashboard'),
+      )
     }
   }
 
@@ -89,6 +107,21 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
           비밀번호 찾기
         </button>
       </footer>
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </section>
   )
 }
