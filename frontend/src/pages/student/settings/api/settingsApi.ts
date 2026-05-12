@@ -14,6 +14,11 @@ interface SettingsResponse {
   data: StudentProfile
 }
 
+interface BasicResponse {
+  success: boolean
+  message?: string
+}
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const fetchStudentProfile = async (studentId: string): Promise<StudentProfile> => {
@@ -54,28 +59,27 @@ export const verifyCurrentPassword = async (password: string): Promise<boolean> 
     body: JSON.stringify({ studentId: userId, password }),
   })
 
-  const result = await response.json()
-  if (!result.success) {
-    throw new Error('현재 비밀번호가 일치하지 않습니다.')
-  }
+  const result: BasicResponse = await response.json()
+  if (!result.success) throw new Error('현재 비밀번호가 일치하지 않습니다.')
   return true
 }
 
 export const updatePassword = async (newPassword: string): Promise<boolean> => {
   const token = localStorage.getItem('accessToken')
 
-  const response = await fetch(`${BASE_URL}/api/auth/reset-password`, {
+  const API_URL = `${BASE_URL}/api/student/reset-password`
+
+  const response = await fetch(API_URL, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      newPassword,
-    }),
+    body: JSON.stringify({ newPassword }),
   })
 
-  const result = await response.json()
+  const text = await response.text()
+  const result: BasicResponse = text ? JSON.parse(text) : {}
 
   if (!result.success) {
     throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
