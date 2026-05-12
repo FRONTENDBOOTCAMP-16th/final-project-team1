@@ -2,6 +2,7 @@ import { api } from '@/api/axios'
 
 export type AttendanceApiItem = {
   attendanceId: number
+  attendanceDate: string
   studentId: string
   studentName: string
   checkInTime: string
@@ -9,11 +10,28 @@ export type AttendanceApiItem = {
   attendanceStatusName: string
 }
 
-export async function getAttendanceList() {
+type GetAttendanceListParams = {
+  attendanceDate?: string
+  startDate?: string
+  endDate?: string
+  page?: number
+  size?: number
+}
+
+export async function getAttendanceList({
+  attendanceDate,
+  startDate,
+  endDate,
+  page = 1,
+  size = 12,
+}: GetAttendanceListParams = {}) {
   const res = await api.get('/api/admin/attendances', {
     params: {
-      page: 1,
-      size: 12,
+      page,
+      size,
+      attendanceDate,
+      startDate,
+      endDate,
     },
   })
 

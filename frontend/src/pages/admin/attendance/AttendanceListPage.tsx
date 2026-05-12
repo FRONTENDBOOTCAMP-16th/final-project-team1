@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { TrendingUp, UserCheck, Clock, UserX } from 'lucide-react'
+
 import { Button } from '@/components'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
-import S from './styles/attendance.module.css'
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
-import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import DatePicker from '@/components/common/datePicker'
 import CountCard from '@/components/common/countCard/CountCard'
@@ -15,6 +12,8 @@ import {
   getAttendanceList,
   type AttendanceApiItem,
 } from '@/pages/admin/attendance/api/attendanceApi'
+
+import S from './styles/attendance.module.css'
 
 const PAGE_SIZE = 10
 
@@ -35,32 +34,49 @@ const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: 
   },
 }
 
+function formatDate(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
 export default function AttendanceListPage() {
   const [attendanceData, setAttendanceData] = useState<AttendanceApiItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
 
-
-  const [isLoading, setIsLoading] = useState(false)
-
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
 
+  const startDateValue = startDate ? formatDate(startDate) : undefined
+  const endDateValue = endDate ? formatDate(endDate) : undefined
+
+  const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus | '전체'>('전체')
+
   useEffect(() => {
     const fetchAttendanceList = async () => {
-      setIsLoading(true)
       try {
-        const data = await getAttendanceList()
+        const data = await getAttendanceList({
+          startDate: startDateValue,
+          endDate: endDateValue,
+          page: 1,
+          size: 100,
+        })
+
+        console.log('시작 날짜:', startDateValue)
+        console.log('종료 날짜:', endDateValue)
         console.log('출결 목록 API 데이터:', data)
+
         setAttendanceData(data)
+        setCurrentPage(1)
       } catch (error) {
         console.error('출결 목록 API 실패:', error)
-      } finally {
-        setIsLoading(false)
       }
     }
 
     fetchAttendanceList()
-  }, [])
+  }, [startDateValue, endDateValue])
 
   const handleStartChange = (date: Date | null) => {
     setStartDate(date)
@@ -68,9 +84,36 @@ export default function AttendanceListPage() {
     setCurrentPage(1)
   }
 
-  const filteredAttendances = useMemo(() => {
-    return attendanceData
+  const handleEndChange = (date: Date | null) => {
+    setEndDate(date)
+    setCurrentPage(1)
+  }
+
+  const presentCount = useMemo(() => {
+    return attendanceData.filter((item) => item.attendanceStatusName === '출석완료').length
   }, [attendanceData])
+
+  const lateCount = useMemo(() => {
+    return attendanceData.filter((item) => item.attendanceStatusName === '지각').length
+  }, [attendanceData])
+
+  const absentCount = useMemo(() => {
+    return attendanceData.filter((item) => item.attendanceStatusName === '결석').length
+  }, [attendanceData])
+
+  const attendanceRate = useMemo(() => {
+    if (attendanceData.length === 0) return 0
+
+    return Math.round(((presentCount + lateCount) / attendanceData.length) * 100)
+  }, [attendanceData.length, presentCount, lateCount])
+
+  const filteredAttendances = useMemo(() => {
+    if (selectedStatus === '전체') {
+      return attendanceData
+    }
+
+    return attendanceData.filter((item) => item.attendanceStatusName === selectedStatus)
+  }, [attendanceData, selectedStatus])
 
   const totalPages = Math.max(1, Math.ceil(filteredAttendances.length / PAGE_SIZE))
 
@@ -91,6 +134,10 @@ export default function AttendanceListPage() {
         </div>
       ),
     },
+    {
+      key: 'attendanceDate',
+      header: '출석일',
+    },
     { key: 'studentId', header: '학번' },
     { key: 'checkInTime', header: '입실시간' },
     { key: 'checkOutTime', header: '퇴실시간' },
@@ -110,63 +157,87 @@ export default function AttendanceListPage() {
   return (
     <AdminLayout>
       <section className={S.count_box}>
-            {isLoading ? (
-        <>
-            <Skeleton height={100} width={200} />
-            <Skeleton height={100} width={200} />
-            <Skeleton height={100} width={200} />
-            <Skeleton height={100} width={200} />
-        </>
-    ) : (
-        <>
-            <CountCard label="오늘의 출석률" value={0} unit="%" icon={<TrendingUp />} variant="gray" />
-            <CountCard label="출석완료" value={0} unit="명" icon={<UserCheck />} variant="green" />
-            <CountCard label="지각인원" value={0} unit="명" icon={<Clock />} variant="yellow" />
-            <CountCard label="결석인원" value={0} unit="명" icon={<UserX />} variant="red" />
-        </>
-    )}
+        <CountCard
+          label="오늘의 출석률"
+          value={attendanceRate}
+          unit="%"
+          icon={<TrendingUp />}
+          variant="gray"
+        />
+
+        <CountCard
+          label="출석완료"
+          value={presentCount}
+          unit="명"
+          icon={<UserCheck />}
+          variant="green"
+        />
+
+        <CountCard label="지각인원" value={lateCount} unit="명" icon={<Clock />} variant="yellow" />
+
+        <CountCard label="결석인원" value={absentCount} unit="명" icon={<UserX />} variant="red" />
       </section>
 
       <section className={S.filter_box}>
         <div className={S.date_box}>
           <DatePicker value={startDate} onChange={handleStartChange} placeholder="0000-00-00" />
+
           <span>-</span>
+
           <DatePicker
             value={endDate}
-            onChange={(date) => {
-              setEndDate(date)
-              setCurrentPage(1)
-            }}
+            onChange={handleEndChange}
             minDate={startDate || undefined}
             placeholder="0000-00-00"
           />
         </div>
 
         <div>
-          <Button variant="success">출석</Button>
-          <Button variant="warning">지각</Button>
-          <Button variant="error">결석</Button>
-          <Button variant="blank">전체</Button>
+          <Button
+            variant="success"
+            onClick={() => {
+              setSelectedStatus('출석완료')
+              setCurrentPage(1)
+            }}
+          >
+            출석
+          </Button>
+
+          <Button
+            variant="warning"
+            onClick={() => {
+              setSelectedStatus('지각')
+              setCurrentPage(1)
+            }}
+          >
+            지각
+          </Button>
+
+          <Button
+            variant="error"
+            onClick={() => {
+              setSelectedStatus('결석')
+              setCurrentPage(1)
+            }}
+          >
+            결석
+          </Button>
+
+          <Button
+            variant="blank"
+            onClick={() => {
+              setSelectedStatus('전체')
+              setCurrentPage(1)
+            }}
+          >
+            전체
+          </Button>
         </div>
       </section>
 
       <section className={S.tableBox}>
-        {isLoading ? (
-          <TableSkeleton
-            columns={[
-              { header: '이름', width: '15%' },
-              { header: '학번', width: '20%' },
-              { header: '입실시간', width: '25%' },
-              { header: '퇴실시간', width: '25%' },
-              { header: '출결상태', width: '15%' },
-            ]}
-            rows={PAGE_SIZE}
-          />
-        ) : (
-          <Table columns={attendanceColumns} data={pagedAttendances} />
-        )}
-        
-        
+        <Table columns={attendanceColumns} data={pagedAttendances} />
+
         <div className={S.table_footer}>
           <span>
             총 {filteredAttendances.length}건 중{' '}
