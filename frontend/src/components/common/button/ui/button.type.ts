@@ -13,15 +13,16 @@ import type { ReactNode, ButtonHTMLAttributes } from 'react';
  * - detail: 주황 연한 배경 (상세보기)
  */
 export type ButtonVariant =
-    | 'primary'
-    | 'dark'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'blank'
-    | 'active'
-    | 'inactive'
-    | 'detail';
+  | 'primary'
+  | 'dark'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'blank'
+  | 'active'
+  | 'inactive'
+  | 'detail'
+  | 'studying'
 
 /**
  * 버튼 크기 (세로 높이 기준)
