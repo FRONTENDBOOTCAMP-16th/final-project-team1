@@ -1,25 +1,32 @@
+// 외부 라이브러리
 import { useEffect, useMemo, useState } from 'react'
 import { TrendingUp, UserCheck, Clock, UserX } from 'lucide-react'
 
+// 공통 컴포넌트
 import { Button } from '@/components'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
-import AdminLayout from '@/pages/sample/AdminLayout'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import DatePicker from '@/components/common/datePicker'
 import CountCard from '@/components/common/countCard/CountCard'
 
+// 레이아웃
+import AdminLayout from '@/pages/sample/AdminLayout'
+
+// API / 스타일
 import {
   getAttendanceList,
   type AttendanceApiItem,
 } from '@/pages/admin/attendance/api/attendanceApi'
-
 import S from './styles/attendance.module.css'
 
+/** 한 페이지에 보여줄 데이터 개수 */
 const PAGE_SIZE = 10
 
 type AttendanceStatus = '출석완료' | '지각' | '결석' | '훈련중'
 type FilterStatus = AttendanceStatus | '전체'
 
+/** 출결 상태 스타일 */
 const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: string }> = {
   출석완료: {
     label: '출석완료',
@@ -39,6 +46,7 @@ const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: 
   },
 }
 
+/** 날짜 포맷 변환 */
 function formatDate(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -47,39 +55,45 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+/** 출결 상태 계산 */
 function getAttendanceStatus(checkInTime: string, checkOutTime: string): AttendanceStatus {
   const hasCheckIn = !!checkInTime && checkInTime !== '00:00'
   const hasCheckOut = !!checkOutTime && checkOutTime !== '00:00'
 
-  if (!hasCheckIn) {
-    return '결석'
-  }
-
-  if (hasCheckIn && !hasCheckOut) {
-    return '훈련중'
-  }
-
-  if (checkInTime > '09:00') {
-    return '지각'
-  }
+  if (!hasCheckIn) return '결석'
+  if (hasCheckIn && !hasCheckOut) return '훈련중'
+  if (checkInTime > '09:00') return '지각'
 
   return '출석완료'
 }
 
 export default function AttendanceListPage() {
+  /** 전체 출결 데이터 */
   const [attendanceData, setAttendanceData] = useState<AttendanceApiItem[]>([])
+
+  /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
 
+  /** 시작 날짜 */
   const [startDate, setStartDate] = useState<Date | null>(null)
+
+  /** 종료 날짜 */
   const [endDate, setEndDate] = useState<Date | null>(null)
 
+  /** 선택된 출결 상태 */
   const [selectedStatus, setSelectedStatus] = useState<FilterStatus>('전체')
+
+  /** 테이블 로딩 상태 */
+  const [isLoading, setIsLoading] = useState(false)
 
   const startDateValue = startDate ? formatDate(startDate) : undefined
   const endDateValue = endDate ? formatDate(endDate) : undefined
 
+  /** 출결 목록 조회 */
   useEffect(() => {
     const fetchAttendanceList = async () => {
+      setIsLoading(true)
+
       try {
         const data = await getAttendanceList({
           startDate: startDateValue,
@@ -92,53 +106,64 @@ export default function AttendanceListPage() {
         setCurrentPage(1)
       } catch (error) {
         console.error('출결 목록 API 실패:', error)
+        setAttendanceData([])
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchAttendanceList()
   }, [startDateValue, endDateValue])
 
+  /** 시작 날짜 변경 */
   const handleStartChange = (date: Date | null) => {
     setStartDate(date)
     setEndDate(null)
     setCurrentPage(1)
   }
 
+  /** 종료 날짜 변경 */
   const handleEndChange = (date: Date | null) => {
     setEndDate(date)
     setCurrentPage(1)
   }
 
+  /** 출석 인원 수 */
   const presentCount = useMemo(() => {
     return attendanceData.filter(
       (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '출석완료',
     ).length
   }, [attendanceData])
 
+  /** 지각 인원 수 */
   const lateCount = useMemo(() => {
     return attendanceData.filter(
       (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '지각',
     ).length
   }, [attendanceData])
 
+  /** 결석 인원 수 */
   const absentCount = useMemo(() => {
     return attendanceData.filter(
       (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '결석',
     ).length
   }, [attendanceData])
 
+  /** 훈련중 인원 수 */
   const trainingCount = useMemo(() => {
     return attendanceData.filter(
       (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '훈련중',
     ).length
   }, [attendanceData])
 
+  /** 출석률 계산 */
   const attendanceRate = useMemo(() => {
     if (attendanceData.length === 0) return 0
 
     return Math.round(((presentCount + lateCount + trainingCount) / attendanceData.length) * 100)
   }, [attendanceData.length, presentCount, lateCount, trainingCount])
 
+  /** 상태 필터링된 출결 목록 */
   const filteredAttendances = useMemo(() => {
     if (selectedStatus === '전체') {
       return attendanceData
@@ -149,8 +174,10 @@ export default function AttendanceListPage() {
     )
   }, [attendanceData, selectedStatus])
 
+  /** 전체 페이지 수 */
   const totalPages = Math.max(1, Math.ceil(filteredAttendances.length / PAGE_SIZE))
 
+  /** 현재 페이지에 보여줄 출결 목록 */
   const pagedAttendances = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE
     const end = start + PAGE_SIZE
@@ -158,6 +185,7 @@ export default function AttendanceListPage() {
     return filteredAttendances.slice(start, end)
   }, [filteredAttendances, currentPage])
 
+  /** 테이블 컬럼 */
   const attendanceColumns: TableColumn<AttendanceApiItem>[] = [
     {
       key: 'studentName',
@@ -296,21 +324,39 @@ export default function AttendanceListPage() {
       </section>
 
       <section className={S.tableBox}>
-        <Table columns={attendanceColumns} data={pagedAttendances} />
+        {isLoading ? (
+          <div className={S.skeletonWrapper}>
+            <TableSkeleton
+              columns={[
+                { header: '이름', width: '16%' },
+                { header: '출석일', width: '16%' },
+                { header: '학번', width: '18%' },
+                { header: '입실시간', width: '16%' },
+                { header: '퇴실시간', width: '16%' },
+                { header: '출결상태', width: '18%' },
+              ]}
+              rows={PAGE_SIZE}
+            />
+          </div>
+        ) : (
+          <Table columns={attendanceColumns} data={pagedAttendances} />
+        )}
 
-        <div className={S.table_footer}>
-          <span>
-            총 {filteredAttendances.length}건 중{' '}
-            {filteredAttendances.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
-            {Math.min(currentPage * PAGE_SIZE, filteredAttendances.length)}건 표시
-          </span>
+        {!isLoading && (
+          <div className={S.table_footer}>
+            <span>
+              총 {filteredAttendances.length}명 중{' '}
+              {filteredAttendances.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
+              {Math.min(currentPage * PAGE_SIZE, filteredAttendances.length)}명 표시
+            </span>
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </section>
     </AdminLayout>
   )

@@ -24,6 +24,13 @@ section {
     color: var(--default-black);
   }
 
+  .skeletonWrapper {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
+
   .statusBadge {
     display: inline-flex;
     align-items: center;
@@ -102,7 +109,7 @@ section {
   th {
     font-weight: var(--Bd);
     font-size: var(--border-radius-xl);
-      color: var(--default-black);
+    color: var(--default-black);
   }
 
   td {
