@@ -102,7 +102,7 @@ function AdminSettingPage() {
                   type={showCurrent ? 'text' : 'password'}
                   placeholder="현재 비밀번호를 입력하세요"
                   value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  onChange={(e) => setCurrentPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -129,7 +129,7 @@ function AdminSettingPage() {
                   type={showNew ? 'text' : 'password'}
                   placeholder="8~16자, 영문+숫자"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -156,7 +156,7 @@ function AdminSettingPage() {
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="새 비밀번호를 다시 입력하세요"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button

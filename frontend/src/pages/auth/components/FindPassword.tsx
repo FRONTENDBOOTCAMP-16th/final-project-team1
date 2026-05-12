@@ -53,7 +53,7 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
               placeholder="홍길동"
               className="input_field"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => setName(event.target.value.replace(/\s/g, ''))}
               required
             />
           </label>
@@ -67,7 +67,7 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
               placeholder="010-1234-5678"
               className="input_field"
               value={phoneNumber}
-              onChange={(event) => setPhoneNumber(event.target.value)}
+              onChange={(event) => setPhoneNumber(event.target.value.replace(/\s/g, ''))}
               required
             />
           </label>

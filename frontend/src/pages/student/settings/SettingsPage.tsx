@@ -64,19 +64,19 @@ function SettingPage() {
     return (
       <StudentLayout>
         <div className="settingContainer">
-          <Skeleton count={24} width="20%"/>
-          <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px'}}>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
+          <Skeleton count={24} width="20%" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
           </div>
-          <Skeleton height={24} width="20%" style={{marginTop: '32px'}} />
-          <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px'}}>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
-            <Skeleton height={40}/>
+          <Skeleton height={24} width="20%" style={{ marginTop: '32px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
           </div>
         </div>
       </StudentLayout>
@@ -140,7 +140,7 @@ function SettingPage() {
                   type={showCurrent ? 'text' : 'password'}
                   placeholder="현재 비밀번호를 입력하세요"
                   value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  onChange={(e) => setCurrentPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -167,7 +167,7 @@ function SettingPage() {
                   type={showNew ? 'text' : 'password'}
                   placeholder="8~16자, 영문+숫자"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -194,7 +194,7 @@ function SettingPage() {
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="새 비밀번호를 다시 입력하세요"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
