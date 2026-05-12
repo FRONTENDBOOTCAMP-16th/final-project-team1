@@ -4,6 +4,8 @@ import { Button } from '@/components'
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 import S from './styles/attendance.module.css'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import DatePicker from '@/components/common/datePicker'
@@ -108,10 +110,21 @@ export default function AttendanceListPage() {
   return (
     <AdminLayout>
       <section className={S.count_box}>
-        <CountCard label="오늘의 출석률" value={0} unit="%" icon={<TrendingUp />} variant="gray" />
-        <CountCard label="출석완료" value={0} unit="명" icon={<UserCheck />} variant="green" />
-        <CountCard label="지각인원" value={0} unit="명" icon={<Clock />} variant="yellow" />
-        <CountCard label="결석인원" value={0} unit="명" icon={<UserX />} variant="red" />
+            {isLoading ? (
+        <>
+            <Skeleton height={100} width={200} />
+            <Skeleton height={100} width={200} />
+            <Skeleton height={100} width={200} />
+            <Skeleton height={100} width={200} />
+        </>
+    ) : (
+        <>
+            <CountCard label="오늘의 출석률" value={0} unit="%" icon={<TrendingUp />} variant="gray" />
+            <CountCard label="출석완료" value={0} unit="명" icon={<UserCheck />} variant="green" />
+            <CountCard label="지각인원" value={0} unit="명" icon={<Clock />} variant="yellow" />
+            <CountCard label="결석인원" value={0} unit="명" icon={<UserX />} variant="red" />
+        </>
+    )}
       </section>
 
       <section className={S.filter_box}>

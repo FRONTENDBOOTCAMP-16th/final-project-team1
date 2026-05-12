@@ -25,7 +25,7 @@ export default function TableSkeleton({
 
     return (
         <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-            <div>
+            <div style={{overflowX: 'hidden'}}>
                 {Array.from({ length: rows }).map((_, rowIndex) => (
                     <div
                         key={rowIndex}
