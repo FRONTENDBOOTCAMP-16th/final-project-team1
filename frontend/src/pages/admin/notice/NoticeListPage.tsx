@@ -265,20 +265,22 @@ const [isLoading, setIsLoading] = useState(false)
             />
 
             <div className={S.table_box}>
-               {isLoading ? (
-                    <TableSkeleton
-                        columns={[
-                            { header: '', width: '5%' },
-                            { header: '번호', width: '10%' },
-                            { header: '제목', width: '55%' },
-                            { header: '작성일', width: '15%' },
-                            { header: '공개여부', width: '15%' },
-                        ]}
-                        rows={PAGE_SIZE}
-                    />
-                ) : (
-                    <Table columns={noticeColumns} data={pagedNotices} />
-                )}
+              {isLoading ? (
+                <div className={S.skeletonWrapper}>
+                  <TableSkeleton
+                    columns={[
+                      { header: '', width: '5%' },
+                      { header: '번호', width: '10%' },
+                      { header: '제목', width: '55%' },
+                      { header: '작성일', width: '15%' },
+                      { header: '공개여부', width: '15%' },
+                    ]}
+                    rows={PAGE_SIZE}
+                  />
+                </div>
+              ) : (
+                <Table columns={noticeColumns} data={pagedNotices} />
+              )}
             </div>
 
             <div className={S.table_footer}>
