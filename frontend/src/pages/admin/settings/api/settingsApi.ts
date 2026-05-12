@@ -1,8 +1,13 @@
 import { useAuthStore } from '@/store'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
+interface BasicResponse {
+  success: boolean
+  message?: string
+}
 
-export const verifyAdminPassword = async (password: string) => {
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+
+export const verifyAdminPassword = async (password: string): Promise<boolean> => {
   const userId = useAuthStore.getState().user?.userId
 
   if (!userId) {
@@ -17,16 +22,20 @@ export const verifyAdminPassword = async (password: string) => {
     body: JSON.stringify({ adminId: userId, password }),
   })
 
-  const result = await response.json()
+  const result: BasicResponse = await response.json()
+
   if (!result.success) {
     throw new Error(result.message || '현재 비밀번호가 일치하지 않습니다.')
   }
+
   return true
 }
 
-export const resetAdminPassword = async (newPassword: string) => {
+export const resetAdminPassword = async (newPassword: string): Promise<boolean> => {
   const token = localStorage.getItem('accessToken')
-  const response = await fetch(`${BASE_URL}/api/admin/reset-password`, {
+  const API_URL = `${BASE_URL}/api/admin/reset-password`
+
+  const response = await fetch(API_URL, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -35,9 +44,12 @@ export const resetAdminPassword = async (newPassword: string) => {
     body: JSON.stringify({ newPassword }),
   })
 
-  const result = await response.json()
+  const text = await response.text()
+  const result: BasicResponse = text ? JSON.parse(text) : {}
+
   if (!result.success) {
     throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
   }
+
   return true
 }
