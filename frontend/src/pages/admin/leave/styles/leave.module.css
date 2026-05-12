@@ -1,3 +1,7 @@
+section {
+  margin: 30px 0 0;
+}
+
 .page {
   display: flex;
   min-height: 100vh;
@@ -19,8 +23,15 @@
   gap: 16px;
 }
 
-.table_box {
+.tableBox {
   margin: 30px 0 0;
+
+  .skeletonWrapper {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
 }
 
 .table_footer {
