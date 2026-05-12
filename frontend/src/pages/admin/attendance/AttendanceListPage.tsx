@@ -18,6 +18,7 @@ import S from './styles/attendance.module.css'
 const PAGE_SIZE = 10
 
 type AttendanceStatus = '출석완료' | '지각' | '결석'
+type FilterStatus = AttendanceStatus | '전체'
 
 const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: string }> = {
   출석완료: {
@@ -42,6 +43,18 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+function getAttendanceStatusByCheckIn(checkInTime: string): AttendanceStatus {
+  if (!checkInTime || checkInTime === '00:00') {
+    return '결석'
+  }
+
+  if (checkInTime > '09:00') {
+    return '지각'
+  }
+
+  return '출석완료'
+}
+
 export default function AttendanceListPage() {
   const [attendanceData, setAttendanceData] = useState<AttendanceApiItem[]>([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -49,10 +62,10 @@ export default function AttendanceListPage() {
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
 
+  const [selectedStatus, setSelectedStatus] = useState<FilterStatus>('전체')
+
   const startDateValue = startDate ? formatDate(startDate) : undefined
   const endDateValue = endDate ? formatDate(endDate) : undefined
-
-  const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus | '전체'>('전체')
 
   useEffect(() => {
     const fetchAttendanceList = async () => {
@@ -64,8 +77,6 @@ export default function AttendanceListPage() {
           size: 100,
         })
 
-        console.log('시작 날짜:', startDateValue)
-        console.log('종료 날짜:', endDateValue)
         console.log('출결 목록 API 데이터:', data)
 
         setAttendanceData(data)
@@ -90,15 +101,21 @@ export default function AttendanceListPage() {
   }
 
   const presentCount = useMemo(() => {
-    return attendanceData.filter((item) => item.attendanceStatusName === '출석완료').length
+    return attendanceData.filter(
+      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '출석완료',
+    ).length
   }, [attendanceData])
 
   const lateCount = useMemo(() => {
-    return attendanceData.filter((item) => item.attendanceStatusName === '지각').length
+    return attendanceData.filter(
+      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '지각',
+    ).length
   }, [attendanceData])
 
   const absentCount = useMemo(() => {
-    return attendanceData.filter((item) => item.attendanceStatusName === '결석').length
+    return attendanceData.filter(
+      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '결석',
+    ).length
   }, [attendanceData])
 
   const attendanceRate = useMemo(() => {
@@ -112,7 +129,9 @@ export default function AttendanceListPage() {
       return attendanceData
     }
 
-    return attendanceData.filter((item) => item.attendanceStatusName === selectedStatus)
+    return attendanceData.filter(
+      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === selectedStatus,
+    )
   }, [attendanceData, selectedStatus])
 
   const totalPages = Math.max(1, Math.ceil(filteredAttendances.length / PAGE_SIZE))
@@ -134,20 +153,34 @@ export default function AttendanceListPage() {
         </div>
       ),
     },
+
     {
       key: 'attendanceDate',
       header: '출석일',
     },
-    { key: 'studentId', header: '학번' },
-    { key: 'checkInTime', header: '입실시간' },
-    { key: 'checkOutTime', header: '퇴실시간' },
+
+    {
+      key: 'studentId',
+      header: '학번',
+    },
+
+    {
+      key: 'checkInTime',
+      header: '입실시간',
+    },
+
+    {
+      key: 'checkOutTime',
+      header: '퇴실시간',
+    },
+
     {
       key: 'attendanceStatusName',
       header: '출결상태',
       render: (row) => {
-        const status = attendanceStatusMap[row.attendanceStatusName as AttendanceStatus]
+        const calculatedStatus = getAttendanceStatusByCheckIn(row.checkInTime)
 
-        if (!status) return <span>-</span>
+        const status = attendanceStatusMap[calculatedStatus]
 
         return <span className={`${S.statusBadge} ${status.className}`}>{status.label}</span>
       },
@@ -158,7 +191,7 @@ export default function AttendanceListPage() {
     <AdminLayout>
       <section className={S.count_box}>
         <CountCard
-          label="오늘의 출석률"
+          label="출석률"
           value={attendanceRate}
           unit="%"
           icon={<TrendingUp />}
