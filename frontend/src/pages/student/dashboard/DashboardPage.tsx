@@ -10,6 +10,7 @@ import {
   getStudentNoticeList,
   type StudentNoticeItem,
 } from '@/pages/student/dashboard/api/studentDashboardApi'
+import { NoticeSkeleton, LeaveSkeleton } from './components/DashboardSkeleton'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 import { axiosInstance } from '@/api/axios'
 
@@ -56,6 +57,7 @@ function DashboardPage() {
 
   const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
   const [isAttendanceLoading, setIsAttendanceLoading] = useState(true)
 
@@ -104,6 +106,12 @@ function DashboardPage() {
         setNotices(data)
       } catch (error) {
         console.error('공지사항 조회 실패:', error)
+      } finally {
+        // 스켈레톤 확인
+        // setTimeout(() => {
+        //   setIsLoading(false)
+        // }, 1000)
+        setIsLoading(false)
       }
     }
 
@@ -323,12 +331,16 @@ function DashboardPage() {
             onNextMonth={handleNextMonth}
           />
           <div className={S.sideArea}>
-            <LeaveStatus />
+            {isLoading ? <LeaveSkeleton /> : <LeaveStatus />}
 
-            <NoticeList
-              notices={notices}
-              onNoticeClick={(noticeId) => navigate(`/student/notice/${noticeId}`)}
-            />
+            {isLoading ? (
+              <NoticeSkeleton />
+            ) : (
+              <NoticeList
+                notices={notices}
+                onNoticeClick={(noticeId) => navigate(`/student/notice/${noticeId}`)}
+              />
+            )}
           </div>
         </div>
       </div>
