@@ -9,6 +9,7 @@ export default function CommonTable<T>({
   currentPage = 1,
   pageSize = 12,
   countLabel = '명',
+  onRowClick,
 }: CommonTableProps<T>) {
   const startCount = (currentPage - 1) * pageSize + 1
   const endCount = Math.min(currentPage * pageSize, totalCount ?? data.length)
@@ -38,7 +39,11 @@ export default function CommonTable<T>({
             </tr>
           ) : (
             data.map((row, rowIndex) => (
-              <tr key={rowKey ? rowKey(row, rowIndex) : rowIndex}>
+              <tr
+                key={rowKey ? rowKey(row, rowIndex) : rowIndex}
+                onClick={() => onRowClick?.(row)}
+                style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+              >
                 {columns.map((column) => (
                   <td key={String(column.key)} style={{ textAlign: column.align ?? 'center' }}>
                     {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
