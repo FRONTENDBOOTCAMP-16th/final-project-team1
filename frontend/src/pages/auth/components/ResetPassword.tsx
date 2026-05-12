@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '@/components/common/modal/Modal'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
 
@@ -9,9 +10,24 @@ interface ResetPasswordProps {
 function ResetPassword({ onChangeView }: ResetPasswordProps) {
   const [new_password, set_new_password] = useState('')
   const [confirm_password, set_confirm_password] = useState('')
-
   const [show_new_password, set_show_new_password] = useState(false)
   const [show_confirm_password, set_show_confirm_password] = useState(false)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
+
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({
+      title,
+      content,
+      onConfirm,
+    })
+    setIsModalOpen(true)
+  }
 
   const handle_reset = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -28,50 +44,48 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
     }
 
     try {
-      // const target_student_id = sessionStorage.getItem('reset_student_id')
-
       const resetToken = sessionStorage.getItem('resetToken')
-
-      // if (!target_student_id) {
-
       if (!resetToken) {
-        alert('인증 정보가 만료되었습니다. 다시 본인 인증을 진행해 주세요.')
-        onChangeView('FIND_PASSWORD')
+        showAlert('인증 만료', '인증 정보가 없습니다. 본인 인증을 다시 진행해 주세요.', () =>
+          onChangeView('FIND_PASSWORD'),
+        )
         return
       }
-
-      const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/auth/reset-password`
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+      const API_URL = `${BASE_URL}/api/auth/reset-password`
 
       const response = await fetch(API_URL, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-
-          // JWT 토큰 헤더 추가
           Authorization: `Bearer ${resetToken}`,
+          'Content-Type': 'application/json',
         },
-
         body: JSON.stringify({
-          // studentId: target_student_id,
           newPassword: new_password,
         }),
       })
 
-      const result = await response.json()
+      const text = await response.text()
+      const result = text ? JSON.parse(text) : {}
 
-      if (response.ok && result.success) {
-        alert('비밀번호가 성공적으로 변경되었습니다! 새 비밀번호로 로그인해 주세요.')
-
-        // 기존 저장값 제거
-        sessionStorage.removeItem('resetToken')
-
-        onChangeView('LOGIN')
+      if (response.ok && result.success !== false) {
+        showAlert(
+          '변경 완료',
+          '비밀번호가 성공적으로 재설정되었습니다. 다시 로그인해 주세요.',
+          () => {
+            sessionStorage.removeItem('resetToken')
+            onChangeView('LOGIN')
+          },
+        )
       } else {
-        alert(result.message || '비밀번호 변경에 실패했습니다.')
+        showAlert('변경 실패', result.message || '비밀번호 재설정에 실패했습니다.')
       }
     } catch (error) {
-      console.error('비밀번호 재설정 에러:', error)
-      alert('서버와 연결할 수 없습니다.')
+      console.error('비밀번호 재설정 통신 에러:', error)
+      showAlert(
+        '오류 발생',
+        '서버와 통신 중 오류가 발생했습니다. 네트워크 상태나 API 주소를 확인해 주세요.',
+      )
     }
   }
 
@@ -136,6 +150,21 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
           취소하고 돌아가기
         </button>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </section>
   )
 }

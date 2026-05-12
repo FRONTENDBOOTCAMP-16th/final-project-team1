@@ -4,6 +4,8 @@ import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
 import { useSettings } from './hooks/useSettings'
 import { useState } from 'react'
+import { verifyCurrentPassword } from './api/settingsApi'
+import Modal from '@/components/common/modal/Modal'
 import './styles/settings.css'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
@@ -19,44 +21,61 @@ function SettingPage() {
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
 
-  const handlePasswordChange = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({ title, content, onConfirm })
+    setIsModalOpen(true)
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      alert('모든 필드를 입력해 주세요.')
-      return
-    }
-
     if (!currentPassword) {
-      alert('현재 비밀번호를 입력해 주세요.')
+      showAlert('입력 오류', '현재 비밀번호를 입력해 주세요.')
       return
     }
 
-    if (currentPassword === newPassword) {
-      alert('새 비밀번호가 현재 비밀번호와 동일합니다. 다른 비밀번호를 입력해 주세요.')
+    if (!newPassword || !confirmPassword) {
+      showAlert('입력 오류', '새 비밀번호를 모두 입력해 주세요.')
       return
     }
 
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
     if (!passwordRegex.test(newPassword)) {
-      alert('비밀번호는 영문, 숫자를 포함하여 8~16자로 입력해 주세요.')
+      showAlert('비밀번호 오류', '새 비밀번호는 8자 이상, 영문과 숫자를 혼합해야 합니다.')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호 확인이 일치하지 않습니다.')
+      showAlert('비밀번호 불일치', '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
       return
     }
+    try {
+      await verifyCurrentPassword(currentPassword)
 
-    const result = await changePassword(currentPassword, newPassword)
+      const success = await changePassword(currentPassword, newPassword)
 
-    if (result.success) {
-      alert('비밀번호가 성공적으로 변경되었습니다! 안전을 위해 다시 로그인해 주세요.')
-      localStorage.clear()
-      window.location.href = '/'
-    } else {
-      alert(result.message)
+      if (success) {
+        showAlert('변경 완료', '비밀번호가 성공적으로 변경되었습니다.', () => {
+          setCurrentPassword('')
+          setNewPassword('')
+          setConfirmPassword('')
+        })
+      }
+    } catch (error) {
+      console.error('비밀번호 변경 실패:', error)
+
+      if (error instanceof Error) {
+        showAlert('변경 실패', error.message)
+      } else {
+        showAlert('변경 실패', '알 수 없는 오류가 발생했습니다. 다시 시도해 주세요.')
+      }
     }
   }
 
@@ -221,6 +240,21 @@ function SettingPage() {
           </form>
         </section>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </StudentLayout>
   )
 }

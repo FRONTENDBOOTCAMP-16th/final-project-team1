@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Modal from '@/components/common/modal/Modal'
 
 interface FindPasswordProps {
   onChangeView: (view: 'LOGIN' | 'ADMIN_LOGIN' | 'FIND_PASSWORD' | 'RESET_PASSWORD') => void
@@ -7,6 +8,22 @@ interface FindPasswordProps {
 function FindPassword({ onChangeView }: FindPasswordProps) {
   const [name, setName] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
+
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({
+      title,
+      content,
+      onConfirm,
+    })
+    setIsModalOpen(true)
+  }
 
   const handleVerify = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -28,17 +45,20 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
 
       if (response.ok && result.success !== false) {
         sessionStorage.setItem('resetToken', result.data.resetToken)
-        alert('본인 인증이 완료되었습니다. 새 비밀번호를 설정해 주세요.')
-        onChangeView('RESET_PASSWORD')
+
+        showAlert('인증 성공', '본인 인증이 완료되었습니다. 새 비밀번호를 설정해 주세요.', () =>
+          onChangeView('RESET_PASSWORD'),
+        )
       } else {
-        alert(
+        showAlert(
+          '인증 실패',
           result.message ||
             '입력하신 정보와 일치하는 계정이 없습니다. 이름과 전화번호를 다시 확인해 주세요.',
         )
       }
     } catch (error) {
       console.error('본인 인증 에러:', error)
-      alert('인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
+      showAlert('오류 발생', '인증 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
     }
   }
 
@@ -83,6 +103,26 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
           로그인으로 돌아가기
         </button>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) {
+            modalConfig.onConfirm()
+          }
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) {
+            modalConfig.onConfirm()
+          }
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </section>
   )
 }

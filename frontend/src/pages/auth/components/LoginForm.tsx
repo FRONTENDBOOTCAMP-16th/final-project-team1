@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
+import Modal from '@/components/common/modal/Modal'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
 
@@ -11,37 +12,62 @@ interface LoginFormProps {
 function LoginForm({ onChangeView }: LoginFormProps) {
   const [studentId, set_studentId] = useState('')
   const [password, set_password] = useState('')
-
   const [show_password, set_show_password] = useState(false)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
 
   const navigate = useNavigate()
   const { login_user, is_loading, error_message } = useLogin()
 
-  const handle_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({
+      title,
+      content,
+      onConfirm,
+    })
+    setIsModalOpen(true)
+  }
+  const handle_login = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const result = await login_user(studentId, password)
 
     if (result.success) {
       if (result.role === 'ADMIN') {
-        alert('관리자 계정입니다. 관리자 로그인 탭을 이용해주세요.')
+        showAlert('로그인 제한', '관리자 계정입니다. 관리자 로그인 탭을 이용해주세요.')
         return
       }
 
       if (studentId === password) {
-        alert('초기 비밀번호를 사용 중입니다. 안전을 위해 비밀번호를 먼저 변경해 주세요.')
-        navigate('/student/settings')
+        showAlert(
+          '비밀번호 변경 안내',
+          '초기 비밀번호를 사용 중입니다. 안전을 위해 비밀번호를 먼저 변경해 주세요.',
+          () => {
+            navigate('/student/settings') // ⭐️ 확인 클릭 시 실행될 로직
+          },
+        )
         return
       }
 
       if (result.passwordYn === 'N') {
-        onChangeView('RESET_PASSWORD')
-      } else {
-        window.location.href = '/student/dashboard'
+        showAlert(
+          '비밀번호 재설정 안내',
+          '비밀번호가 초기화된 계정입니다. 비밀번호를 변경해 주세요.',
+          () => navigate('/student/settings'),
+        )
+        return
       }
+
+      showAlert('로그인 성공', '환영합니다! 대시보드로 이동합니다.', () =>
+        navigate('/student/dashboard'),
+      )
     }
   }
-
   return (
     <section className="auth_content">
       <form className="login_form" onSubmit={handle_login}>
@@ -95,6 +121,26 @@ function LoginForm({ onChangeView }: LoginFormProps) {
           비밀번호 찾기
         </button>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) {
+            modalConfig.onConfirm()
+          }
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) {
+            modalConfig.onConfirm()
+          }
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </section>
   )
 }
