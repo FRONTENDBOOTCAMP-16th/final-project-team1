@@ -54,6 +54,13 @@ section {
     border: 1px solid #ff4d4f;
     background-color: #fff1f0;
   }
+  
+  .attendanceTraining {
+    color: var(--default-orange);
+    border: 1px solid var(--default-orange);
+    background-color: #ff60001a;
+  }
+
 
   .ellipsis {
     display: inline-block;

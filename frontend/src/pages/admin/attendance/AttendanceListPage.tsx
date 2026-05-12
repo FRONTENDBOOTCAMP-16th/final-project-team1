@@ -17,7 +17,7 @@ import S from './styles/attendance.module.css'
 
 const PAGE_SIZE = 10
 
-type AttendanceStatus = '출석완료' | '지각' | '결석'
+type AttendanceStatus = '출석완료' | '지각' | '결석' | '훈련중'
 type FilterStatus = AttendanceStatus | '전체'
 
 const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: string }> = {
@@ -33,6 +33,10 @@ const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: 
     label: '결석',
     className: S.attendanceAbsent,
   },
+  훈련중: {
+    label: '훈련중',
+    className: S.attendanceTraining,
+  },
 }
 
 function formatDate(date: Date) {
@@ -43,9 +47,16 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`
 }
 
-function getAttendanceStatusByCheckIn(checkInTime: string): AttendanceStatus {
-  if (!checkInTime || checkInTime === '00:00') {
+function getAttendanceStatus(checkInTime: string, checkOutTime: string): AttendanceStatus {
+  const hasCheckIn = !!checkInTime && checkInTime !== '00:00'
+  const hasCheckOut = !!checkOutTime && checkOutTime !== '00:00'
+
+  if (!hasCheckIn) {
     return '결석'
+  }
+
+  if (hasCheckIn && !hasCheckOut) {
+    return '훈련중'
   }
 
   if (checkInTime > '09:00') {
@@ -77,8 +88,6 @@ export default function AttendanceListPage() {
           size: 100,
         })
 
-        console.log('출결 목록 API 데이터:', data)
-
         setAttendanceData(data)
         setCurrentPage(1)
       } catch (error) {
@@ -102,27 +111,33 @@ export default function AttendanceListPage() {
 
   const presentCount = useMemo(() => {
     return attendanceData.filter(
-      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '출석완료',
+      (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '출석완료',
     ).length
   }, [attendanceData])
 
   const lateCount = useMemo(() => {
     return attendanceData.filter(
-      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '지각',
+      (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '지각',
     ).length
   }, [attendanceData])
 
   const absentCount = useMemo(() => {
     return attendanceData.filter(
-      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === '결석',
+      (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '결석',
+    ).length
+  }, [attendanceData])
+
+  const trainingCount = useMemo(() => {
+    return attendanceData.filter(
+      (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === '훈련중',
     ).length
   }, [attendanceData])
 
   const attendanceRate = useMemo(() => {
     if (attendanceData.length === 0) return 0
 
-    return Math.round(((presentCount + lateCount) / attendanceData.length) * 100)
-  }, [attendanceData.length, presentCount, lateCount])
+    return Math.round(((presentCount + lateCount + trainingCount) / attendanceData.length) * 100)
+  }, [attendanceData.length, presentCount, lateCount, trainingCount])
 
   const filteredAttendances = useMemo(() => {
     if (selectedStatus === '전체') {
@@ -130,7 +145,7 @@ export default function AttendanceListPage() {
     }
 
     return attendanceData.filter(
-      (item) => getAttendanceStatusByCheckIn(item.checkInTime) === selectedStatus,
+      (item) => getAttendanceStatus(item.checkInTime, item.checkOutTime) === selectedStatus,
     )
   }, [attendanceData, selectedStatus])
 
@@ -153,33 +168,27 @@ export default function AttendanceListPage() {
         </div>
       ),
     },
-
     {
       key: 'attendanceDate',
       header: '출석일',
     },
-
     {
       key: 'studentId',
       header: '학번',
     },
-
     {
       key: 'checkInTime',
       header: '입실시간',
     },
-
     {
       key: 'checkOutTime',
       header: '퇴실시간',
     },
-
     {
       key: 'attendanceStatusName',
       header: '출결상태',
       render: (row) => {
-        const calculatedStatus = getAttendanceStatusByCheckIn(row.checkInTime)
-
+        const calculatedStatus = getAttendanceStatus(row.checkInTime, row.checkOutTime)
         const status = attendanceStatusMap[calculatedStatus]
 
         return <span className={`${S.statusBadge} ${status.className}`}>{status.label}</span>
@@ -191,7 +200,7 @@ export default function AttendanceListPage() {
     <AdminLayout>
       <section className={S.count_box}>
         <CountCard
-          label="출석률"
+          label="오늘의 출석률"
           value={attendanceRate}
           unit="%"
           icon={<TrendingUp />}
@@ -207,6 +216,14 @@ export default function AttendanceListPage() {
         />
 
         <CountCard label="지각인원" value={lateCount} unit="명" icon={<Clock />} variant="yellow" />
+
+        <CountCard
+          label="훈련중"
+          value={trainingCount}
+          unit="명"
+          icon={<Clock />}
+          variant="orange"
+        />
 
         <CountCard label="결석인원" value={absentCount} unit="명" icon={<UserX />} variant="red" />
       </section>
@@ -244,6 +261,16 @@ export default function AttendanceListPage() {
             }}
           >
             지각
+          </Button>
+
+          <Button
+            variant="studying"
+            onClick={() => {
+              setSelectedStatus('훈련중')
+              setCurrentPage(1)
+            }}
+          >
+            훈련중
           </Button>
 
           <Button
