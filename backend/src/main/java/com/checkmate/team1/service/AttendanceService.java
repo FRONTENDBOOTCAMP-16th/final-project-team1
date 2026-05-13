@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class AttendanceService {
 
     public CheckInResponse checkIn(String studentId) {
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         Attendance attendance =
                 attendanceRepository
@@ -40,7 +41,7 @@ public class AttendanceService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("학생 정보를 찾을 수 없습니다."));
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
         Attendance newAttendance =
                 new Attendance(student, today, now, null);
@@ -56,7 +57,7 @@ public class AttendanceService {
 
     public CheckOutResponse checkOut(String studentId) {
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         Attendance attendance =
                 attendanceRepository
@@ -81,7 +82,7 @@ public class AttendanceService {
                     .build();
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
         attendance.checkOut(now);
 

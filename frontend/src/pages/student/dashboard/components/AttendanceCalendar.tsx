@@ -1,4 +1,5 @@
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface AttendanceCalendarItem {
   attendanceDate: string
@@ -6,13 +7,22 @@ interface AttendanceCalendarItem {
 }
 
 interface Props {
+  year: number
+  month: number
   attendanceList: AttendanceCalendarItem[]
+  isLoading: boolean
+  onPrevMonth: () => void
+  onNextMonth: () => void
 }
 
-function AttendanceCalendar({ attendanceList }: Props) {
-  const year = 2026
-  const month = 4
-
+function AttendanceCalendar({
+  year,
+  month,
+  attendanceList,
+  isLoading,
+  onPrevMonth,
+  onNextMonth,
+}: Props) {
   const firstDay = new Date(year, month - 1, 1).getDay()
   const lastDate = new Date(year, month, 0).getDate()
 
@@ -25,15 +35,20 @@ function AttendanceCalendar({ attendanceList }: Props) {
     <section className={S.calendarCard}>
       <div className={S.calendarHeader}>
         <h3 className={S.sectionTitle}>출석현황 캘린더</h3>
-        <span className={S.calendarMonth}>2026년 4월</span>
-      </div>
 
-      <div className={S.weekGrid}>
-        {['일', '월', '화', '수', '목', '금', '토'].map((week) => (
-          <span key={week} className={S.week}>
-            {week}
+        <div className={S.monthController}>
+          <button type="button" onClick={onPrevMonth} className={S.monthButton}>
+            <ChevronLeft size={20} />
+          </button>
+
+          <span className={S.calendarMonth}>
+            {year}년 {month}월
           </span>
-        ))}
+
+          <button type="button" onClick={onNextMonth} className={S.monthButton}>
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
 
       <div className={S.calendarGrid}>
@@ -45,16 +60,31 @@ function AttendanceCalendar({ attendanceList }: Props) {
           const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 
           const attendance = attendanceList.find((item) => item.attendanceDate === dateString)
+          const weekDay = new Date(year, month - 1, day).getDay()
+          const isWeekday = weekDay !== 0 && weekDay !== 6
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+
+          const currentDate = new Date(year, month - 1, day)
+          currentDate.setHours(0, 0, 0, 0)
+
+          const isFutureDate = currentDate > today
+
+          const status = attendance
+            ? attendance.attendanceStatus
+            : !isLoading && isWeekday && !isFutureDate
+              ? 'ABSENT'
+              : undefined
 
           return (
             <div
               key={index}
               className={`${S.day} ${
-                attendance?.attendanceStatus === 'PRESENT'
+                status === 'PRESENT'
                   ? S.present
-                  : attendance?.attendanceStatus === 'ONGOING'
+                  : status === 'ONGOING'
                     ? S.ongoing
-                    : attendance?.attendanceStatus === 'ABSENT'
+                    : status === 'ABSENT'
                       ? S.absent
                       : ''
               }`}

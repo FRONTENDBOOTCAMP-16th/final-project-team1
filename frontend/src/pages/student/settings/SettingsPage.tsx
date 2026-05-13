@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
 import { useSettings } from './hooks/useSettings'
+import { useState } from 'react'
+import { verifyCurrentPassword } from './api/settingsApi'
+import Modal from '@/components/common/modal/Modal'
 import './styles/settings.css'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
@@ -17,51 +21,83 @@ function SettingPage() {
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalConfig, setModalConfig] = useState<{
+    title: string
+    content: string
+    onConfirm?: () => void
+  }>({ title: '', content: '' })
 
-  const handlePasswordChange = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const showAlert = (title: string, content: string, onConfirm?: () => void) => {
+    setModalConfig({ title, content, onConfirm })
+    setIsModalOpen(true)
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      alert('모든 필드를 입력해 주세요.')
-      return
-    }
-
     if (!currentPassword) {
-      alert('현재 비밀번호를 입력해 주세요.')
+      showAlert('입력 오류', '현재 비밀번호를 입력해 주세요.')
       return
     }
 
-    if (currentPassword === newPassword) {
-      alert('새 비밀번호가 현재 비밀번호와 동일합니다. 다른 비밀번호를 입력해 주세요.')
+    if (!newPassword || !confirmPassword) {
+      showAlert('입력 오류', '새 비밀번호를 모두 입력해 주세요.')
       return
     }
 
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
     if (!passwordRegex.test(newPassword)) {
-      alert('비밀번호는 영문, 숫자를 포함하여 8~16자로 입력해 주세요.')
+      showAlert('비밀번호 오류', '새 비밀번호는 8자 이상, 영문과 숫자를 혼합해야 합니다.')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호 확인이 일치하지 않습니다.')
+      showAlert('비밀번호 불일치', '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
       return
     }
+    try {
+      await verifyCurrentPassword(currentPassword)
 
-    const result = await changePassword(currentPassword, newPassword)
+      const success = await changePassword(currentPassword, newPassword)
 
-    if (result.success) {
-      alert('비밀번호가 성공적으로 변경되었습니다! 안전을 위해 다시 로그인해 주세요.')
-      localStorage.clear()
-      window.location.href = '/'
-    } else {
-      alert(result.message)
+      if (success) {
+        showAlert('변경 완료', '비밀번호가 성공적으로 변경되었습니다.', () => {
+          setCurrentPassword('')
+          setNewPassword('')
+          setConfirmPassword('')
+        })
+      }
+    } catch (error) {
+      console.error('비밀번호 변경 실패:', error)
+
+      if (error instanceof Error) {
+        showAlert('변경 실패', error.message)
+      } else {
+        showAlert('변경 실패', '알 수 없는 오류가 발생했습니다. 다시 시도해 주세요.')
+      }
     }
   }
 
   if (isLoading)
     return (
       <StudentLayout>
-        <div className="settingContainer">정보를 불러오는 중입니다...</div>
+        <div className="settingContainer">
+          <Skeleton count={24} width="20%" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+          </div>
+          <Skeleton height={24} width="20%" style={{ marginTop: '32px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
+          </div>
+        </div>
       </StudentLayout>
     )
   if (error)
@@ -123,7 +159,7 @@ function SettingPage() {
                   type={showCurrent ? 'text' : 'password'}
                   placeholder="현재 비밀번호를 입력하세요"
                   value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  onChange={(e) => setCurrentPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -150,7 +186,7 @@ function SettingPage() {
                   type={showNew ? 'text' : 'password'}
                   placeholder="8~16자, 영문+숫자"
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -177,7 +213,7 @@ function SettingPage() {
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="새 비밀번호를 다시 입력하세요"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
                   className="inputField"
                 />
                 <button
@@ -204,6 +240,21 @@ function SettingPage() {
           </form>
         </section>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        title={modalConfig.title}
+        onClose={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        onConfirm={() => {
+          setIsModalOpen(false)
+          if (modalConfig.onConfirm) modalConfig.onConfirm()
+        }}
+        buttonType="one"
+      >
+        <p>{modalConfig.content}</p>
+      </Modal>
     </StudentLayout>
   )
 }

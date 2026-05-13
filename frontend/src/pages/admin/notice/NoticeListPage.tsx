@@ -10,6 +10,7 @@ import type { SummaryCard } from '@/components/common/statusSummary/statusSummar
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 import Modal from '@/components/common/modal/Modal'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 
 // 레이아웃
 import AdminLayout from '@/pages/sample/AdminLayout'
@@ -57,15 +58,21 @@ export default function NoticeListPage() {
   const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
+/** 로딩 상태 */
+const [isLoading, setIsLoading] = useState(false)  
+
   /** 공지사항 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true)
         const result = await getRecentNoticeRequests()
         setData(result)
       } catch (e) {
         console.error('데이터 조회 실패:', e)
         alert('데이터를 불러오는데 실패했습니다.')
+      }finally{
+        setIsLoading(false) 
       }
     }
 
@@ -201,7 +208,15 @@ export default function NoticeListPage() {
       key: 'title',
       header: '제목',
       width: '600px',
-      render: (row) => <div className={S.ellipsis}>{row.title}</div>,
+      render: (row) => (
+        <button
+          type="button"
+          className={`${S.ellipsis} ${S.btn}`}
+          onClick={() => navigate(`/admin/notice/${row.noticeId}/edit`)}
+        >
+          {row.title}
+        </button>
+      ),
     },
     { key: 'createdDate', header: '작성일', width: '200px' },
     {
@@ -250,7 +265,22 @@ export default function NoticeListPage() {
             />
 
             <div className={S.table_box}>
-              <Table columns={noticeColumns} data={pagedNotices} />
+              {isLoading ? (
+                <div className={S.skeletonWrapper}>
+                  <TableSkeleton
+                    columns={[
+                      { header: '', width: '5%' },
+                      { header: '번호', width: '10%' },
+                      { header: '제목', width: '55%' },
+                      { header: '작성일', width: '15%' },
+                      { header: '공개여부', width: '15%' },
+                    ]}
+                    rows={PAGE_SIZE}
+                  />
+                </div>
+              ) : (
+                <Table columns={noticeColumns} data={pagedNotices} />
+              )}
             </div>
 
             <div className={S.table_footer}>

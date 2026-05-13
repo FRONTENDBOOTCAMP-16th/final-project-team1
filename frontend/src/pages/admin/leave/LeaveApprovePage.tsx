@@ -9,6 +9,7 @@ import type { SummaryCard } from '@/components/common/statusSummary/statusSummar
 import Table, { type TableColumn } from '@/components/common/table'
 import Pagination from '@/components/common/pagination/Pagination'
 import Modal from '@/components/common/modal/Modal'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 
 // 레이아웃
 import AdminLayout from '@/pages/sample/AdminLayout'
@@ -64,15 +65,22 @@ export default function LeaveApprovePage() {
   const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
+  
+  const [isLoading, setIsLoading] = useState(false)
+
   /** 휴가 신청 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
+
       try {
         const result = await getRecentLeaveRequests()
         setData(result)
       } catch (e: unknown) {
         console.error('데이터 조회 실패:', e)
         alert('데이터를 불러오는데 실패했습니다.')
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -124,6 +132,8 @@ export default function LeaveApprovePage() {
       } else {
         alert('처리에 실패했습니다.')
       }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -252,23 +262,40 @@ export default function LeaveApprovePage() {
           <section className={S.content}>
             <LeaveStatusTabs activeTab={activeTab} onChange={handleChangeTab} />
 
-            <div className={S.table_box}>
-              <Table columns={vacationColumns} data={pagedData} />
+            <div className={S.tableBox}>
+              {isLoading ? (
+                <div className={S.skeletonWrapper}>
+                  <TableSkeleton
+                    columns={[
+                      { header: '신청자', width: '25%' },
+                      { header: '학번', width: '20%' },
+                      { header: '휴가종류', width: '20%' },
+                      { header: '기간', width: '20%' },
+                      { header: '처리', width: '15%' },
+                    ]}
+                    rows={PAGE_SIZE}
+                  />
+                </div>
+              ) : (
+                <Table columns={vacationColumns} data={pagedData} />
+              )}
             </div>
 
-            <div className={S.table_footer}>
-              <span>
-                총 {currentData.length}명 중{' '}
-                {currentData.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
-                {Math.min(currentPage * PAGE_SIZE, currentData.length)}명 표시
-              </span>
+            {!isLoading && (
+              <div className={S.table_footer}>
+                <span>
+                  총 {currentData.length}건 중{' '}
+                  {currentData.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
+                  {Math.min(currentPage * PAGE_SIZE, currentData.length)}건 표시
+                </span>
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
           </section>
         </main>
       </div>

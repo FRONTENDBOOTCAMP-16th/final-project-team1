@@ -1,22 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import axios from 'axios'
+
 import styles from './StudentCreatePage.module.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
 import { getLectureList } from '@/pages/admin/lecture/api/lecture.api'
 import { addStudent } from '../api/student.api'
-
-type StudentStatusCode = 'S001' | 'S002' | 'S003'
-
-interface StudentCreateForm {
-  name: string
-  password: string
-  phoneNumber: string
-  email: string
-  classId: string
-  studentStatusCode: StudentStatusCode
-}
 
 function formatPhoneNumber(value: string): string {
   const digits = value.replace(/\D/g, '').slice(0, 11)
@@ -25,80 +18,65 @@ function formatPhoneNumber(value: string): string {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
 }
 
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
+const studentSchema = z.object({
+  name: z.string().min(1, '이름을 입력하세요'),
+  phoneNumber: z
+    .string()
+    .min(1, '휴대폰 번호를 입력하세요')
+    .regex(/^\d{3}-\d{3,4}-\d{4}$/, { message: '올바른 형식으로 입력하세요 (예: 010-1234-5678)' }),
+  email: z.string().email('올바른 이메일 형식이 아닙니다'),
+  classId: z.string().min(1, '수강 과정을 선택하세요'),
+  studentStatusCode: z.enum(['S001', 'S002', 'S003']),
+})
+
+type StudentCreateForm = z.infer<typeof studentSchema>
 
 export default function StudentCreatePage() {
   const navigate = useNavigate()
-
-  const [form, setForm] = useState<StudentCreateForm>({
-    name: '',
-    password: '1234',
-    phoneNumber: '',
-    email: '',
-    classId: '',
-    studentStatusCode: 'S003',
-  })
-
-  const [emailError, setEmailError] = useState('')
-  const [phoneError, setPhoneError] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [courses, setCourses] = useState<{ classId: number; className: string }[]>([])
 
+  const {
+    register,
+    handleSubmit,
+    control,
+    setError,
+    formState: { errors },
+  } = useForm<StudentCreateForm>({
+    resolver: zodResolver(studentSchema),
+    defaultValues: {
+      name: '',
+      phoneNumber: '',
+      email: '',
+      classId: '',
+      studentStatusCode: 'S003',
+    },
+  })
+
   useEffect(() => {
-    async function fetchCourses() {
-      try {
-        const result = await getLectureList({ page: 1, size: 1000 })
+    getLectureList({ page: 1, size: 1000 })
+      .then((result) => {
         setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
-      } catch (error) {
-        console.error('강의 목록 조회 실패:', error)
-      }
-    }
-    fetchCourses()
+      })
+      .catch((error) => console.error('강의 목록 조회 실패:', error))
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (phoneError) setPhoneError('')
-    setForm((prev) => ({ ...prev, phoneNumber: formatPhoneNumber(e.target.value) }))
-  }
-
-  const handleEmailBlur = () => {
-    if (form.email && !isValidEmail(form.email)) {
-      setEmailError('올바른 이메일 형식이 아닙니다.')
-    } else {
-      setEmailError('')
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (form.email && !isValidEmail(form.email)) {
-      setEmailError('올바른 이메일 형식이 아닙니다.')
-      return
-    }
-
+  const onSubmit = async (data: StudentCreateForm) => {
     try {
       await addStudent({
-        name: form.name,
-        password: form.password,
-        phoneNumber: form.phoneNumber,
-        email: form.email,
-        classId: Number(form.classId),
-        studentStatusCode: form.studentStatusCode,
+        name: data.name,
+        password: '1234',
+        phoneNumber: data.phoneNumber,
+        email: data.email,
+        classId: Number(data.classId),
+        studentStatusCode: data.studentStatusCode,
       })
       setShowModal(true)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message ?? ''
         if (message.includes('핸드폰')) {
-          setPhoneError(message)
+          setError('phoneNumber', { message })
           return
         }
       }
@@ -120,18 +98,14 @@ export default function StudentCreatePage() {
         등록이 완료되었습니다.
       </Modal>
 
-      <form className={styles.page} onSubmit={handleSubmit}>
+      <form className={styles.page} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.formBox}>
           <div className={styles.formGroup}>
             <label>
               이름 <span>*</span>
             </label>
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="학생 이름을 입력하세요"
-            />
+            <input {...register('name')} placeholder="학생 이름을 입력하세요" />
+            {errors.name && <p className={styles.errorText}>{errors.name.message}</p>}
           </div>
 
           <div className={styles.row}>
@@ -150,14 +124,21 @@ export default function StudentCreatePage() {
               <label>
                 휴대폰 번호 <span>*</span>
               </label>
-              <input
+              <Controller
                 name="phoneNumber"
-                value={form.phoneNumber}
-                onChange={handlePhoneChange}
-                placeholder="010-0000-0000"
-                maxLength={13}
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    onChange={(e) => field.onChange(formatPhoneNumber(e.target.value))}
+                    placeholder="010-0000-0000"
+                    maxLength={13}
+                  />
+                )}
               />
-              {phoneError && <p className={styles.errorText}>{phoneError}</p>}
+              {errors.phoneNumber && (
+                <p className={styles.errorText}>{errors.phoneNumber.message}</p>
+              )}
             </div>
           </div>
 
@@ -165,17 +146,8 @@ export default function StudentCreatePage() {
             <label>
               메일 <span>*</span>
             </label>
-            <input
-              name="email"
-              value={form.email}
-              onChange={(e) => {
-                handleChange(e)
-                if (emailError) setEmailError('')
-              }}
-              onBlur={handleEmailBlur}
-              placeholder="student@likelion.net"
-            />
-            {emailError && <p className={styles.errorText}>{emailError}</p>}
+            <input {...register('email')} placeholder="student@likelion.net" />
+            {errors.email && <p className={styles.errorText}>{errors.email.message}</p>}
           </div>
 
           <div className={styles.row}>
@@ -183,7 +155,7 @@ export default function StudentCreatePage() {
               <label>
                 수강목록 <span>*</span>
               </label>
-              <select name="classId" value={form.classId} onChange={handleChange}>
+              <select {...register('classId')}>
                 <option value="">수강 과정을 선택하세요</option>
                 {courses.map((course) => (
                   <option key={course.classId} value={course.classId}>
@@ -191,44 +163,24 @@ export default function StudentCreatePage() {
                   </option>
                 ))}
               </select>
+              {errors.classId && <p className={styles.errorText}>{errors.classId.message}</p>}
             </div>
 
             <div className={styles.formGroup}>
               <label>
                 상태 <span>*</span>
               </label>
-
               <div className={styles.checkboxGroup}>
                 <label>
-                  <input
-                    type="radio"
-                    name="studentStatusCode"
-                    value="S003"
-                    checked={form.studentStatusCode === 'S003'}
-                    onChange={handleChange}
-                  />
+                  <input type="radio" value="S003" {...register('studentStatusCode')} />
                   재학
                 </label>
-
                 <label>
-                  <input
-                    type="radio"
-                    name="studentStatusCode"
-                    value="S002"
-                    checked={form.studentStatusCode === 'S002'}
-                    onChange={handleChange}
-                  />
+                  <input type="radio" value="S002" {...register('studentStatusCode')} />
                   수료
                 </label>
-
                 <label>
-                  <input
-                    type="radio"
-                    name="studentStatusCode"
-                    value="S001"
-                    checked={form.studentStatusCode === 'S001'}
-                    onChange={handleChange}
-                  />
+                  <input type="radio" value="S001" {...register('studentStatusCode')} />
                   중도포기
                 </label>
               </div>
@@ -239,7 +191,6 @@ export default function StudentCreatePage() {
             <button type="button" className={styles.cancelButton} onClick={goToList}>
               목록으로 돌아가기
             </button>
-
             <button type="submit" className={styles.submitButton}>
               등록하기
             </button>

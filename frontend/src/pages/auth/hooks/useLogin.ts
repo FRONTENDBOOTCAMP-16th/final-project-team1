@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { post_login_api } from '../api/loginApi'
+import { useAuthStore } from '@/store'
 
 export const useLogin = () => {
   const [is_loading, set_is_loading] = useState<boolean>(false)
   const [error_message, set_error_message] = useState<string | null>(null)
+
+  const setLogin = useAuthStore((state) => state.setLogin)
 
   const login_user = async (studentId: string, password: string) => {
     set_is_loading(true)
@@ -11,11 +14,16 @@ export const useLogin = () => {
 
     try {
       const data = await post_login_api(studentId, password)
-
       localStorage.setItem('accessToken', data.accessToken)
       localStorage.setItem('studentId', data.studentId)
       localStorage.setItem('userName', data.name)
       localStorage.setItem('role', data.role)
+
+      setLogin({
+        userId: data.studentId,
+        name: data.name,
+        role: data.role,
+      })
 
       return {
         success: true,

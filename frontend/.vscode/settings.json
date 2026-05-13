@@ -1,3 +1,5 @@
 {
-    "npm.packageManager": "bun"
+  "npm.packageManager": "bun",
+  "diffEditor.ignoreTrimWhitespace": true,
+  "files.eol": "\n"
 }

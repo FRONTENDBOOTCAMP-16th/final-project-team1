@@ -1,34 +1,55 @@
-export const verifyAdminPassword = async (adminId: string, password: string) => {
-  const response = await fetch('https://final-project-team1.onrender.com/api/admin/login', {
+import { useAuthStore } from '@/store'
+
+interface BasicResponse {
+  success: boolean
+  message?: string
+}
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+
+export const verifyAdminPassword = async (password: string): Promise<boolean> => {
+  const userId = useAuthStore.getState().user?.userId
+
+  if (!userId) {
+    throw new Error('관리자 정보를 찾을 수 없습니다. 다시 로그인해 주세요.')
+  }
+
+  const response = await fetch(`${BASE_URL}/api/admin/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ adminId, password }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ adminId: userId, password }),
   })
 
-  const result = await response.json()
+  const result: BasicResponse = await response.json()
+
   if (!result.success) {
     throw new Error(result.message || '현재 비밀번호가 일치하지 않습니다.')
   }
+
   return true
 }
 
-export const resetAdminPassword = async (adminId: string, newPassword: string) => {
+export const resetAdminPassword = async (newPassword: string): Promise<boolean> => {
   const token = localStorage.getItem('accessToken')
-  const response = await fetch(
-    'https://final-project-team1.onrender.com/api/admin/reset-password',
-    {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ adminId, newPassword }),
-    },
-  )
+  const API_URL = `${BASE_URL}/api/admin/reset-password`
 
-  const result = await response.json()
+  const response = await fetch(API_URL, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ newPassword }),
+  })
+
+  const text = await response.text()
+  const result: BasicResponse = text ? JSON.parse(text) : {}
+
   if (!result.success) {
     throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
   }
+
   return true
 }

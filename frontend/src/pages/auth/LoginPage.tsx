@@ -7,6 +7,7 @@ import LoginForm from './components/LoginForm'
 import AdminLoginForm from './components/AdminLoginForm'
 import FindPassword from './components/FindPassword'
 import ResetPassword from './components/ResetPassword'
+import { useAuthStore } from '@/store'
 import './styles/login.css'
 
 interface JwtPayload {
@@ -18,6 +19,9 @@ export default function LoginPage() {
   const { view, set_view } = useAuthView()
   const navigate = useNavigate()
 
+  // Zustand 로그아웃 함수 가져오기
+  const setLogout = useAuthStore((state) => state.setLogout)
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
 
@@ -28,9 +32,7 @@ export default function LoginPage() {
       const now = Math.floor(new Date().getTime() / 1000)
 
       if (decoded.exp <= now) {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('userName')
-        localStorage.removeItem('role')
+        setLogout() // 직접 지우지 말고 스토어 함수 사용!
         return
       }
 
@@ -44,11 +46,9 @@ export default function LoginPage() {
         return
       }
     } catch {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('userName')
-      localStorage.removeItem('role')
+      setLogout() // 에러 시에도 스토어 함수 사용
     }
-  }, [navigate])
+  }, [navigate, setLogout]) // 의존성 배열에 setLogout 추가
 
   return (
     <main className="login_page_wrapper">

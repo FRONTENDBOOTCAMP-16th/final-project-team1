@@ -114,7 +114,5 @@
     margin-block-start: 8px;
   }
 
-  .SubmitButton {
-    flex: 1; /* 신청하기 버튼이 남은 공간 다 차지 */
-  }
+  
 }
