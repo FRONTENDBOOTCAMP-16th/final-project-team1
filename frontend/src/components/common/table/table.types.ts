@@ -12,9 +12,9 @@ export interface CommonTableProps<T> {
   columns: TableColumn<T>[]
   data: T[]
   rowKey?: (row: T, index: number) => string | number
-
   totalCount?: number
   currentPage?: number
   pageSize?: number
   countLabel?: string
+  onRowClick?: (row: T) => void
 }
