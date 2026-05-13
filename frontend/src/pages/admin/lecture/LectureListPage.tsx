@@ -70,7 +70,7 @@ export default function LectureListPage() {
             <Search size={16} />
             <input
               className={styles.searchInput}
-              placeholder="강의 검색..."
+              placeholder="강의 검색"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {

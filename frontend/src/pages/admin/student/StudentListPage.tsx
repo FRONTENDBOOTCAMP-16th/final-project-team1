@@ -165,9 +165,11 @@ export default function StudentListPage() {
         header: '상태',
         render: (row: AdminStudent) => {
           const colorClass =
-            row.statusCode === 'S001' ? 'status-gray'
-            : row.statusCode === 'S002' ? 'status-blue'
-            : 'status-orange'
+            row.statusCode === 'S001'
+              ? 'status-gray'
+              : row.statusCode === 'S002'
+                ? 'status-blue'
+                : 'status-orange'
           return <span className={`status ${colorClass}`}>{row.statusName}</span>
         },
       },
