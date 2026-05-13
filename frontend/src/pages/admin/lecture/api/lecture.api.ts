@@ -8,6 +8,7 @@ import type {
   GetLectureListResponse,
   UpdateLectureRequest,
   UpdateLectureResponse,
+  DeleteLectureResponse,
 } from './lecture.types'
 
 export async function createLecture(requestBody: CreateLectureRequest) {
@@ -42,5 +43,12 @@ export async function updateLecture(classId: number, requestBody: UpdateLectureR
     requestBody,
   )
 
+  return response.data
+}
+
+export async function deleteLecture(classId: number) {
+  const response = await axiosInstance.delete<ApiResponse<DeleteLectureResponse>>(
+    `/api/admin/classes/${classId}`,
+  )
   return response.data
 }
