@@ -93,16 +93,6 @@ function DashboardPage() {
 
   // 공지사항
   useEffect(() => {
-    const fetchStudentDashboard = async () => {
-      try {
-        const response = await axiosInstance.get('/api/student/dashboard')
-
-        console.log('학생 대시보드 응답:', response.data)
-      } catch (error) {
-        console.error('학생 대시보드 조회 실패:', error)
-      }
-    }
-
     const fetchNotices = async () => {
       try {
         const data = await getStudentNoticeList()
@@ -115,7 +105,6 @@ function DashboardPage() {
       }
     }
 
-    fetchStudentDashboard()
     fetchNotices()
   }, [])
 
