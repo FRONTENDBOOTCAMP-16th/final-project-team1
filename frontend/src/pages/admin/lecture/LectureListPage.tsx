@@ -57,15 +57,8 @@ export default function LectureListPage() {
   const navigate = useNavigate()
   return (
     <AdminLayout>
-      <div
-        style={{
-          display: 'flex',
-          gap: '10px',
-          alignItems: 'center',
-          marginBottom: '20px',
-        }}
-      >
-        <div style={{ flex: 1 }}>
+      <div className={styles.filterBar}>
+        <div className={styles.searchWrap}>
           <div className={styles.searchBar}>
             <Search size={16} />
             <input
@@ -120,7 +113,7 @@ export default function LectureListPage() {
             <tbody>
               {lectures.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                  <td colSpan={4} className={styles.emptyRow}>
                     검색 결과가 없습니다.
                   </td>
                 </tr>
@@ -129,7 +122,7 @@ export default function LectureListPage() {
                   <tr
                     key={lecture.classId}
                     onClick={() => navigate(`/admin/lecture/${lecture.classId}/edit`)}
-                    style={{ cursor: 'pointer' }}
+                    className={styles.clickableRow}
                   >
                     <td>{lecture.className}</td>
                     <td>{lecture.startDate}</td>

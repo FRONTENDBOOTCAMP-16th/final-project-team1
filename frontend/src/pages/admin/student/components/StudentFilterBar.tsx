@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import comboStyle from '@/components/common/comboBox/comboBox.module.css'
 import searchStyle from '@/components/common/search/search.module.css'
+import styles from './StudentFilterBar.module.css'
 
 interface Course {
   classId: number
@@ -29,15 +30,8 @@ export default function StudentFilterBar({
   const navigate = useNavigate()
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: '10px',
-        alignItems: 'center',
-        marginBottom: '20px',
-      }}
-    >
-      <div style={{ flex: 1 }}>
+    <div className={styles.filterBar}>
+      <div className={styles.selectWrap}>
         <div className={comboStyle.comboBox}>
           <select
             value={selectedCourse ?? ''}
@@ -56,7 +50,7 @@ export default function StudentFilterBar({
         </div>
       </div>
 
-      <div style={{ flex: 3 }}>
+      <div className={styles.searchWrap}>
         <div className={searchStyle.searchBar}>
           <Search size={16} />
           <input

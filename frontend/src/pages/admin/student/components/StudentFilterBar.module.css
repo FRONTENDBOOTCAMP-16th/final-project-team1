@@ -1,0 +1,14 @@
+.filterBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.selectWrap {
+  flex: 1;
+}
+
+.searchWrap {
+  flex: 3;
+}

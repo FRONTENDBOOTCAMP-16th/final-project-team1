@@ -139,6 +139,27 @@
   color: #111111;
 }
 
+.filterBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.searchWrap {
+  flex: 1;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
 /* 하단 영역 */
 .table-footer {
   display: flex;
