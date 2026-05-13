@@ -58,9 +58,9 @@ export default function AdminDashboardPage() {
       try {
         setIsLeaveLoading(true)
 
-        const data = await getLeaveRequestList(1, 5)
+        const data = await getLeaveRequestList(1, 100)
 
-        setVacationData(data.items)
+        setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
       } catch (error) {
         console.error(error)
       } finally {
@@ -128,9 +128,9 @@ export default function AdminDashboardPage() {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      const data = await getLeaveRequestList(1, 5)
+      const data = await getLeaveRequestList(1, 100)
 
-      setVacationData(data.items)
+      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
     }
@@ -140,9 +140,9 @@ export default function AdminDashboardPage() {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      const data = await getLeaveRequestList(1, 5)
+      const data = await getLeaveRequestList(1, 100)
 
-      setVacationData(data.items)
+      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
     }
@@ -183,26 +183,14 @@ export default function AdminDashboardPage() {
       key: 'action',
       header: '처리',
       render: (row) => {
-        const isCompleted = row.approvalStatusCode !== 'V001'
-
         return (
           <div className={S.actionBox}>
-            <Button
-              type="button"
-              variant="active"
-              disabled={isCompleted}
-              onClick={() => handleApprove(row)}
-            >
+            <Button type="button" variant="active" onClick={() => handleApprove(row)}>
               <Check size={16} />
               승인
             </Button>
 
-            <Button
-              type="button"
-              variant="inactive"
-              disabled={isCompleted}
-              onClick={() => handleReject(row)}
-            >
+            <Button type="button" variant="inactive" onClick={() => handleReject(row)}>
               <X size={16} />
               반려
             </Button>
