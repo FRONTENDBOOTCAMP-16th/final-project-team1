@@ -71,7 +71,11 @@ export default function StudentEditPage() {
           classId: String(detail.classId),
           studentStatusCode: detail.statusCode as 'S001' | 'S002' | 'S003',
         })
-        setCourses(lectureResult.items.map(({ classId, className }) => ({ classId, className })))
+        setCourses(
+          lectureResult.items
+            .filter((item) => !item.isCompleted)
+            .map(({ classId, className }) => ({ classId, className })),
+        )
       } catch (error) {
         console.error('학생 정보 조회 실패:', error)
       }

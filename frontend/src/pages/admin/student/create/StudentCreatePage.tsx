@@ -56,7 +56,11 @@ export default function StudentCreatePage() {
   useEffect(() => {
     getLectureList({ page: 1, size: 1000 })
       .then((result) => {
-        setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
+        setCourses(
+          result.items
+            .filter((item) => !item.isCompleted)
+            .map(({ classId, className }) => ({ classId, className })),
+        )
       })
       .catch((error) => console.error('강의 목록 조회 실패:', error))
   }, [])
