@@ -11,7 +11,7 @@ import {
   type StudentNoticeItem,
 } from '@/pages/student/dashboard/api/studentDashboardApi'
 import Modal from '@/components/common/modal/Modal'
-import { NoticeSkeleton, LeaveSkeleton } from './components/DashboardSkeleton'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 import { axiosInstance } from '@/api/axios'
 
@@ -58,7 +58,8 @@ function DashboardPage() {
 
   const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isNoticeLoading, setIsNoticeLoading] = useState(true)
+
   const navigate = useNavigate()
   const [isAttendanceLoading, setIsAttendanceLoading] = useState(true)
 
@@ -89,6 +90,8 @@ function DashboardPage() {
       hour12: false,
     })
   }
+
+  // 공지사항
   useEffect(() => {
     const fetchStudentDashboard = async () => {
       try {
@@ -108,11 +111,7 @@ function DashboardPage() {
       } catch (error) {
         console.error('공지사항 조회 실패:', error)
       } finally {
-        // 스켈레톤 확인
-        // setTimeout(() => {
-        //   setIsLoading(false)
-        // }, 1000)
-        setIsLoading(false)
+        setIsNoticeLoading(false)
       }
     }
 
@@ -340,10 +339,10 @@ function DashboardPage() {
             onNextMonth={handleNextMonth}
           />
           <div className={S.sideArea}>
-            {isLoading ? <LeaveSkeleton /> : <LeaveStatus />}
+            <LeaveStatus />
 
-            {isLoading ? (
-              <NoticeSkeleton />
+            {isNoticeLoading ? (
+              <TableSkeleton rows={3} columns={1} />
             ) : (
               <NoticeList
                 notices={notices}
@@ -366,9 +365,10 @@ function DashboardPage() {
   )
 }
 
+//휴가 신청 현황
 function LeaveStatus() {
   const navigate = useNavigate()
-
+  const [isLeaveLoading, setIsLeaveLoading] = useState(true)
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
 
   useEffect(() => {
@@ -395,6 +395,8 @@ function LeaveStatus() {
       } catch (error) {
         console.error('휴가 목록 조회 실패:', error)
         setLeaveList([])
+      } finally {
+        setIsLeaveLoading(false)
       }
     }
 
@@ -406,7 +408,14 @@ function LeaveStatus() {
     '승인 완료': '휴가 승인이 완료되었습니다.',
     반려: '휴가 승인이 반려되었습니다.',
   }
-
+  if (isLeaveLoading) {
+    return (
+      <section className={S.sideCard}>
+        <h3 className={S.sectionTitle}>휴가승인 현황</h3>
+        <TableSkeleton rows={3} columns={2} />
+      </section>
+    )
+  }
   return (
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>휴가승인 현황</h3>
@@ -434,6 +443,7 @@ function LeaveStatus() {
   )
 }
 
+// 공지사항
 function NoticeList({ notices, onNoticeClick }: NoticeListProps) {
   return (
     <section className={S.sideCard}>
