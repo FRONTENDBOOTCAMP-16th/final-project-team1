@@ -78,35 +78,12 @@ function SettingPage() {
       }
     }
   }
-
-  if (isLoading)
-    return (
-      <StudentLayout>
-        <div className="settingContainer">
-          <Skeleton count={24} width="20%" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-          </div>
-          <Skeleton height={24} width="20%" style={{ marginTop: '32px' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-            <Skeleton height={40} />
-          </div>
-        </div>
-      </StudentLayout>
-    )
   if (error)
     return (
       <StudentLayout>
         <div className="settingContainer">에러: {error}</div>
       </StudentLayout>
     )
-  if (!profile) return null
 
   return (
     <StudentLayout>
@@ -118,128 +95,127 @@ function SettingPage() {
           </h3>
 
           <div className="infoGrid">
-            <div className="inputGroup">
-              <span className="label">이름</span>
-              <div className="valueBox">{profile.name}</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">전화번호</span>
-              <div className="valueBox">{profile.phoneNumber}</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">학번</span>
-              <div className="valueBox">{profile.studentId}</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">소속</span>
-              <div className="valueBox">{profile.className}</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">이메일</span>
-              <div className="valueBox">{profile.email}</div>
-            </div>
+            {[
+              { label: '이름', value: profile?.name, width: '60%' },
+              { label: '전화번호', value: profile?.phoneNumber, width: '80%' },
+              { label: '학번', value: profile?.studentId, width: '70%' },
+              { label: '소속', value: profile?.className, width: '50%' },
+              { label: '이메일', value: profile?.email, width: '90%' },
+            ].map((item, idx) => (
+              <div className="inputGroup" key={idx}>
+                <span className="label">{item.label}</span>
+                <div className="valueBox">
+                  {isLoading ? (
+                    <Skeleton width={item.width} height={20} borderRadius={4} />
+                  ) : (
+                    item.value
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
         <section className="passwordSection">
-          <h3 className="sectionTitle">
-            <div className="icon lockIcon" />
-            비밀번호 변경
-          </h3>
-          <form onSubmit={handlePasswordChange}>
+          <h3 className="sectionTitle">비밀번호 변경</h3>
+          <form onSubmit={handlePasswordChange} className="passwordForm">
             <div className="inputGroup">
               <label htmlFor="currentPassword">현재 비밀번호</label>
-              <div className="passwordInputWrapper">
-                <input
-                  id="currentPassword"
-                  type={showCurrent ? 'text' : 'password'}
-                  placeholder="현재 비밀번호를 입력하세요"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value.replace(/\s/g, ''))}
-                  className="inputField"
-                />
-                <button
-                  type="button"
-                  className="viewIconBtn"
-                  onClick={() => setShowCurrent(!showCurrent)}
-                  tabIndex={-1}
-                >
-                  <img
-                    src={showCurrent ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
+                <div className="passwordInputWrapper">
+                  <input
+                    id="currentPassword"
+                    type={showCurrent ? 'text' : 'password'}
+                    placeholder="현재 비밀번호를 입력하세요"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value.replace(/\s/g, ''))}
+                    className="inputField"
                   />
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="viewIconBtn"
+                    onClick={() => setShowCurrent(!showCurrent)}
+                    tabIndex={-1}
+                  >
+                    <img
+                      src={showCurrent ? eyeIcon : eyeOffIcon}
+                      alt="Toggle"
+                      width="20"
+                      height="20"
+                    />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="inputGroup">
               <label htmlFor="newPassword">새 비밀번호</label>
-              <div className="passwordInputWrapper">
-                <input
-                  id="newPassword"
-                  type={showNew ? 'text' : 'password'}
-                  placeholder="8~16자, 영문+숫자"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value.replace(/\s/g, ''))}
-                  className="inputField"
-                />
-                <button
-                  type="button"
-                  className="viewIconBtn"
-                  onClick={() => setShowNew(!showNew)}
-                  tabIndex={-1}
-                >
-                  <img
-                    src={showNew ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
+                <div className="passwordInputWrapper">
+                  <input
+                    id="newPassword"
+                    type={showNew ? 'text' : 'password'}
+                    placeholder="새 비밀번호를 입력하세요"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value.replace(/\s/g, ''))}
+                    className="inputField"
                   />
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="viewIconBtn"
+                    onClick={() => setShowNew(!showNew)}
+                    tabIndex={-1}
+                  >
+                    <img src={showNew ? eyeIcon : eyeOffIcon} alt="Toggle" width="20" height="20" />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="inputGroup">
               <label htmlFor="confirmPassword">새 비밀번호 확인</label>
-              <div className="passwordInputWrapper">
-                <input
-                  id="confirmPassword"
-                  type={showConfirm ? 'text' : 'password'}
-                  placeholder="새 비밀번호를 다시 입력하세요"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
-                  className="inputField"
-                />
-                <button
-                  type="button"
-                  className="viewIconBtn"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  tabIndex={-1}
-                >
-                  <img
-                    src={showConfirm ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
+                <div className="passwordInputWrapper">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirm ? 'text' : 'password'}
+                    placeholder="새 비밀번호를 다시 입력하세요"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value.replace(/\s/g, ''))}
+                    className="inputField"
                   />
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="viewIconBtn"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    tabIndex={-1}
+                  >
+                    <img
+                      src={showConfirm ? eyeIcon : eyeOffIcon}
+                      alt="Toggle"
+                      width="20"
+                      height="20"
+                    />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="buttonWrapper">
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isLoading}>
                 비밀번호 변경
               </Button>
             </div>
           </form>
         </section>
       </div>
+
       <Modal
         isOpen={isModalOpen}
         title={modalConfig.title}

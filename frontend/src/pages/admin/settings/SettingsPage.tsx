@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Button from '@/components/common/button/ui/button'
 import { useAdminSettings } from './hooks/useSettings'
@@ -11,11 +13,12 @@ import eyeOffIcon from '@/assets/eye-off.svg'
 function AdminSettingPage() {
   const { changePassword } = useAdminSettings()
 
+  const isLoading = false
+
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  // 보이기/숨기기 상태
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -34,6 +37,7 @@ function AdminSettingPage() {
 
   const handlePasswordChange = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     if (!currentPassword || !newPassword || !confirmPassword) {
       showAlert('입력 오류', '모든 필드를 입력해 주세요.')
       return
@@ -88,20 +92,18 @@ function AdminSettingPage() {
           </h3>
 
           <div className="infoGrid">
-            <div className="inputGroup">
-              <span className="label">관리자 이름</span>
-              <div className="valueBox">김관리</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">관리자 아이디</span>
-              <div className="valueBox">admin</div>
-            </div>
-
-            <div className="inputGroup">
-              <span className="label">소속</span>
-              <div className="valueBox">출결 관리 시스템 운영팀</div>
-            </div>
+            {[
+              { label: '관리자 이름', value: '김관리', width: '40%' },
+              { label: '관리자 아이디', value: 'admin', width: '30%' },
+              { label: '소속', value: '출결 관리 시스템 운영팀', width: '60%' },
+            ].map((item, idx) => (
+              <div className="inputGroup" key={idx}>
+                <span className="label">{item.label}</span>
+                <div className="valueBox">
+                  {isLoading ? <Skeleton width={item.width} height={20} borderRadius={4} /> : item.value}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -114,6 +116,9 @@ function AdminSettingPage() {
           <form onSubmit={handlePasswordChange}>
             <div className="inputGroup">
               <label htmlFor="currentPassword">현재 비밀번호</label>
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
               <div className="passwordInputWrapper">
                 <input
                   id="currentPassword"
@@ -137,10 +142,14 @@ function AdminSettingPage() {
                   />
                 </button>
               </div>
+              )}
             </div>
 
             <div className="inputGroup">
               <label htmlFor="newPassword">새 비밀번호</label>
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
               <div className="passwordInputWrapper">
                 <input
                   id="newPassword"
@@ -164,10 +173,14 @@ function AdminSettingPage() {
                   />
                 </button>
               </div>
+              )}
             </div>
 
             <div className="inputGroup">
               <label htmlFor="confirmPassword">새 비밀번호 확인</label>
+              {isLoading ? (
+                <Skeleton height={50} borderRadius={8} containerClassName="skeletonFix" />
+              ) : (
               <div className="passwordInputWrapper">
                 <input
                   id="confirmPassword"
@@ -191,6 +204,7 @@ function AdminSettingPage() {
                   />
                 </button>
               </div>
+              )}
             </div>
 
             <div className="buttonWrapper">

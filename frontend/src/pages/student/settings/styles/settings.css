@@ -153,3 +153,8 @@
 .viewIconBtn img {
   pointer-events: none;
 }
+
+.skeletonFix {
+  display: block;
+  line-height: 0;
+}
