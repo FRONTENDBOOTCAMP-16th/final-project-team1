@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface AttendanceCalendarItem {
   attendanceDate: string
-  attendanceStatus: 'PRESENT' | 'ABSENT' | 'ONGOING'
+  attendanceStatus: 'PRESENT' | 'ABSENT'
 }
 
 interface Props {
@@ -80,13 +80,7 @@ function AttendanceCalendar({
             <div
               key={index}
               className={`${S.day} ${
-                status === 'PRESENT'
-                  ? S.present
-                  : status === 'ONGOING'
-                    ? S.ongoing
-                    : status === 'ABSENT'
-                      ? S.absent
-                      : ''
+                status === 'PRESENT' ? S.present : status === 'ABSENT' ? S.absent : ''
               }`}
             >
               {day}
@@ -103,12 +97,6 @@ function AttendanceCalendar({
             <span className={`${S.dot} ${S.green}`} />
             <span>출석완료</span>
           </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.orange}`} />
-            <span>훈련중</span>
-          </div>
-
           <div className={S.legendItem}>
             <span className={`${S.dot} ${S.red}`} />
             <span>결석</span>

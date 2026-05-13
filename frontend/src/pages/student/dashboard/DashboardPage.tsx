@@ -274,12 +274,7 @@ function DashboardPage() {
 
   const calendarAttendanceList = attendanceItems.map((item) => ({
     attendanceDate: item.attendanceDate,
-    attendanceStatus:
-      item.checkInTime && !item.checkOutTime
-        ? ('ONGOING' as const)
-        : item.checkOutTime
-          ? ('PRESENT' as const)
-          : ('ABSENT' as const),
+    attendanceStatus: item.checkInTime ? ('PRESENT' as const) : ('ABSENT' as const),
   }))
 
   const formatTime = (time: string | null) => {
