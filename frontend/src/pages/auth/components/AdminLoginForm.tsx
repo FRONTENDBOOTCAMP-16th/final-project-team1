@@ -44,9 +44,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
         return
       }
 
-      showAlert('로그인 성공', '관리자 계정으로 로그인되었습니다.', () =>
-        navigate('/admin/dashboard'),
-      )
+      navigate('/admin/dashboard')
     }
   }
 

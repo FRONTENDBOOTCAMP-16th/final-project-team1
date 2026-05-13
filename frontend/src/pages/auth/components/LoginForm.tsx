@@ -65,9 +65,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
         return
       }
 
-      showAlert('로그인 성공', '환영합니다! 대시보드로 이동합니다.', () =>
-        navigate('/student/dashboard'),
-      )
+      navigate('/student/dashboard')
     }
   }
   return (
