@@ -13,10 +13,10 @@ export default function NoticeList({ data }: Props) {
       <h3 className={S.title}>시스템 공지사항</h3>
 
       <ul className={S.list}>
-        {data.slice(0, 5).map((item, index) => (
+        {data.slice(0, 5).map((item) => (
           <li
             key={item.noticeId}
-            className={`${S.item} ${index === 0 ? S.highlight : ''}`}
+            className={S.item}
             onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
           >
             <strong className={S.noticeTitle}>{item.title}</strong>

@@ -52,22 +52,16 @@
 }
 
 .item:hover {
-  background: #f2f2f2;
-}
+  background-color: #fff7ed;
+  border-color: #fdba74;
 
-.highlight {
-  background: #fff3eb;
-  border-color: #ff5a00;
+  cursor: pointer;
 }
 
 .noticeTitle {
   font-weight: 700;
   font-size: 16px;
   color: #333333;
-}
-
-.highlight .noticeTitle {
-  color: #ff5a00;
 }
 
 .noticeDate {
@@ -326,9 +320,4 @@
 
 .absentDot::before {
   background: #e60000;
-}
-
-.highlight {
-  background: #fff3eb;
-  border: 2px solid #ffb48a;
 }
