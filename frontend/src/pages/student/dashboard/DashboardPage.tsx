@@ -10,6 +10,7 @@ import {
   getStudentNoticeList,
   type StudentNoticeItem,
 } from '@/pages/student/dashboard/api/studentDashboardApi'
+import Modal from '@/components/common/modal/Modal'
 import { NoticeSkeleton, LeaveSkeleton } from './components/DashboardSkeleton'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 import { axiosInstance } from '@/api/axios'
@@ -184,9 +185,17 @@ function DashboardPage() {
     fetchAttendanceItems()
   }, [calendarYear, calendarMonth])
 
+  //중복 입/퇴실
+  const [popupMessage, setPopupMessage] = useState('')
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
+
+  const openPopup = (message: string) => {
+    setPopupMessage(message)
+    setIsPopupOpen(true)
+  }
   const handleCheckIn = async () => {
     if (checkInTime) {
-      alert('이미 입실 처리되었습니다.')
+      openPopup('이미 입실 처리되었습니다.')
       return
     }
 
@@ -204,7 +213,7 @@ function DashboardPage() {
   const handleCheckOut = async () => {
     console.log('퇴실 함수 실행됨')
     if (checkOutTime) {
-      alert('이미 퇴실 처리되었습니다.')
+      openPopup('이미 퇴실 처리되었습니다.')
       return
     }
 
@@ -344,6 +353,15 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        title="알림"
+        buttonType="one"
+        onConfirm={() => setIsPopupOpen(false)}
+      >
+        <p>{popupMessage}</p>
+      </Modal>
     </StudentLayout>
   )
 }
