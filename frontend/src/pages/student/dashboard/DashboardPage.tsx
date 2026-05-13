@@ -337,7 +337,10 @@ function DashboardPage() {
             <LeaveStatus />
 
             {isNoticeLoading ? (
-              <TableSkeleton rows={3} columns={1} />
+              <section className={S.sideCard}>
+                <h3 className={S.sectionTitle}>공지사항</h3>
+                <TableSkeleton rows={3} columns={1} />
+              </section>
             ) : (
               <NoticeList
                 notices={notices}
@@ -407,7 +410,7 @@ function LeaveStatus() {
     return (
       <section className={S.sideCard}>
         <h3 className={S.sectionTitle}>휴가승인 현황</h3>
-        <TableSkeleton rows={3} columns={2} />
+        <TableSkeleton rows={3} columns={1} />
       </section>
     )
   }
