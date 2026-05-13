@@ -10,7 +10,8 @@ import {
   getStudentNoticeList,
   type StudentNoticeItem,
 } from '@/pages/student/dashboard/api/studentDashboardApi'
-import { NoticeSkeleton, LeaveSkeleton } from './components/DashboardSkeleton'
+import Modal from '@/components/common/modal/Modal'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
 import { axiosInstance } from '@/api/axios'
 
@@ -57,7 +58,8 @@ function DashboardPage() {
 
   const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
   const [notices, setNotices] = useState<StudentNoticeItem[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isNoticeLoading, setIsNoticeLoading] = useState(true)
+
   const navigate = useNavigate()
   const [isAttendanceLoading, setIsAttendanceLoading] = useState(true)
 
@@ -88,17 +90,9 @@ function DashboardPage() {
       hour12: false,
     })
   }
+
+  // 공지사항
   useEffect(() => {
-    const fetchStudentDashboard = async () => {
-      try {
-        const response = await axiosInstance.get('/api/student/dashboard')
-
-        console.log('학생 대시보드 응답:', response.data)
-      } catch (error) {
-        console.error('학생 대시보드 조회 실패:', error)
-      }
-    }
-
     const fetchNotices = async () => {
       try {
         const data = await getStudentNoticeList()
@@ -107,15 +101,10 @@ function DashboardPage() {
       } catch (error) {
         console.error('공지사항 조회 실패:', error)
       } finally {
-        // 스켈레톤 확인
-        // setTimeout(() => {
-        //   setIsLoading(false)
-        // }, 1000)
-        setIsLoading(false)
+        setIsNoticeLoading(false)
       }
     }
 
-    fetchStudentDashboard()
     fetchNotices()
   }, [])
 
@@ -184,9 +173,17 @@ function DashboardPage() {
     fetchAttendanceItems()
   }, [calendarYear, calendarMonth])
 
+  //중복 입/퇴실
+  const [popupMessage, setPopupMessage] = useState('')
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
+
+  const openPopup = (message: string) => {
+    setPopupMessage(message)
+    setIsPopupOpen(true)
+  }
   const handleCheckIn = async () => {
     if (checkInTime) {
-      alert('이미 입실 처리되었습니다.')
+      openPopup('이미 입실 처리되었습니다.')
       return
     }
 
@@ -204,7 +201,7 @@ function DashboardPage() {
   const handleCheckOut = async () => {
     console.log('퇴실 함수 실행됨')
     if (checkOutTime) {
-      alert('이미 퇴실 처리되었습니다.')
+      openPopup('이미 퇴실 처리되었습니다.')
       return
     }
 
@@ -266,12 +263,7 @@ function DashboardPage() {
 
   const calendarAttendanceList = attendanceItems.map((item) => ({
     attendanceDate: item.attendanceDate,
-    attendanceStatus:
-      item.checkInTime && !item.checkOutTime
-        ? ('ONGOING' as const)
-        : item.checkOutTime
-          ? ('PRESENT' as const)
-          : ('ABSENT' as const),
+    attendanceStatus: item.checkInTime ? ('PRESENT' as const) : ('ABSENT' as const),
   }))
 
   const formatTime = (time: string | null) => {
@@ -331,10 +323,13 @@ function DashboardPage() {
             onNextMonth={handleNextMonth}
           />
           <div className={S.sideArea}>
-            {isLoading ? <LeaveSkeleton /> : <LeaveStatus />}
+            <LeaveStatus />
 
-            {isLoading ? (
-              <NoticeSkeleton />
+            {isNoticeLoading ? (
+              <section className={S.sideCard}>
+                <h3 className={S.sectionTitle}>공지사항</h3>
+                <TableSkeleton rows={3} columns={1} />
+              </section>
             ) : (
               <NoticeList
                 notices={notices}
@@ -344,13 +339,23 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        title="알림"
+        buttonType="one"
+        onConfirm={() => setIsPopupOpen(false)}
+      >
+        <p>{popupMessage}</p>
+      </Modal>
     </StudentLayout>
   )
 }
 
+//휴가 신청 현황
 function LeaveStatus() {
   const navigate = useNavigate()
-
+  const [isLeaveLoading, setIsLeaveLoading] = useState(true)
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
 
   useEffect(() => {
@@ -377,6 +382,8 @@ function LeaveStatus() {
       } catch (error) {
         console.error('휴가 목록 조회 실패:', error)
         setLeaveList([])
+      } finally {
+        setIsLeaveLoading(false)
       }
     }
 
@@ -388,7 +395,14 @@ function LeaveStatus() {
     '승인 완료': '휴가 승인이 완료되었습니다.',
     반려: '휴가 승인이 반려되었습니다.',
   }
-
+  if (isLeaveLoading) {
+    return (
+      <section className={S.sideCard}>
+        <h3 className={S.sectionTitle}>휴가승인 현황</h3>
+        <TableSkeleton rows={3} columns={1} />
+      </section>
+    )
+  }
   return (
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>휴가승인 현황</h3>
@@ -416,6 +430,7 @@ function LeaveStatus() {
   )
 }
 
+// 공지사항
 function NoticeList({ notices, onNoticeClick }: NoticeListProps) {
   return (
     <section className={S.sideCard}>
