@@ -53,6 +53,18 @@ function Header() {
     }
   }
 
+  if (menuRole === 'student') {
+    if (location.pathname.includes('/student/dashboard')) {
+      subTitle = '오늘도 멋사와 함께 열공하세요!'
+    } else if (location.pathname.includes('/student/leave')) {
+      subTitle = '휴가 신청 내역을 확인하세요.'
+    } else if (location.pathname.includes('/student/notice')) {
+      subTitle = '공지사항을 확인하세요.'
+    } else if (location.pathname.includes('/student/settings')) {
+      subTitle = '환경설정 페이지입니다.'
+    }
+  }
+
   // 로컬스토리지 대신 Zustand 상태 사용
   const userName = user?.name || '이름 없음'
   const userInitials = menuRole === 'admin' ? '관' : userName ? userName[0] : '학'
