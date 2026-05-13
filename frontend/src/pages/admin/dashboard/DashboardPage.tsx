@@ -19,9 +19,11 @@ import SystemNoticeList from './components/NoticeList'
 import Table, { type TableColumn } from '@/components/common/table'
 import { Button } from '@/components'
 
-import S from '@/pages/admin/dashboard/styles/dashboard.module.css'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 
-import Pagination from '@/components/common/pagination/Pagination'
+import S from '@/pages/admin/dashboard/styles/dashboard.module.css'
 
 type VacationType = '병결' | '공결' | '개인사유'
 
@@ -43,39 +45,50 @@ const vacationTypeMap = {
 export default function AdminDashboardPage() {
   const [summary, setSummary] = useState<AdminDashboardData | null>(null)
   const [attendanceData, setAttendanceData] = useState<AttendanceItem[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
 
   const [noticeData, setNoticeData] = useState<NoticeItem[]>([])
 
   const [vacationData, setVacationData] = useState<LeaveRequestItem[]>([])
-  const [leaveTotalCount, setLeaveTotalCount] = useState(0)
+
+  //휴가 신청 현황
+  const [isLeaveLoading, setIsLeaveLoading] = useState(true)
 
   useEffect(() => {
     const fetchLeaveRequestList = async () => {
       try {
-        const data = await getLeaveRequestList(currentPage, pageSize)
+        setIsLeaveLoading(true)
 
-        setVacationData(data.items)
-        setLeaveTotalCount(data.totalCount)
+        const data = await getLeaveRequestList(1, 100)
+
+        setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLeaveLoading(false)
       }
     }
 
     fetchLeaveRequestList()
-  }, [currentPage])
+  }, [])
+
+  //공지사항 리스트
+  const [isNoticeLoading, setIsNoticeLoading] = useState(true)
 
   useEffect(() => {
-    const fetchNoticeList = async () => {
+    const fetchNoticeData = async () => {
       try {
+        setIsNoticeLoading(true)
+
         const data = await getNoticeList()
         setNoticeData(data)
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsNoticeLoading(false)
       }
     }
 
-    fetchNoticeList()
+    fetchNoticeData()
   }, [])
 
   useEffect(() => {
@@ -91,13 +104,20 @@ export default function AdminDashboardPage() {
     fetchSummary()
   }, [])
 
+  //전체 출결 현황 그래프
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
+        setIsLoading(true)
+
         const data = await getAttendanceStatusByClass()
         setAttendanceData(data)
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -108,10 +128,9 @@ export default function AdminDashboardPage() {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      const data = await getLeaveRequestList(currentPage, pageSize)
+      const data = await getLeaveRequestList(1, 100)
 
-      setVacationData(data.items)
-      setLeaveTotalCount(data.totalCount)
+      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
     }
@@ -121,17 +140,13 @@ export default function AdminDashboardPage() {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      const data = await getLeaveRequestList(currentPage, pageSize)
+      const data = await getLeaveRequestList(1, 100)
 
-      setVacationData(data.items)
-      setLeaveTotalCount(data.totalCount)
+      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
     }
   }
-
-  const pageSize = 10
-  const totalPages = Math.ceil(leaveTotalCount / pageSize)
 
   const vacationColumns: TableColumn<LeaveRequestItem>[] = [
     {
@@ -168,26 +183,14 @@ export default function AdminDashboardPage() {
       key: 'action',
       header: '처리',
       render: (row) => {
-        const isCompleted = row.approvalStatusCode !== 'V001'
-
         return (
           <div className={S.actionBox}>
-            <Button
-              type="button"
-              variant="active"
-              disabled={isCompleted}
-              onClick={() => handleApprove(row)}
-            >
+            <Button type="button" variant="active" onClick={() => handleApprove(row)}>
               <Check size={16} />
               승인
             </Button>
 
-            <Button
-              type="button"
-              variant="inactive"
-              disabled={isCompleted}
-              onClick={() => handleReject(row)}
-            >
+            <Button type="button" variant="inactive" onClick={() => handleReject(row)}>
               <X size={16} />
               반려
             </Button>
@@ -240,13 +243,27 @@ export default function AdminDashboardPage() {
         <div className={S.topGrid}>
           <section className={S.chartSection}>
             <div className={S.container}>
-              <AttendanceStatusChart data={attendanceData} />
+              {isLoading ? (
+                <>
+                  <Skeleton width={180} height={24} borderRadius={8} />
+
+                  <div style={{ marginTop: '24px' }}>
+                    <Skeleton height={280} borderRadius={16} />
+                  </div>
+                </>
+              ) : (
+                <AttendanceStatusChart data={attendanceData} />
+              )}
             </div>
           </section>
 
           <section className={S.noticeSection}>
             <div className={S.container}>
-              <SystemNoticeList data={noticeData} />
+              {isNoticeLoading ? (
+                <TableSkeleton rows={5} columns={2} />
+              ) : (
+                <SystemNoticeList data={noticeData} />
+              )}
             </div>
           </section>
         </div>
@@ -254,22 +271,16 @@ export default function AdminDashboardPage() {
         <section className={S.recentLeave}>
           <h3>최근 휴가 신청 내역</h3>
 
-          <Table
-            columns={vacationColumns}
-            data={vacationData}
-            totalCount={leaveTotalCount}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            countLabel="명"
-          />
-
-          <div className={S.paginationBox}>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
+          {isLeaveLoading ? (
+            <TableSkeleton rows={5} columns={vacationColumns.length} />
+          ) : (
+            <Table
+              columns={vacationColumns}
+              data={vacationData.slice(0, 5)}
+              totalCount={5}
+              countLabel="명"
             />
-          </div>
+          )}
         </section>
       </div>
     </AdminLayout>
