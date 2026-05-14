@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
+import { useAuthStore } from '@/store'
 
 interface JwtPayload {
   exp: number
@@ -12,14 +13,9 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ allowedRole }: ProtectedRouteProps) {
   const token = localStorage.getItem('accessToken')
+  // localStorage를 직접 조작하는 대신 Zustand setLogout으로 상태 + localStorage 일괄 초기화
+  const setLogout = useAuthStore.getState().setLogout
 
-  function clearAuth() {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('userName')
-    localStorage.removeItem('role')
-  }
-
-  // 토큰 없음
   if (!token) {
     return <Navigate to="/" replace />
   }
@@ -29,30 +25,26 @@ export default function ProtectedRoute({ allowedRole }: ProtectedRouteProps) {
   try {
     decoded = jwtDecode<JwtPayload>(token)
   } catch {
-    clearAuth()
-
+    // 토큰 파싱 실패
+    setLogout()
     return <Navigate to="/" replace />
   }
 
-  // decode 실패 방어
   if (!decoded) {
-    clearAuth()
-
+    setLogout()
     return <Navigate to="/" replace />
   }
 
-  // 현재 시간
   const now = Math.floor(new Date().getTime() / 1000)
 
-  // 토큰 만료
   if (decoded.exp < now) {
-    clearAuth()
-
+    // 토큰 만료
+    setLogout()
     return <Navigate to="/" replace />
   }
 
-  // 권한 불일치
   if (decoded.role !== allowedRole) {
+    // 권한 불일치
     return <Navigate to="/" replace />
   }
 

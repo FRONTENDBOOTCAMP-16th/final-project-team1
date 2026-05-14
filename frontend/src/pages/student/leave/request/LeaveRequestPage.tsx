@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postLeaveRequest } from '../api/leaveApi'
+import { useAuthStore } from '@/store'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import Button from '@/components/common/button/ui/button'
 import CustomComboBox from '@/components/common/comboBox/customComboBox'
@@ -42,6 +43,8 @@ function getToday(): Date {
 
 function LeaveRequestPage() {
   const navigate = useNavigate()
+  // 변경 전: localStorage.getItem('studentId') || ''
+  const studentId = useAuthStore((state) => state.user?.userId) || ''
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [startDate, setStartDate] = useState<Date | null>(null)
@@ -79,7 +82,7 @@ function LeaveRequestPage() {
     try {
       setIsSubmitting(true)
       await postLeaveRequest({
-        studentId: localStorage.getItem('studentId') || '',
+        studentId,
         leaveTypeCode: LEAVE_TYPE_CODE_MAP[leaveType],
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),

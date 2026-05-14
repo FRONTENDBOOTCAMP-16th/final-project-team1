@@ -16,9 +16,11 @@ export const useAdminLogin = () => {
       const data = await postAdminLoginApi(adminId, password)
 
       localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('adminId', data.adminId)
       localStorage.setItem('userName', data.name)
-      localStorage.setItem('role', data.role)
+      // 변경 전: userId/role을 localStorage에 직접 저장했으나 보안상 제거
+      // localStorage.setItem('adminId', data.adminId)
+      // localStorage.setItem('role', data.role)
+      // → 새로고침 시 store/index.ts에서 accessToken을 디코딩해 복원
 
       setLogin({
         userId: data.adminId,
