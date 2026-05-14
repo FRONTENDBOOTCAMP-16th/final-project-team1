@@ -124,6 +124,7 @@ export default function AdminDashboardPage() {
     fetchAttendanceData()
   }, [])
 
+  //휴가 신청 승인/반려
   const handleApprove = async (row: LeaveRequestItem) => {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
@@ -213,7 +214,7 @@ export default function AdminDashboardPage() {
           />
           <CountCard
             label="출석완료"
-            value={summary?.presentCount ?? 0}
+            value={(summary?.presentCount ?? 0) + (summary?.lateCount ?? 0)}
             unit="명"
             icon={<UserCheck />}
             variant="green"
@@ -269,7 +270,10 @@ export default function AdminDashboardPage() {
         </div>
 
         <section className={S.recentLeave}>
-          <h3>최근 휴가 신청 내역</h3>
+          <div className={S.header}>
+            <h3>최근 휴가 신청 내역</h3>
+            <p className={S.description}>최근 등록된 5개 내역만 표시됩니다.</p>
+          </div>
 
           {isLeaveLoading ? (
             <TableSkeleton rows={5} columns={vacationColumns.length} />
