@@ -9,6 +9,7 @@ import type { TableColumn } from '@/components/common/table/table.types'
 import { Plus } from 'lucide-react'
 import { getLeaveList } from './api/leaveApi'
 import type { LeaveItem } from './api/leaveApi'
+import { useAuthStore } from '@/store'
 import S from './styles/leave.module.css'
 
 const statusMap: Record<string, { className: string }> = {
@@ -25,7 +26,8 @@ function LeaveListPage() {
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
   const [totalCount, setTotalCount] = useState(0)
 
-  const studentId = localStorage.getItem('studentId') || ''
+  // 변경 전: localStorage.getItem('studentId') || ''
+  const studentId = useAuthStore((state) => state.user?.userId) || ''
   const totalPages = Math.ceil(totalCount / 10)
 
   useEffect(() => {

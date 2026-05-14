@@ -15,9 +15,11 @@ export const useLogin = () => {
     try {
       const data = await postLoginApi(studentId, password)
       localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('studentId', data.studentId)
       localStorage.setItem('userName', data.name)
-      localStorage.setItem('role', data.role)
+      // 변경 전: userId/role을 localStorage에 직접 저장했으나 보안상 제거
+      // localStorage.setItem('studentId', data.studentId)
+      // localStorage.setItem('role', data.role)
+      // → 새로고침 시 store/index.ts에서 accessToken을 디코딩해 복원
 
       setLogin({
         userId: data.studentId,
