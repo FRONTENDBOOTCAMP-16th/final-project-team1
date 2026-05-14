@@ -10,9 +10,9 @@ interface AdminLoginFormProps {
 }
 
 function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
-  const [adminId, set_adminId] = useState('')
-  const [password, set_password] = useState('')
-  const [show_password, set_show_password] = useState(false)
+  const [adminId, setAdminId] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalConfig, setModalConfig] = useState<{
@@ -22,7 +22,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
   }>({ title: '', content: '' })
 
   const navigate = useNavigate()
-  const { login_admin, is_loading, error_message } = useAdminLogin()
+  const { loginAdmin, isLoading, errorMessage } = useAdminLogin()
 
   const showAlert = (title: string, content: string, onConfirm?: () => void) => {
     setModalConfig({
@@ -33,10 +33,10 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
     setIsModalOpen(true)
   }
 
-  const handle_admin_login = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleAdminLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const result = await login_admin(adminId, password)
+    const result = await loginAdmin(adminId, password)
 
     if (result.success) {
       if (result.role === 'STUDENT') {
@@ -50,7 +50,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
 
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handle_admin_login}>
+      <form className="login_form" onSubmit={handleAdminLogin}>
         <fieldset className="input_group">
           <label className="input_label">
             <span>관리자 아이디</span>
@@ -59,7 +59,7 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
               placeholder="관리자 아이디를 입력하세요"
               className="input_field"
               value={adminId}
-              onChange={(event) => set_adminId(event.target.value.replace(/\s/g, ''))}
+              onChange={(event) => setAdminId(event.target.value.replace(/\s/g, ''))}
               required
             />
           </label>
@@ -70,33 +70,33 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
             <span>비밀번호</span>
             <div className="password_input_wrapper">
               <input
-                type={show_password ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="비밀번호를 입력하세요"
                 className="input_field"
                 value={password}
-                onChange={(event) => set_password(event.target.value.replace(/\s/g, ''))}
+                onChange={(event) => setPassword(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button
                 type="button"
                 className="password_view_button"
-                onClick={() => set_show_password(!show_password)}
+                onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
               >
-                <img src={show_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
               </button>
             </div>
           </label>
         </fieldset>
 
-        {error_message && (
+        {errorMessage && (
           <p className="error_text" role="alert">
-            {error_message}
+            {errorMessage}
           </p>
         )}
 
-        <button type="submit" className="login_submit_button" disabled={is_loading}>
-          {is_loading ? '관리자 로그인 중...' : '관리자 로그인'}
+        <button type="submit" className="login_submit_button" disabled={isLoading}>
+          {isLoading ? '관리자 로그인 중...' : '관리자 로그인'}
         </button>
       </form>
 

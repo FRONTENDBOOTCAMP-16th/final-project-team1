@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/store'
+import { axiosInstance } from '@/api/axios'
 
 export interface StudentProfile {
   name: string
@@ -22,30 +23,18 @@ interface BasicResponse {
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const fetchStudentProfile = async (studentId: string): Promise<StudentProfile> => {
-  const token = localStorage.getItem('accessToken')
+  const response = await axiosInstance.get<SettingsResponse>('/api/student/settings', {
+    params: { studentId },
+  })
 
-  const params = new URLSearchParams({ studentId })
-
-  try {
-    const response = await fetch(`${BASE_URL}/api/student/settings?${params.toString()}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    const result: SettingsResponse = await response.json()
-    if (!result.success) {
-      throw new Error(result.message || '정보 조회 실패')
-    }
-    return result.data
-  } catch (error) {
-    console.error('학생 상세 조회 실패', error)
-    throw error
+  if (!response.data.success) {
+    throw new Error(response.data.message || '정보 조회 실패')
   }
+
+  return response.data.data
 }
 
+// 로그인 엔드포인트 호출 — 잘못된 비밀번호 시 401 반환 가능하므로 fetch 유지 (axiosInstance 인터셉터의 강제 리다이렉트 방지)
 export const verifyCurrentPassword = async (password: string): Promise<boolean> => {
   const userId = useAuthStore.getState().user?.userId
 
@@ -65,24 +54,12 @@ export const verifyCurrentPassword = async (password: string): Promise<boolean> 
 }
 
 export const updatePassword = async (newPassword: string): Promise<boolean> => {
-  const token = localStorage.getItem('accessToken')
-
-  const API_URL = `${BASE_URL}/api/student/reset-password`
-
-  const response = await fetch(API_URL, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ newPassword }),
+  const response = await axiosInstance.patch<BasicResponse>('/api/student/reset-password', {
+    newPassword,
   })
 
-  const text = await response.text()
-  const result: BasicResponse = text ? JSON.parse(text) : {}
-
-  if (!result.success) {
-    throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
+  if (!response.data.success) {
+    throw new Error(response.data.message || '비밀번호 재설정에 실패했습니다.')
   }
 
   return true

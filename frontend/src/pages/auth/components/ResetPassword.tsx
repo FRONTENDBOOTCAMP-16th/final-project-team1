@@ -8,10 +8,10 @@ interface ResetPasswordProps {
 }
 
 function ResetPassword({ onChangeView }: ResetPasswordProps) {
-  const [new_password, set_new_password] = useState('')
-  const [confirm_password, set_confirm_password] = useState('')
-  const [show_new_password, set_show_new_password] = useState(false)
-  const [show_confirm_password, set_show_confirm_password] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalConfig, setModalConfig] = useState<{
@@ -29,17 +29,17 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
     setIsModalOpen(true)
   }
 
-  const handle_reset = async (event: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleReset = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const password_regex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
 
-    if (!password_regex.test(new_password)) {
+    if (!passwordRegex.test(newPassword)) {
       showAlert('비밀번호 형식 오류', '비밀번호는 영문, 숫자를 포함하여 8~16자로 입력해주세요.')
       return
     }
 
-    if (new_password !== confirm_password) {
+    if (newPassword !== confirmPassword) {
       showAlert('비밀번호 불일치', '입력하신 새 비밀번호가 서로 일치하지 않습니다.')
       return
     }
@@ -62,7 +62,7 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          newPassword: new_password,
+          newPassword,
         }),
       })
 
@@ -92,26 +92,26 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
 
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handle_reset}>
+      <form className="login_form" onSubmit={handleReset}>
         <fieldset className="input_group">
           <label className="input_label">
             <span>새 비밀번호</span>
             <div className="password_input_wrapper">
               <input
-                type={show_new_password ? 'text' : 'password'}
+                type={showNewPassword ? 'text' : 'password'}
                 placeholder="비밀번호 8자 이상 영문+숫자 조합"
                 className="input_field"
-                value={new_password}
-                onChange={(event) => set_new_password(event.target.value.replace(/\s/g, ''))}
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button
                 type="button"
                 className="password_view_button"
-                onClick={() => set_show_new_password(!show_new_password)}
+                onClick={() => setShowNewPassword(!showNewPassword)}
                 tabIndex={-1}
               >
-                <img src={show_new_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showNewPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
               </button>
             </div>
           </label>
@@ -122,20 +122,20 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
             <span>새 비밀번호 확인</span>
             <div className="password_input_wrapper">
               <input
-                type={show_confirm_password ? 'text' : 'password'}
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="새 비밀번호를 다시 입력하세요"
                 className="input_field"
-                value={confirm_password}
-                onChange={(event) => set_confirm_password(event.target.value.replace(/\s/g, ''))}
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value.replace(/\s/g, ''))}
                 required
               />
               <button
                 type="button"
                 className="password_view_button"
-                onClick={() => set_show_confirm_password(!show_confirm_password)}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
               >
-                <img src={show_confirm_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showConfirmPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
               </button>
             </div>
           </label>
