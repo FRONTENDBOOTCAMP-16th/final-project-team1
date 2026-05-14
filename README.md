@@ -15,16 +15,38 @@
 
 ## 🛠 기술 스택
 
-| 구분        | 기술                           |
-| ----------- | ------------------------------ |
-| Frontend    | React, TypeScript, Vite, CSS   |
-| 상태관리    | Zustand                        |
-| 데이터 통신 | Axios                          |
-| 폼/검증     | React Hook Form, Zod           |
-| 에디터      | React Quill                    |
-| 보안        | DOMPurify                      |
-| 코드 품질   | ESLint, Prettier               |
-| 협업 도구   | GitHub, Notion, Figma, Discord |
+### 🖥️ 프론트엔드
+
+| 구분              | 기술                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| Frontend          | React 19, TypeScript 6.0, Vite 8                             |
+| 라우팅 / 상태관리 | React Router DOM 7, Zustand 5                                |
+| 데이터 통신       | Axios 1                                                      |
+| 폼 / 검증         | React Hook Form 7, Zod 3                                     |
+| UI / 라이브러리   | React Quill New, Lucide React, React Icons, React Datepicker |
+| 유틸리티          | date-fns                                                     |
+| 보안 / 코드 품질  | DOMPurify, ESLint, TypeScript ESLint                         |
+
+---
+
+### ⚙️ 백엔드
+
+| 구분           | 기술                                 |
+| -------------- | ------------------------------------ |
+| Backend        | Java 17, Spring Boot 3.5             |
+| Database / ORM | MySQL (Aiven Cloud), Spring Data JPA |
+| 인증           | Spring Security, JWT                 |
+| API 문서       | Swagger, SpringDoc OpenAPI           |
+| 빌드 / 배포    | Gradle, Docker                       |
+
+---
+
+### 🛠️ 개발 및 협업 도구
+
+| 구분      | 기술                                     |
+| --------- | ---------------------------------------- |
+| 개발 도구 | IntelliJ IDEA, VS Code, DBeaver, Postman |
+| 협업 도구 | GitHub, Notion, Figma, Discord           |
 
 ---
 
