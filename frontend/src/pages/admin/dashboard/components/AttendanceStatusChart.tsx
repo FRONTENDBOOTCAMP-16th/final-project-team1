@@ -30,6 +30,8 @@ export default function AttendanceStatusChart({ data }: Props) {
           const latePercent = total ? (item.lateCount / total) * 100 : 0
           const absentPercent = total ? (item.absentCount / total) * 100 : 0
 
+          const actualPresentCount = item.presentCount + item.lateCount
+
           return (
             <div key={item.classId} className={S.chartItem}>
               <div className={S.chartHeader}>
@@ -44,7 +46,7 @@ export default function AttendanceStatusChart({ data }: Props) {
               </div>
 
               <div className={S.legend}>
-                <span className={S.presentDot}>출석완료 {item.presentCount}명</span>
+                <span className={S.presentDot}>출석완료 {actualPresentCount}명</span>
                 <span className={S.lateDot}>지각인원 {item.lateCount}명</span>
                 <span className={S.absentDot}>결석인원 {item.absentCount}명</span>
               </div>

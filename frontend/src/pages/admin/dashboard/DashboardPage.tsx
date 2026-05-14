@@ -124,6 +124,7 @@ export default function AdminDashboardPage() {
     fetchAttendanceData()
   }, [])
 
+  //휴가 신청 승인/반려
   const handleApprove = async (row: LeaveRequestItem) => {
     try {
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
@@ -213,7 +214,7 @@ export default function AdminDashboardPage() {
           />
           <CountCard
             label="출석완료"
-            value={summary?.presentCount ?? 0}
+            value={(summary?.presentCount ?? 0) + (summary?.lateCount ?? 0)}
             unit="명"
             icon={<UserCheck />}
             variant="green"
