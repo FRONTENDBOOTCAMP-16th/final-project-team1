@@ -197,7 +197,7 @@ export default function AttendanceListPage() {
     <AdminLayout>
       <section className={S.count_box}>
         <CountCard
-          label="오늘의 출석률"
+          label="출석률"
           value={attendanceRate}
           unit="%"
           icon={<TrendingUp />}
