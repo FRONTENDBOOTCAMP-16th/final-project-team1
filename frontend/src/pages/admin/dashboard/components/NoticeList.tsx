@@ -23,7 +23,14 @@ export default function NoticeList({ data }: Props) {
             className={S.item}
             onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
           >
-            <strong className={S.noticeTitle}>{item.title}</strong>
+            <div className={S.noticeContent}>
+              <strong className={S.noticeTitle}>{item.title}</strong>
+
+              <span className={item.isOpen ? S.publicBadge : S.privateBadge}>
+                {item.isOpen ? '공개' : '비공개'}
+              </span>
+            </div>
+
             <span className={S.noticeDate}>{item.createdDate}</span>
           </li>
         ))}
