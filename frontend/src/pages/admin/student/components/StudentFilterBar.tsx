@@ -66,7 +66,7 @@ export default function StudentFilterBar({
         </div>
       </div>
 
-      <button type="button" onClick={onSearch} className="button primary">
+      <button type="button" onClick={onSearch} className="search-button">
         <Search size={16} />
         검색
       </button>
