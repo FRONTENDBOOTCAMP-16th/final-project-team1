@@ -147,11 +147,10 @@ export default function NoticeListPage() {
   /** 선택 삭제 */
   const handleDelete = async () => {
     if (selectedIds.length === 0) {
-      alert('삭제할 공지사항을 선택해주세요.')
+      setModalMessage('삭제할 공지사항을 선택해주세요.')
+      setOpen(true)
       return
     }
-
-    if (!confirm('선택한 공지사항을 삭제하시겠습니까?')) return
 
     try {
       await Promise.all(selectedIds.map((noticeId) => deleteNotice(noticeId)))
@@ -161,7 +160,8 @@ export default function NoticeListPage() {
       setSelectedIds([])
       setCurrentPage(1)
 
-      alert('삭제되었습니다.')
+      setModalMessage('삭제되었습니다.')
+      setOpen(true)
     } catch (e) {
       console.error('삭제 실패:', e)
       alert('삭제에 실패했습니다.')
