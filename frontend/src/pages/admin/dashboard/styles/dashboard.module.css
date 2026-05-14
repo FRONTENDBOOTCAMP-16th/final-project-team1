@@ -374,3 +374,26 @@
   background-color: #f2f4f7;
   color: #667085;
 }
+
+/* 최근 휴가 신청 테이블 */
+.recentLeave {
+  position: relative;
+}
+
+.leaveSkeletonOverlay {
+  margin-top: 12px;
+}
+
+.tableBox {
+  overflow: hidden;
+
+  border-radius: 12px;
+}
+
+.tableSkeletonBox {
+  overflow: hidden;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background-color: #fff;
+}

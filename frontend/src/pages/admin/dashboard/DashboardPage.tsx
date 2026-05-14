@@ -283,16 +283,30 @@ export default function AdminDashboardPage() {
             <p className={S.description}>최근 등록된 5개 내역만 표시됩니다.</p>
           </div>
 
-          {isLeaveLoading ? (
-            <TableSkeleton rows={5} columns={vacationColumns.length} />
-          ) : (
-            <Table
-              columns={vacationColumns}
-              data={vacationData.slice(0, 5)}
-              totalCount={5}
-              countLabel="명"
-            />
-          )}
+          <div className={S.tableBox}>
+            {isLeaveLoading ? (
+              <div className={S.tableSkeletonBox}>
+                <TableSkeleton
+                  columns={[
+                    { header: '신청자', width: '15%' },
+                    { header: '학번', width: '13%' },
+                    { header: '휴가종류', width: '13%' },
+                    { header: '기간', width: '25%' },
+                    { header: '처리상태', width: '12%' },
+                    { header: '처리', width: '15%' },
+                  ]}
+                  rows={5}
+                />
+              </div>
+            ) : (
+              <Table
+                columns={vacationColumns}
+                data={vacationData.slice(0, 5)}
+                totalCount={5}
+                countLabel="명"
+              />
+            )}
+          </div>
         </section>
       </div>
     </AdminLayout>
