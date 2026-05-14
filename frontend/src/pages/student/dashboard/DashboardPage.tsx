@@ -378,7 +378,14 @@ function LeaveStatus() {
           return
         }
 
-        setLeaveList(response.data.data.items ?? [])
+        const items = response.data.data.items ?? []
+
+        const pendingItems = items
+          .filter((item: LeaveItem) => item.approvalStatusName === '승인 대기')
+          .slice(-3)
+          .reverse()
+
+        setLeaveList(pendingItems)
       } catch (error) {
         console.error('휴가 목록 조회 실패:', error)
         setLeaveList([])
@@ -407,7 +414,7 @@ function LeaveStatus() {
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>휴가승인 현황</h3>
 
-      {leaveList.slice(0, 3).map((item) => (
+      {leaveList.map((item) => (
         <div
           key={item.leaveRequestId}
           className={`${S.listItem} ${
