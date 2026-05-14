@@ -61,7 +61,7 @@ function NoticeListPage() {
             width: '100px',
             render: (row: NoticeItem) => {
                 const index = noticeList.indexOf(row)
-                return <span>{totalCount - index - (currentPage - 1) * PAGE_SIZE}</span>
+                return <span>{(currentPage - 1) * PAGE_SIZE + index + 1}</span>
             },
         },
         {
@@ -102,7 +102,7 @@ function NoticeListPage() {
                     )}
                 </div>
                 <div className={S.paginationBox}>
-                    <span className={S['table-footer']}>
+                    <span>
                         총 {totalCount}건 중{' '}
                         {totalCount === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
                         {Math.min(currentPage * PAGE_SIZE, totalCount)}건 표시
