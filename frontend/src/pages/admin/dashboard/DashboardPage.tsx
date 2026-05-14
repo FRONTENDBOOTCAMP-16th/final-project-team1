@@ -269,7 +269,10 @@ export default function AdminDashboardPage() {
         </div>
 
         <section className={S.recentLeave}>
-          <h3>최근 휴가 신청 내역</h3>
+          <div className={S.header}>
+            <h3>최근 휴가 신청 내역</h3>
+            <p className={S.description}>최근 등록된 5개 내역만 표시됩니다.</p>
+          </div>
 
           {isLeaveLoading ? (
             <TableSkeleton rows={5} columns={vacationColumns.length} />

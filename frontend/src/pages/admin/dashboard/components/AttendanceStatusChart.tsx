@@ -16,7 +16,11 @@ interface Props {
 export default function AttendanceStatusChart({ data }: Props) {
   return (
     <section className={S.attendanceChartSection}>
-      <h3 className={S.sectionTitle}>오늘의 전체 출결 현황</h3>
+      <div className={S.header}>
+        <h3 className={S.sectionTitle}>오늘의 전체 출결 현황</h3>
+
+        <p className={S.description}>현재 진행중인 강의만 표시됩니다.</p>
+      </div>
 
       <div className={S.chartList}>
         {data.map((item) => {

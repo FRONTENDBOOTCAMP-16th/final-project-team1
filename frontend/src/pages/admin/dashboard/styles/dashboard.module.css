@@ -11,7 +11,7 @@
 }
 
 .title {
-  margin: 0 0 28px;
+  margin: 0 0 3px;
 
   font-weight: 700;
   font-size: 20px;
@@ -232,7 +232,7 @@
 }
 
 .sectionTitle {
-  margin: 0 0 18px;
+  margin: 0 0 3px;
 
   font-weight: 600;
   font-size: 22px;
@@ -320,4 +320,20 @@
 
 .absentDot::before {
   background: #e60000;
+}
+
+/* 섹션별 부가 설명 */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.description {
+  margin-top: 4px;
+
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: left;
 }
