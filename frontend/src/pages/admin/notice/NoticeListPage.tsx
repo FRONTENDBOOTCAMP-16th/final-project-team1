@@ -173,9 +173,11 @@ export default function NoticeListPage() {
     navigate('/admin/notice/create')
   }
 
-  /** 검색어에 맞는 공지사항 목록 */
+  /** 검색어에 맞는 공지사항 목록 + 작성일 최신순 정렬 */
   const filteredNotices = useMemo(() => {
-    return data.filter((notice) => notice.title.includes(searchKeyword))
+    return [...data]
+      .filter((notice) => notice.title.includes(searchKeyword))
+      .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
   }, [data, searchKeyword])
 
   /** 전체 페이지 수 */
