@@ -8,6 +8,7 @@ import 'react-quill-new/dist/quill.snow.css'
 
 import AdminLayout from '@/pages/sample/AdminLayout'
 import FormSkeleton from '@/components/common/skeleton/FormSkeleton'
+import Modal from '@/components/common/modal/Modal'
 
 import { getNoticeDetail, updateNotice } from './api/noticeApi'
 import S from './styles/noticeEditor.module.css'
@@ -24,6 +25,13 @@ export default function NoticeEditPage() {
 
   /** 상세 조회 로딩 상태 */
   const [isLoading, setIsLoading] = useState(false)
+
+  /** 안내 팝업 상태 */
+  const [open, setOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+
+  /** 팝업 확인 후 실행할 동작 */
+  const [modalAction, setModalAction] = useState<(() => void) | null>(null)
 
   /** URL 파라미터 가져오기 */
   const { id } = useParams()
@@ -49,7 +57,10 @@ export default function NoticeEditPage() {
         setIsOpen(detail.isOpen)
       } catch (error) {
         console.error('공지 상세 조회 실패:', error)
-        alert('공지 데이터를 불러오지 못했습니다.')
+
+        setModalMessage('공지 데이터를 불러오지 못했습니다.')
+        setModalAction(null)
+        setOpen(true)
       } finally {
         setIsLoading(false)
       }
@@ -69,13 +80,30 @@ export default function NoticeEditPage() {
         isOpen,
       })
 
-      alert('수정되었습니다.')
+      setModalMessage('수정되었습니다.')
 
-      // 목록 페이지 이동
-      navigate('/admin/notice')
+      // 확인 버튼 클릭 시 목록 페이지로 이동
+      setModalAction(() => () => {
+        navigate('/admin/notice')
+      })
+
+      setOpen(true)
     } catch (error) {
       console.error('공지 수정 실패:', error)
-      alert('공지 수정에 실패했습니다.')
+
+      setModalMessage('공지 수정에 실패했습니다.')
+      setModalAction(null)
+      setOpen(true)
+    }
+  }
+
+  /** 팝업 닫기 */
+  const handleCloseModal = () => {
+    setOpen(false)
+
+    if (modalAction) {
+      modalAction()
+      setModalAction(null)
     }
   }
 
@@ -133,6 +161,10 @@ export default function NoticeEditPage() {
           </Button>
         </div>
       </div>
+
+      <Modal isOpen={open} onClose={handleCloseModal} onConfirm={handleCloseModal} buttonType="one">
+        {modalMessage}
+      </Modal>
     </AdminLayout>
   )
 }

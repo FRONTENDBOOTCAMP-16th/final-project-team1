@@ -29,6 +29,9 @@ export default function NoticeCreatePage() {
   /** 모달에 표시할 메시지 */
   const [modalMessage, setModalMessage] = useState('')
 
+  /** 모달 확인 후 실행할 동작 */
+  const [modalAction, setModalAction] = useState<(() => void) | null>(null)
+
   /** 페이지 이동 함수 */
   const navigate = useNavigate()
 
@@ -48,15 +51,22 @@ export default function NoticeCreatePage() {
     return div.textContent?.trim() === ''
   }
 
+  /** 모달 열기 */
+  const showModal = (message: string, action?: () => void) => {
+    setModalMessage(message)
+    setModalAction(() => action ?? null)
+    setOpen(true)
+  }
+
   /** 공지사항 등록 */
   const handleCreateNotice = async () => {
     if (!title.trim()) {
-      alert('제목을 입력해주세요.')
+      showModal('제목을 입력해주세요.')
       return
     }
 
     if (isEmptyContent(content)) {
-      alert('내용을 입력해주세요.')
+      showModal('내용을 입력해주세요.')
       return
     }
 
@@ -66,18 +76,23 @@ export default function NoticeCreatePage() {
         content,
       })
 
-      setModalMessage('공지사항이 등록되었습니다.')
-      setOpen(true)
+      showModal('공지사항이 등록되었습니다.', () => {
+        navigate('/admin/notice')
+      })
     } catch (error) {
       console.error('공지 등록 실패:', error)
-      alert('공지 등록에 실패했습니다.')
+      showModal('공지 등록에 실패했습니다.')
     }
   }
 
-  /** 공지사항 목록 페이지로 이동 */
+  /** 모달 닫기 */
   const handleCloseModal = () => {
     setOpen(false)
-    navigate('/admin/notice')
+
+    if (modalAction) {
+      modalAction()
+      setModalAction(null)
+    }
   }
 
   return (
