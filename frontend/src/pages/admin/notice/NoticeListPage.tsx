@@ -64,6 +64,12 @@ export default function NoticeListPage() {
   /** 라우팅 이동 */
   const navigate = useNavigate()
 
+  /** 기본 alert 대신 공통 모달 열기 */
+  const showAlert = (message: string) => {
+    setModalMessage(message)
+    setOpen(true)
+  }
+
   /** 공지사항 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +80,7 @@ export default function NoticeListPage() {
         setData(result)
       } catch (e) {
         console.error('데이터 조회 실패:', e)
-        alert('데이터를 불러오는데 실패했습니다.')
+        showAlert('데이터를 불러오는데 실패했습니다.')
       } finally {
         setIsLoading(false)
       }
@@ -133,7 +139,7 @@ export default function NoticeListPage() {
       setOpen(true)
     } catch (e) {
       console.error('공개 상태 변경 실패:', e)
-      alert('공개 상태 변경 실패')
+      showAlert('공개 상태 변경 실패')
     }
   }
 
@@ -164,7 +170,7 @@ export default function NoticeListPage() {
       setOpen(true)
     } catch (e) {
       console.error('삭제 실패:', e)
-      alert('삭제에 실패했습니다.')
+      showAlert('삭제에 실패했습니다.')
     }
   }
 
