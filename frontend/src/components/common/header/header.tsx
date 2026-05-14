@@ -32,7 +32,38 @@ function Header() {
   const category = pathSegment[2] || 'dashboard'
 
   const pageTitle = Title_label[menuRole]?.[category] || '대시보드'
-  const subTitle = menuRole === 'admin' ? '관리자님 환영합니다.' : '오늘도 멋사와 함께 열공하세요!'
+  // const subTitle = menuRole === 'admin' ? '관리자님 환영합니다.' : '오늘도 멋사와 함께 열공하세요!'
+  let subTitle = '오늘도 멋사와 함께 열공하세요!'
+
+  if (menuRole === 'admin') {
+    if (location.pathname.includes('/admin/student')) {
+      subTitle = '학생 관리 페이지입니다.'
+    } else if (location.pathname.includes('/admin/attendance')) {
+      subTitle = '출결 관리 페이지입니다.'
+    } else if (location.pathname.includes('/admin/lecture')) {
+      subTitle = '강의 관리 페이지입니다.'
+    } else if (location.pathname.includes('/admin/leave')) {
+      subTitle = '휴가 관리 페이지입니다.'
+    } else if (location.pathname.includes('/admin/notice')) {
+      subTitle = '공지사항 관리 페이지입니다.'
+    } else if (location.pathname.includes('/admin/settings')) {
+      subTitle = '환경설정 페이지입니다.'
+    } else {
+      subTitle = '관리자님 환영합니다.'
+    }
+  }
+
+  if (menuRole === 'student') {
+    if (location.pathname.includes('/student/dashboard')) {
+      subTitle = '오늘도 멋사와 함께 열공하세요!'
+    } else if (location.pathname.includes('/student/leave')) {
+      subTitle = '휴가 신청 내역을 확인하세요.'
+    } else if (location.pathname.includes('/student/notice')) {
+      subTitle = '공지사항을 확인하세요.'
+    } else if (location.pathname.includes('/student/settings')) {
+      subTitle = '환경설정 페이지입니다.'
+    }
+  }
 
   // 로컬스토리지 대신 Zustand 상태 사용
   const userName = user?.name || '이름 없음'

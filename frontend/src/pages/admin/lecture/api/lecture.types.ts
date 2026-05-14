@@ -52,3 +52,7 @@ export interface UpdateLectureResponse {
   isCompleted: boolean
   completedStatusName: string
 }
+
+export interface DeleteLectureResponse {
+  classId: number
+}
