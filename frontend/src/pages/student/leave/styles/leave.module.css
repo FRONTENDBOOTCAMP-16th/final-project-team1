@@ -5,7 +5,6 @@
   padding: 0px;
 }
 
-
 .ButtonBox{
   display:flex;
   flex-flow: nowrap row;
@@ -27,24 +26,21 @@
   background-color: #fff;
 }
 
-
 .tit,
 .name {
   color: var(--default-black);
 }
-  
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 102px;
-  height: 30px;
-  padding: 0 5px;
-  border-radius: 20px;
-  font-weight: var(--Md);
-  font-size: var(--sub-title);
-  line-height: var(--big-title);
+  min-width: 76px;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .statusProgress {
@@ -65,21 +61,6 @@
   color: var(--error-gray);
 }
 
-
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 76px;
-  height: 28px;
-  padding: 0 14px;
-
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .attendanceComplete {
   color: #00a84f;
   border: 1px solid #00c853;
@@ -97,8 +78,6 @@
   border: 1px solid #ff4d4f;
   background-color: #fff1f0;
 }
-
-
 
 .vacationSick,
 .vacationOfficial,
@@ -122,13 +101,10 @@
   gap: 6px;
 }
 
-
-
 .resultIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -143,7 +119,6 @@
   background-color: #fdecea;
   color: #ff3b30;
 }
-
 
 .table {
   width: 100%;
@@ -177,11 +152,6 @@
   }
 }
 
-
-
-/* ===========================================
-   휴가 종류 배지 (각각 다른 색)
-   =========================================== */
 .reasonPersonal {
     color: var(--default-black);
     background-color: #F0F0F0;
@@ -189,9 +159,6 @@
     border-radius: var(--border-radius-md);
 }
 
-/* ===========================================
-   처리상태 배지
-   =========================================== */
 .statusPending {
     color: #f59f00;
     border: 1px solid #ffb300;
@@ -208,4 +175,16 @@
     color: #ff3b30;
     border: 1px solid #ff4d4f;
     background-color: #fff1f0;
+}
+
+/* 페이지네이션 */
+.paginationBox {
+    inline-size: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block-start: 18px;
+    color: #666;
+    font-size: 14px;
 }

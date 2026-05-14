@@ -11,7 +11,7 @@
 }
 
 .title {
-  margin: 0 0 28px;
+  margin: 0 0 3px;
 
   font-weight: 700;
   font-size: 20px;
@@ -52,22 +52,16 @@
 }
 
 .item:hover {
-  background: #f2f2f2;
-}
+  background-color: #fff7ed;
+  border-color: #fdba74;
 
-.highlight {
-  background: #fff3eb;
-  border-color: #ff5a00;
+  cursor: pointer;
 }
 
 .noticeTitle {
   font-weight: 700;
   font-size: 16px;
   color: #333333;
-}
-
-.highlight .noticeTitle {
-  color: #ff5a00;
 }
 
 .noticeDate {
@@ -238,7 +232,7 @@
 }
 
 .sectionTitle {
-  margin: 0 0 18px;
+  margin: 0 0 3px;
 
   font-weight: 600;
   font-size: 22px;
@@ -328,7 +322,55 @@
   background: #e60000;
 }
 
-.highlight {
-  background: #fff3eb;
-  border: 2px solid #ffb48a;
+/* 섹션별 부가 설명 */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.description {
+  margin-top: 4px;
+
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: left;
+}
+
+/* 공지사항 공개/비공개 */
+/* 공지사항 공개/비공개 */
+.noticeContent {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  gap: 10px;
+}
+
+.publicBadge,
+.privateBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 22px;
+  padding: 2px 8px;
+  margin-left: auto;
+
+  border-radius: 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.publicBadge {
+  background-color: #ecfdf3;
+  color: #027a48;
+}
+
+.privateBadge {
+  background-color: #f2f4f7;
+  color: #667085;
 }

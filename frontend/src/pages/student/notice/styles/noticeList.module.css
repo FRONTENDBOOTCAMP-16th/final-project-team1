@@ -24,24 +24,22 @@
 /* 페이지네이션 */
 .paginationBox {
     inline-size: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block-start: 18px;
+    color: #666;
+    font-size: 14px;
 }
 
-/* 제목 클릭 버튼 (link처럼 보이게) */
-.TitleButton {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    
-    font-family: inherit;
-    font-size: inherit;
-    color: var(--default-black);
+/* 제목 텍스트 */
+.title {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     text-align: left;
-    
-    transition: color 0.2s ease;
-}
-
-.TitleButton:hover {
-    color: var(--default-orange);
-    text-decoration: underline;
+    color: var(--default-black);
 }

@@ -58,21 +58,25 @@ export default function NoticeListPage() {
   const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
-/** 로딩 상태 */
-const [isLoading, setIsLoading] = useState(false)  
+  /** 로딩 상태 */
+  const [isLoading, setIsLoading] = useState(false)
+
+  /** 라우팅 이동 */
+  const navigate = useNavigate()
 
   /** 공지사항 목록 조회 */
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
+
         const result = await getRecentNoticeRequests()
         setData(result)
       } catch (e) {
         console.error('데이터 조회 실패:', e)
         alert('데이터를 불러오는데 실패했습니다.')
-      }finally{
-        setIsLoading(false) 
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -143,11 +147,10 @@ const [isLoading, setIsLoading] = useState(false)
   /** 선택 삭제 */
   const handleDelete = async () => {
     if (selectedIds.length === 0) {
-      alert('삭제할 공지사항을 선택해주세요.')
+      setModalMessage('삭제할 공지사항을 선택해주세요.')
+      setOpen(true)
       return
     }
-
-    if (!confirm('선택한 공지사항을 삭제하시겠습니까?')) return
 
     try {
       await Promise.all(selectedIds.map((noticeId) => deleteNotice(noticeId)))
@@ -157,24 +160,24 @@ const [isLoading, setIsLoading] = useState(false)
       setSelectedIds([])
       setCurrentPage(1)
 
-      alert('삭제되었습니다.')
+      setModalMessage('삭제되었습니다.')
+      setOpen(true)
     } catch (e) {
       console.error('삭제 실패:', e)
       alert('삭제에 실패했습니다.')
     }
   }
-  /** 라우팅 이동 */
-  const navigate = useNavigate()
 
   /** 등록 */
   const handleCreate = () => {
-    console.log('등록')
     navigate('/admin/notice/create')
   }
 
-  /** 검색어에 맞는 공지사항 목록 */
+  /** 검색어에 맞는 공지사항 목록 + 작성일 최신순 정렬 */
   const filteredNotices = useMemo(() => {
-    return data.filter((notice) => notice.title.includes(searchKeyword))
+    return [...data]
+      .filter((notice) => notice.title.includes(searchKeyword))
+      .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
   }, [data, searchKeyword])
 
   /** 전체 페이지 수 */
@@ -185,7 +188,13 @@ const [isLoading, setIsLoading] = useState(false)
     const start = (currentPage - 1) * PAGE_SIZE
     const end = start + PAGE_SIZE
 
-    return filteredNotices.slice(start, end)
+    return filteredNotices.slice(start, end).map((notice, index) => ({
+      ...notice,
+
+      // 서버에서 내려오는 displayNo 대신
+      // 화면 기준으로 1, 2, 3... 다시 번호를 붙임
+      displayNo: start + index + 1,
+    }))
   }, [filteredNotices, currentPage])
 
   /** 테이블 컬럼 */
@@ -203,7 +212,11 @@ const [isLoading, setIsLoading] = useState(false)
         />
       ),
     },
-    { key: 'displayNo', header: '번호', width: '100px' },
+    {
+      key: 'displayNo',
+      header: '번호',
+      width: '100px',
+    },
     {
       key: 'title',
       header: '제목',
@@ -218,7 +231,11 @@ const [isLoading, setIsLoading] = useState(false)
         </button>
       ),
     },
-    { key: 'createdDate', header: '작성일', width: '200px' },
+    {
+      key: 'createdDate',
+      header: '작성일',
+      width: '200px',
+    },
     {
       key: 'isOpen',
       header: '공개여부',
@@ -299,6 +316,7 @@ const [isLoading, setIsLoading] = useState(false)
           </section>
         </main>
       </div>
+
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}

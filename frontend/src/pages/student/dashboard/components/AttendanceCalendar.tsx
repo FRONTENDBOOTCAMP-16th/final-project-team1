@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface AttendanceCalendarItem {
   attendanceDate: string
-  attendanceStatus: 'PRESENT' | 'ABSENT' | 'ONGOING'
+  attendanceStatus: 'PRESENT' | 'ABSENT'
 }
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
   month: number
   attendanceList: AttendanceCalendarItem[]
   isLoading: boolean
+  courseStartDate?: string
   onPrevMonth: () => void
   onNextMonth: () => void
 }
@@ -60,8 +61,10 @@ function AttendanceCalendar({
           const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 
           const attendance = attendanceList.find((item) => item.attendanceDate === dateString)
+
           const weekDay = new Date(year, month - 1, day).getDay()
           const isWeekday = weekDay !== 0 && weekDay !== 6
+
           const today = new Date()
           today.setHours(0, 0, 0, 0)
 
@@ -70,9 +73,12 @@ function AttendanceCalendar({
 
           const isFutureDate = currentDate > today
 
+          const courseStartDate = new Date(2026, 3, 1)
+          courseStartDate.setHours(0, 0, 0, 0)
+
           const status = attendance
             ? attendance.attendanceStatus
-            : !isLoading && isWeekday && !isFutureDate
+            : !isLoading && isWeekday && !isFutureDate && currentDate >= courseStartDate
               ? 'ABSENT'
               : undefined
 
@@ -80,13 +86,7 @@ function AttendanceCalendar({
             <div
               key={index}
               className={`${S.day} ${
-                status === 'PRESENT'
-                  ? S.present
-                  : status === 'ONGOING'
-                    ? S.ongoing
-                    : status === 'ABSENT'
-                      ? S.absent
-                      : ''
+                status === 'PRESENT' ? S.present : status === 'ABSENT' ? S.absent : ''
               }`}
             >
               {day}
@@ -103,12 +103,6 @@ function AttendanceCalendar({
             <span className={`${S.dot} ${S.green}`} />
             <span>출석완료</span>
           </div>
-
-          <div className={S.legendItem}>
-            <span className={`${S.dot} ${S.orange}`} />
-            <span>훈련중</span>
-          </div>
-
           <div className={S.legendItem}>
             <span className={`${S.dot} ${S.red}`} />
             <span>결석</span>
