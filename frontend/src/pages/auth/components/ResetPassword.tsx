@@ -29,17 +29,18 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
     setIsModalOpen(true)
   }
 
-  const handle_reset = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handle_reset = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const password_regex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
+
     if (!password_regex.test(new_password)) {
-      alert('비밀번호는 8자 이상, 영문과 숫자를 혼합해야 합니다.')
+      showAlert('비밀번호 형식 오류', '비밀번호는 영문, 숫자를 포함하여 8~16자로 입력해주세요.')
       return
     }
 
     if (new_password !== confirm_password) {
-      alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.')
+      showAlert('비밀번호 불일치', '입력하신 새 비밀번호가 서로 일치하지 않습니다.')
       return
     }
 
