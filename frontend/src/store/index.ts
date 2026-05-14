@@ -16,7 +16,6 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: !!localStorage.getItem('accessToken'),
 
-  // 새로고침해도 이름이 날아가지 않도록 초기값을 로컬스토리지에서 가져옴
   user: localStorage.getItem('accessToken')
     ? {
         userId: localStorage.getItem('adminId') || localStorage.getItem('studentId') || '',
@@ -26,6 +25,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     : null,
 
   setLogin: (userData) => set({ isLoggedIn: true, user: userData }),
+  
   setLogout: () => {
     localStorage.clear()
     set({ isLoggedIn: false, user: null })

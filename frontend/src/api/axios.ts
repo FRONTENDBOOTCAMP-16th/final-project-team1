@@ -38,10 +38,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('userName')
-      localStorage.removeItem('studentId')
-      localStorage.removeItem('role')
+      localStorage.clear()
       window.location.href = '/'
     }
     return Promise.reject(error)
