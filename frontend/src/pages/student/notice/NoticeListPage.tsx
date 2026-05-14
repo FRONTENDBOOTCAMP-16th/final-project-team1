@@ -17,15 +17,12 @@ function NoticeListPage() {
     const navigate = useNavigate()
     const [isLoading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
-    const [allNotices, setAllNotices] = useState<NoticeItem[]>([])
+    const [noticeList, setNoticeList] = useState<NoticeItem[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [keyword, setKeyword] = useState('')
     const [searchKeyword, setSearchKeyword] = useState('')
 
     const totalPages = Math.ceil(totalCount / PAGE_SIZE)
-    const indexOfLastNotice = currentPage * PAGE_SIZE
-    const indexOfFirstNotice = indexOfLastNotice - PAGE_SIZE
-    const noticeList = allNotices.slice(indexOfFirstNotice, indexOfLastNotice)
 
     useEffect(() => {
         const fetchNoticeList = async () => {
@@ -36,7 +33,7 @@ function NoticeListPage() {
                     page: currentPage,
                     size: PAGE_SIZE,
                 })
-                setAllNotices(
+                setNoticeList(
                     [...data.items].sort((a, b) =>
                         new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
                     )
@@ -63,7 +60,7 @@ function NoticeListPage() {
             header: '번호',
             width: '100px',
             render: (row: NoticeItem) => {
-                const index = allNotices.indexOf(row)
+                const index = noticeList.indexOf(row)
                 return <span>{totalCount - index - (currentPage - 1) * PAGE_SIZE}</span>
             },
         },
@@ -105,7 +102,7 @@ function NoticeListPage() {
                     )}
                 </div>
                 <div className={S.paginationBox}>
-                    <span>
+                    <span className={S['table-footer']}>
                         총 {totalCount}건 중{' '}
                         {totalCount === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
                         {Math.min(currentPage * PAGE_SIZE, totalCount)}건 표시

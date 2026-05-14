@@ -121,11 +121,18 @@ function LeaveListPage() {
           />
         )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <div className={S.paginationBox}>
+    <span>
+        총 {totalCount}건 중{' '}
+        {totalCount === 0 ? 0 : (currentPage - 1) * 10 + 1} -{' '}
+        {Math.min(currentPage * 10, totalCount)}건 표시
+    </span>
+    <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+    />
+</div>
       </StudentLayout>
     </div>
   )
