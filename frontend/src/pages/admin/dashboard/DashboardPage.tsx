@@ -50,6 +50,8 @@ export default function AdminDashboardPage() {
 
   const [vacationData, setVacationData] = useState<LeaveRequestItem[]>([])
 
+  const [processingId, setProcessingId] = useState<number | null>(null)
+
   //휴가 신청 현황
   const [isLeaveLoading, setIsLeaveLoading] = useState(true)
 
@@ -62,7 +64,6 @@ export default function AdminDashboardPage() {
 
         setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
       } catch (error) {
-        console.error(error)
       } finally {
         setIsLeaveLoading(false)
       }
@@ -82,7 +83,6 @@ export default function AdminDashboardPage() {
         const data = await getNoticeList()
         setNoticeData(data)
       } catch (error) {
-        console.error(error)
       } finally {
         setIsNoticeLoading(false)
       }
@@ -91,61 +91,59 @@ export default function AdminDashboardPage() {
     fetchNoticeData()
   }, [])
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const data = await getAdminDashboardSummary()
-        setSummary(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    fetchSummary()
-  }, [])
-
-  //전체 출결 현황 그래프
+  //출결 현황 그래프
   const [isLoading, setIsLoading] = useState(true)
-
   useEffect(() => {
-    const fetchAttendanceData = async () => {
+    const fetchDashboardData = async () => {
       try {
         setIsLoading(true)
 
-        const data = await getAttendanceStatusByClass()
-        setAttendanceData(data)
+        const [summaryData, attendanceData] = await Promise.all([
+          getAdminDashboardSummary(),
+          getAttendanceStatusByClass(),
+        ])
+
+        setSummary(summaryData)
+        setAttendanceData(attendanceData)
       } catch (error) {
-        console.error(error)
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchAttendanceData()
+    fetchDashboardData()
   }, [])
 
   //휴가 신청 승인/반려
   const handleApprove = async (row: LeaveRequestItem) => {
     try {
+      setProcessingId(row.leaveRequestId)
+
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      const data = await getLeaveRequestList(1, 100)
+      const data = await getLeaveRequestList(1, 50)
 
       setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
+    } finally {
+      setProcessingId(null)
     }
   }
 
   const handleReject = async (row: LeaveRequestItem) => {
     try {
+      setProcessingId(row.leaveRequestId)
+
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      const data = await getLeaveRequestList(1, 100)
+      const data = await getLeaveRequestList(1, 50)
 
       setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
       console.error(error)
+    } finally {
+      setProcessingId(null)
     }
   }
 
@@ -186,14 +184,24 @@ export default function AdminDashboardPage() {
       render: (row) => {
         return (
           <div className={S.actionBox}>
-            <Button type="button" variant="active" onClick={() => handleApprove(row)}>
+            <Button
+              type="button"
+              variant="active"
+              onClick={() => handleApprove(row)}
+              disabled={processingId === row.leaveRequestId}
+            >
               <Check size={16} />
-              승인
+              {processingId === row.leaveRequestId ? '...' : '승인'}
             </Button>
 
-            <Button type="button" variant="inactive" onClick={() => handleReject(row)}>
+            <Button
+              type="button"
+              variant="inactive"
+              onClick={() => handleReject(row)}
+              disabled={processingId === row.leaveRequestId}
+            >
               <X size={16} />
-              반려
+              {processingId === row.leaveRequestId ? '...' : '반려'}
             </Button>
           </div>
         )
