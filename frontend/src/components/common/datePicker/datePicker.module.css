@@ -1,4 +1,3 @@
-
 :global(.react-datepicker-wrapper) {
   width: 100%;
 }
@@ -6,7 +5,7 @@
 .datepicker {
   position: relative;
   flex: 1;
-  
+
   .input {
     width: 100%;
     min-width: 153px;
@@ -20,19 +19,18 @@
     text-align: center;
     cursor: pointer;
     caret-color: transparent;
+    background-color: #ffffff;
 
     &::placeholder {
       color: #111111;
       font-weight: 500;
       font-size: 14px;
-      color: #111111;
     }
 
     &:focus {
       outline: none;
       border-color: #cccccc;
     }
-
   }
 
   .icon {
@@ -55,7 +53,6 @@
     pointer-events: none;
   }
 
-  /* open 상태일 때 적용 */
   .rotate {
     transform: translateY(-50%) rotate(180deg);
   }
