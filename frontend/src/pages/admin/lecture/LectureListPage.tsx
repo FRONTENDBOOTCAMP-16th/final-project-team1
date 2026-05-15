@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styles from './styles/LectureListPage.module.css'
+import searchStyle from '@/components/common/search/search.module.css'
 import { getLectureList } from './api/lecture.api'
 import type { LectureItem } from './api/lecture.types'
 // Sidebar + Header가 포함된 관리자 공통 레이아웃
@@ -59,10 +60,10 @@ export default function LectureListPage() {
     <AdminLayout>
       <div className={styles.filterBar}>
         <div className={styles.searchWrap}>
-          <div className={styles.searchBar}>
+          <div className={searchStyle.searchBar}>
             <Search size={16} />
             <input
-              className={styles.searchInput}
+              className={searchStyle.searchInput}
               placeholder="강의 검색"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}

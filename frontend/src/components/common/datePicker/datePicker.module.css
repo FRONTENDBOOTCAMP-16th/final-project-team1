@@ -16,6 +16,8 @@
     font-weight: 500;
     font-size: 14px;
     color: #111111;
+    background-color: #fff;
+    color-scheme: light;
     text-align: center;
     cursor: pointer;
     caret-color: transparent;
@@ -56,4 +58,47 @@
   .rotate {
     transform: translateY(-50%) rotate(180deg);
   }
+}
+
+/* react-datepicker 캘린더 팝업 라이트모드 고정 */
+:global(.react-datepicker) {
+  background-color: #fff;
+  border-color: #eeeeee;
+  color-scheme: light;
+}
+
+:global(.react-datepicker__header) {
+  background-color: #f5f5f5;
+  border-bottom-color: #eeeeee;
+}
+
+:global(.react-datepicker__current-month),
+:global(.react-datepicker__day-name),
+:global(.react-datepicker__day),
+:global(.react-datepicker__time-name) {
+  color: #111111;
+}
+
+:global(.react-datepicker__day:hover) {
+  background-color: #f0f0f0;
+  color: #111111;
+}
+
+:global(.react-datepicker__day--selected),
+:global(.react-datepicker__day--keyboard-selected) {
+  background-color: #ff6000;
+  color: #fff;
+}
+
+:global(.react-datepicker__day--disabled) {
+  color: #aaaaaa;
+}
+
+:global(.react-datepicker__navigation-icon::before) {
+  border-color: #555555;
+}
+
+:global(.react-datepicker__triangle::before),
+:global(.react-datepicker__triangle::after) {
+  border-bottom-color: #f5f5f5;
 }

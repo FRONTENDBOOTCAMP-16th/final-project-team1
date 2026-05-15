@@ -1,4 +1,3 @@
-
 .statusTab {
   display: flex;
   gap: 6px;
@@ -6,6 +5,7 @@
   background-color: #ffffff;
   border: 1px solid #cccccc;
   border-radius: var(--border-radius-xl);
+  color-scheme: light;
 
   .tab {
     flex: 1;
@@ -16,12 +16,15 @@
     font-size: var(--sub-title);
     line-height: 48px;
     color: #111111;
+    background-color: transparent;
     cursor: pointer;
     transition: all 0.2s ease;
+    border: 1px solid #cccccc;
+    border-radius: var(--border-radius-xl);
   }
 
   .active {
-    background-color: #FF6000;
+    background-color: #ff6000;
     color: #ffffff;
   }
 }
