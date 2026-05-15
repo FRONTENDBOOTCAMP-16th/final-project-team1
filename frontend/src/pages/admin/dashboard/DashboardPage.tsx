@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
       try {
         setIsLeaveLoading(true)
 
-        const data = await getLeaveRequestList(1, 100)
+        const data = await getLeaveRequestList(1, 30)
 
         setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
       } catch (error) {
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      const data = await getLeaveRequestList(1, 50)
+      const data = await getLeaveRequestList(1, 30)
 
       setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
@@ -137,7 +137,7 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      const data = await getLeaveRequestList(1, 50)
+      const data = await getLeaveRequestList(1, 30)
 
       setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
     } catch (error) {
