@@ -124,11 +124,21 @@
 }
 
 .cardSection {
-  display: flex;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
+}
 
-  inline-size: 100%;
+@media (max-width: 1200px) {
+  .cardSection {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .cardSection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .cardSection > * {
@@ -338,7 +348,6 @@
   text-align: left;
 }
 
-/* 공지사항 공개/비공개 */
 /* 공지사항 공개/비공개 */
 .noticeContent {
   display: flex;
