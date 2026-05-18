@@ -125,39 +125,39 @@ function DashboardPage() {
     return weekdayCount
   }
 
-  useEffect(() => {
-    const fetchAttendanceItems = async () => {
-      try {
-        setIsAttendanceLoading(true)
+  const fetchAttendanceItems = async () => {
+    try {
+      setIsAttendanceLoading(true)
 
-        const response = await api.get('/api/student/attendance-calendar', {
-          params: {
-            year: calendarYear,
-            month: calendarMonth,
-          },
-        })
+      const response = await api.get('/api/student/attendance-calendar', {
+        params: {
+          year: calendarYear,
+          month: calendarMonth,
+        },
+      })
 
-        if (!response.data.success) {
-          setAttendanceItems([])
-          return
-        }
-
-        const items: AttendanceItem[] = response.data.data.items ?? []
-
-        const totalDays = getWeekdayCount(calendarYear, calendarMonth)
-        const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
-
-        setAttendanceRate(rate)
-        setAttendanceItems(items)
-
-        setIsAttendanceLoading(false)
-      } catch (error) {
-        console.error('출결 캘린더 조회 실패:', error)
+      if (!response.data.success) {
         setAttendanceItems([])
-        setIsAttendanceLoading(false)
+        return
       }
-    }
 
+      const items: AttendanceItem[] = response.data.data.items ?? []
+
+      const totalDays = getWeekdayCount(calendarYear, calendarMonth)
+
+      const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
+
+      setAttendanceRate(rate)
+      setAttendanceItems(items)
+    } catch (error) {
+      console.error('출결 캘린더 조회 실패:', error)
+      setAttendanceItems([])
+    } finally {
+      setIsAttendanceLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchAttendanceItems()
   }, [calendarYear, calendarMonth])
 
@@ -181,6 +181,7 @@ function DashboardPage() {
       const time = response.data.data.checkInTime
 
       setCheckInTime(formatApiTime(time))
+      await fetchAttendanceItems()
     } catch (error) {
       console.error('입실 처리 실패', error)
     }
@@ -198,6 +199,7 @@ function DashboardPage() {
       const time = response.data.data.checkOutTime
 
       setCheckOutTime(formatApiTime(time))
+      await fetchAttendanceItems()
     } catch (error) {
       console.error('퇴실 처리 실패', error)
     }
