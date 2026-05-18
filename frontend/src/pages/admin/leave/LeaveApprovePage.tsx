@@ -1,6 +1,7 @@
 // 외부 라이브러리
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { FileText, Check, X } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // 공통 컴포넌트
 import { Button } from '@/components'
@@ -66,17 +67,11 @@ const statusNameMap: Record<TabType, string> = {
 }
 
 export default function LeaveApprovePage() {
-  /** 전체 휴가 신청 목록 */
-  const [data, setData] = useState<LeaveApiItem[]>([])
-
   /** 현재 선택된 탭 */
   const [activeTab, setActiveTab] = useState<TabType>('pending')
 
   /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
-
-  /** 목록 최초 로딩 */
-  const [isLoading, setIsLoading] = useState(false)
 
   /** 승인/반려 처리 중인 행 ID */
   const [processingId, setProcessingId] = useState<number | null>(null)
@@ -85,25 +80,43 @@ export default function LeaveApprovePage() {
   const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
+  /** React Query 캐시 제어 */
+  const queryClient = useQueryClient()
+
   /** 휴가 신청 목록 조회 */
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery<LeaveApiItem[]>({
+    queryKey: ['leaveRequests'],
+    queryFn: getRecentLeaveRequests,
+  })
 
-      try {
-        const result = await getRecentLeaveRequests()
-        setData(result)
-      } catch (e: unknown) {
-        console.error('데이터 조회 실패:', e)
-        setModalMessage('데이터를 불러오는데 실패했습니다.')
-        setOpen(true)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  /** 승인 / 반려 상태 변경 mutation */
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ leaveRequestId, nextStatus }: { leaveRequestId: number; nextStatus: TabType }) =>
+      updateLeaveRequestStatus(leaveRequestId, statusCodeMap[nextStatus]),
 
-    fetchData()
-  }, [])
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['leaveRequests'],
+      })
+
+      setModalMessage(variables.nextStatus === 'approved' ? '승인 되었습니다.' : '반려 되었습니다.')
+      setOpen(true)
+    },
+
+    onError: (e) => {
+      console.error('상태 변경 실패:', e)
+      setModalMessage(e instanceof Error ? e.message : '처리에 실패했습니다.')
+      setOpen(true)
+    },
+
+    onSettled: () => {
+      setProcessingId(null)
+    },
+  })
 
   /** 탭 변경 시 첫 페이지로 이동 */
   const handleChangeTab = (tab: TabType) => {
@@ -113,37 +126,17 @@ export default function LeaveApprovePage() {
 
   /** 승인 / 반려 상태 변경 */
   const handleUpdateStatus = useCallback(
-    async (leaveRequestId: number, nextStatus: TabType) => {
+    (leaveRequestId: number, nextStatus: TabType) => {
       if (processingId !== null) return
 
       setProcessingId(leaveRequestId)
 
-      try {
-        await updateLeaveRequestStatus(leaveRequestId, statusCodeMap[nextStatus])
-
-        setData((prev) =>
-          prev.map((item) =>
-            item.leaveRequestId === leaveRequestId
-              ? {
-                  ...item,
-                  approvalStatusCode: statusCodeMap[nextStatus],
-                  approvalStatusName: statusNameMap[nextStatus],
-                }
-              : item,
-          ),
-        )
-
-        setModalMessage(nextStatus === 'approved' ? '승인 되었습니다.' : '반려 되었습니다.')
-        setOpen(true)
-      } catch (e: unknown) {
-        console.error('상태 변경 실패:', e)
-        setModalMessage(e instanceof Error ? e.message : '처리에 실패했습니다.')
-        setOpen(true)
-      } finally {
-        setProcessingId(null)
-      }
+      updateStatusMutation.mutate({
+        leaveRequestId,
+        nextStatus,
+      })
     },
-    [processingId],
+    [processingId, updateStatusMutation],
   )
 
   /**
@@ -312,12 +305,14 @@ export default function LeaveApprovePage() {
                     rows={PAGE_SIZE}
                   />
                 </div>
+              ) : isError ? (
+                <div className={S.empty}>데이터를 불러오는데 실패했습니다.</div>
               ) : (
                 <Table columns={vacationColumns} data={pagedData} />
               )}
             </div>
 
-            {!isLoading && (
+            {!isLoading && !isError && (
               <div className={S.table_footer}>
                 <span>
                   총 {currentData.length}건 중{' '}
