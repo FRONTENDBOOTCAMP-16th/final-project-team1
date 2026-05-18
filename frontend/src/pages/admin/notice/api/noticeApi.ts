@@ -1,4 +1,4 @@
-import { api } from '@/api/axios'
+import { axiosInstance } from '@/api/axios'
 
 /** 공지사항 목록 조회 요청 파라미터 */
 export type NoticeListParams = {
@@ -37,7 +37,7 @@ export async function getRecentNoticeRequests({
   page,
   size,
 }: NoticeListParams): Promise<NoticeListResponse> {
-  const res = await api.get('/api/admin/notices', {
+  const res = await axiosInstance.get('/api/admin/notices', {
     params: {
       keyword,
       page,
@@ -50,13 +50,13 @@ export async function getRecentNoticeRequests({
 
 // 삭제
 export async function deleteNotice(noticeId: number) {
-  const res = await api.delete(`/api/admin/notices/${noticeId}`)
+  const res = await axiosInstance.delete(`/api/admin/notices/${noticeId}`)
   return res.data.data
 }
 
 // 상세 조회
 export async function getNoticeDetail(noticeId: number) {
-  const res = await api.get(`/api/admin/notices/${noticeId}`)
+  const res = await axiosInstance.get(`/api/admin/notices/${noticeId}`)
   return res.data.data
 }
 
@@ -69,12 +69,12 @@ export async function updateNotice(
     isOpen: boolean
   },
 ) {
-  const res = await api.put(`/api/admin/notices/${noticeId}`, payload)
+  const res = await axiosInstance.put(`/api/admin/notices/${noticeId}`, payload)
   return res.data.data
 }
 
 // 리스트 등록
 export async function createNotice(payload: { title: string; content: string }) {
-  const res = await api.post('/api/admin/notices', payload)
+  const res = await axiosInstance.post('/api/admin/notices', payload)
   return res.data
 }
