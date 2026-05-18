@@ -72,6 +72,7 @@
   flex-direction: column;
   gap: 10px;
   text-align: start;
+  margin-block-end: 20px;
 }
 
 .input_label {

@@ -5,6 +5,7 @@ import {
   updatePassword,
   type StudentProfile,
 } from '../api/settingsApi'
+import { useAuthStore } from '@/store'
 
 export const useSettings = () => {
   const [profile, setProfile] = useState<StudentProfile | null>(null)
@@ -16,7 +17,8 @@ export const useSettings = () => {
       try {
         setIsLoading(true)
 
-        const savedStudentId = localStorage.getItem('studentId')
+        // 변경 전: localStorage.getItem('studentId')
+        const savedStudentId = useAuthStore.getState().user?.userId
 
         if (!savedStudentId) {
           throw new Error('로그인 정보가 없습니다. 다시 로그인해 주세요.')

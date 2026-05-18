@@ -8,6 +8,7 @@
   --background: #ffffff;
   --foreground: #111111;
   --primay: #ff6000;
+  color-scheme: light only;
 }
 
 /* 
@@ -22,17 +23,6 @@
   --font-noto: var(--font-noto), ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
 }
 
-/* 
-  [다크 모드 설정] 
-  시스템 설정이 다크 모드일 때 변수 값을 변경합니다. 
-*/
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #111111;
-    --foreground: #ffffff;
-    --primay: #ff6000;
-  }
-}
 
 /* 
   [기본 스타일 적용] 

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
 import StudentLayout from '@/pages/sample/StudentLayout'
 import NoticeBoard from '@/components/common/noticeBoard/noticeBoard'
+import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import { getNoticeDetail } from './api/noticeApi'
 import type { NoticeDetail } from './api/noticeApi'
 import S from './styles/noticeDetail.module.css'
@@ -33,11 +32,8 @@ function NoticeDetailPage() {
     if (isLoading) return (
         <div className={S.noticeDetailContainer}>
             <StudentLayout>
-                <div style={{ padding: '30px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <Skeleton height={32} width="50%" />
-                    <Skeleton height={16} width="20%" />
-                    <Skeleton height={200} />
-                    <Skeleton height={48} width="30%" style={{ margin: '0 auto' }} />
+                <div className={S.skeletonWrapper}>
+                    <TableSkeleton rows={5} columns={1} />
                 </div>
             </StudentLayout>
         </div>

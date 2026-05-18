@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styles from './styles/LectureListPage.module.css'
+import searchStyle from '@/components/common/search/search.module.css'
 import { getLectureList } from './api/lecture.api'
 import type { LectureItem } from './api/lecture.types'
 // Sidebar + Header가 포함된 관리자 공통 레이아웃
@@ -57,20 +58,13 @@ export default function LectureListPage() {
   const navigate = useNavigate()
   return (
     <AdminLayout>
-      <div
-        style={{
-          display: 'flex',
-          gap: '10px',
-          alignItems: 'center',
-          marginBottom: '20px',
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <div className={styles.searchBar}>
+      <div className={styles.filterBar}>
+        <div className={styles.searchWrap}>
+          <div className={searchStyle.searchBar}>
             <Search size={16} />
             <input
-              className={styles.searchInput}
-              placeholder="강의 검색..."
+              className={searchStyle.searchInput}
+              placeholder="강의 검색"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               onKeyDown={(e) => {
@@ -120,7 +114,7 @@ export default function LectureListPage() {
             <tbody>
               {lectures.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                  <td colSpan={4} className={styles.emptyRow}>
                     검색 결과가 없습니다.
                   </td>
                 </tr>
@@ -129,7 +123,7 @@ export default function LectureListPage() {
                   <tr
                     key={lecture.classId}
                     onClick={() => navigate(`/admin/lecture/${lecture.classId}/edit`)}
-                    style={{ cursor: 'pointer' }}
+                    className={styles.clickableRow}
                   >
                     <td>{lecture.className}</td>
                     <td>{lecture.startDate}</td>

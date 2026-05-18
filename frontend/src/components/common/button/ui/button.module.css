@@ -92,13 +92,6 @@
   border: 2px solid var(--border-gray);
 }
 
-/* 훈련중 (진행중 - 주황) */
-.studying {
-  color: var(--default-orange);
-  background-color: color-mix(in srgb, var(--default-orange) 10%, transparent);
-  border: 2px solid var(--default-orange);
-}
-
 /* 승인 */
 .active {
   color: var(--white);

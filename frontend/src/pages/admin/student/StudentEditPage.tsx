@@ -24,7 +24,7 @@ const studentSchema = z.object({
     .string()
     .min(1, '휴대폰 번호를 입력하세요')
     .regex(/^\d{3}-\d{3,4}-\d{4}$/, { message: '올바른 형식으로 입력하세요 (예: 010-1234-5678)' }),
-  email: z.string().email('올바른 이메일 형식이 아닙니다'),
+  email: z.string().min(1, '이메일을 입력하세요').email('올바른 이메일 형식이 아닙니다'),
   classId: z.string().min(1, '수강 과정을 선택하세요'),
   studentStatusCode: z.enum(['S001', 'S002', 'S003']),
 })
@@ -71,7 +71,11 @@ export default function StudentEditPage() {
           classId: String(detail.classId),
           studentStatusCode: detail.statusCode as 'S001' | 'S002' | 'S003',
         })
-        setCourses(lectureResult.items.map(({ classId, className }) => ({ classId, className })))
+        setCourses(
+          lectureResult.items
+            .filter((item) => !item.isCompleted)
+            .map(({ classId, className }) => ({ classId, className })),
+        )
       } catch (error) {
         console.error('학생 정보 조회 실패:', error)
       }

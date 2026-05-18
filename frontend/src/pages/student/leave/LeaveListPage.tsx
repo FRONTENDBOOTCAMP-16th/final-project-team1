@@ -9,7 +9,10 @@ import type { TableColumn } from '@/components/common/table/table.types'
 import { Plus } from 'lucide-react'
 import { getLeaveList } from './api/leaveApi'
 import type { LeaveItem } from './api/leaveApi'
+import { useAuthStore } from '@/store'
 import S from './styles/leave.module.css'
+
+const PAGE_SIZE = 10
 
 const statusMap: Record<string, { className: string }> = {
   V001: { className: S.statusPending },
@@ -25,17 +28,16 @@ function LeaveListPage() {
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
   const [totalCount, setTotalCount] = useState(0)
 
-  const studentId = localStorage.getItem('studentId') || ''
-  const totalPages = Math.ceil(totalCount / 10)
+  const studentId = useAuthStore((state) => state.user?.userId) || ''
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   useEffect(() => {
     const fetchLeaveList = async () => {
       try {
         setIsLoading(true)
         const data = await getLeaveList({
-          // studentId,
           page: currentPage,
-          size: 10,
+          size: PAGE_SIZE,
           statusCode: statusFilter || undefined,
         })
         setLeaveList(data.items)
@@ -112,20 +114,27 @@ function LeaveListPage() {
         </div>
 
         {isLoading ? (
-          <TableSkeleton rows={10} columns={4} />
+          <TableSkeleton rows={PAGE_SIZE} columns={4} />
         ) : (
           <CommonTable
-              columns={historyColumns}
-              data={leaveList}
-              rowKey={(row) => row.leaveRequestId}
+            columns={historyColumns}
+            data={leaveList}
+            rowKey={(row) => row.leaveRequestId}
           />
         )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <div className={S.paginationBox}>
+          <span>
+            총 {totalCount}건 중{' '}
+            {totalCount === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
+            {Math.min(currentPage * PAGE_SIZE, totalCount)}건 표시
+          </span>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </StudentLayout>
     </div>
   )
