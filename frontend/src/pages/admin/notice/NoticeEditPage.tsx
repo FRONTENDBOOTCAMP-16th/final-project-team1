@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { z } from 'zod'
 import { Button } from '@/components'
 import { SquarePen } from 'lucide-react'
 
@@ -12,6 +13,29 @@ import Modal from '@/components/common/modal/Modal'
 
 import { getNoticeDetail, updateNotice } from './api/noticeApi'
 import S from './styles/noticeEditor.module.css'
+
+/** 공지사항 입력값 유효성 검사 */
+const noticeSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, '제목을 입력해주세요.')
+    .max(30, '제목은 30자 이하로 입력해주세요.')
+    .regex(/^(?![ㄱ-ㅎㅏ-ㅣ]+$).*/, '자음 또는 모음만 입력할 수 없습니다.'),
+
+  content: z.string().refine(
+    (value) => {
+      const div = document.createElement('div')
+      div.innerHTML = value
+      return div.textContent?.trim() !== ''
+    },
+    {
+      message: '내용을 입력해주세요.',
+    },
+  ),
+
+  isOpen: z.boolean(),
+})
 
 export default function NoticeEditPage() {
   /** 제목 상태 */
@@ -71,14 +95,23 @@ export default function NoticeEditPage() {
 
   /** 공지 수정 */
   const handleUpdateNotice = async () => {
+    const result = noticeSchema.safeParse({
+      title,
+      content,
+      isOpen,
+    })
+
+    if (!result.success) {
+      setModalMessage(result.error.issues[0].message)
+      setModalAction(null)
+      setOpen(true)
+      return
+    }
+
     try {
       if (!id) return
 
-      await updateNotice(Number(id), {
-        title,
-        content,
-        isOpen,
-      })
+      await updateNotice(Number(id), result.data)
 
       setModalMessage('수정되었습니다.')
 
