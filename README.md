@@ -20,12 +20,28 @@
 
 ## 📌 프로젝트 소개
 
-| 항목       | 내용                                                                                                                                                     |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 프로젝트명 | ♟️ 체크메이트 (Checkmate)                                                                                                                                |
-| 구성       | 👨‍🎓 학생용 / 👨‍💼 관리자용                                                                                                                                  |
-| 개발 기간  | 📅 2026.04.16 ~ 2026.05.19                                                                                                                               |
-| 소개       | React 기반으로 학생과 관리자가 각각의 역할에 맞게 출결 확인, 휴가 신청, 공지사항 관리, 학생 및 강의 관리 기능을 사용할 수 있도록 설계된 출결 관리 시스템 |
+학생과 관리자 권한에 따라 출결 현황 조회, 휴가 신청, 공지사항 및 학생·강의 관리 기능을 제공하는 React 기반 출결 관리 시스템
+
+| 항목      | 내용                           |
+| --------- | ------------------------------ |
+| 개발 기간 | 2026.04.16 ~ 2026.05.19 (5주)  |
+| 팀 구성   | 5인                            |
+| 서비스    | 학생 포털 / 관리자 어드민      |
+| 지원 환경 | Desktop · Tablet 반응형 웹     |
+| Frontend  | React · TypeScript · Vite      |
+| Backend   | Spring Boot · MySQL            |
+| 배포 환경 | Netlify · Render · Aiven MySQL |
+
+## 🔗 Project Links
+
+- Service  
+  https://final-checkmate.netlify.app/
+
+- API Docs (Swagger)  
+  https://final-project-team1.onrender.com/swagger-ui/index.html
+
+- WBS  
+  https://docs.google.com/spreadsheets/d/1FtVwEGyxLy-u7XBxii0xNnxMp_u-ThXnVulO8N3tmGA/edit?gid=0#gid=0
 
 ---
 
