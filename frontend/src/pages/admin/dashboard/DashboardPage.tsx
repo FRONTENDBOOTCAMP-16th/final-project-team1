@@ -211,103 +211,101 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminLayout>
-      <div className={S.dashboard}>
-        <section className={S.cardSection}>
-          <CountCard
-            label="오늘의 출석률"
-            value={summary?.attendanceRate ?? 0}
-            unit="%"
-            icon={<TrendingUp />}
-            variant="gray"
-          />
-          <CountCard
-            label="출석완료"
-            value={(summary?.presentCount ?? 0) + (summary?.lateCount ?? 0)}
-            unit="명"
-            icon={<UserCheck />}
-            variant="green"
-          />
-          <CountCard
-            label="지각인원"
-            value={summary?.lateCount ?? 0}
-            unit="명"
-            icon={<Clock />}
-            variant="yellow"
-          />
-          <CountCard
-            label="결석인원"
-            value={summary?.absentCount ?? 0}
-            unit="명"
-            icon={<UserX />}
-            variant="red"
-          />
-          <CountCard
-            label="휴가승인대기"
-            value={summary?.pendingLeaveCount ?? 0}
-            unit="명"
-            icon={<ScrollText />}
-            variant="orange"
-          />
-        </section>
-        <div className={S.topGrid}>
-          <section className={S.chartSection}>
-            <div className={S.container}>
-              {isLoading ? (
-                <>
-                  <Skeleton width={180} height={24} borderRadius={8} />
-
-                  <div style={{ marginTop: '24px' }}>
-                    <Skeleton height={280} borderRadius={16} />
-                  </div>
-                </>
-              ) : (
-                <AttendanceStatusChart data={attendanceData} />
-              )}
-            </div>
+      <div className={S.dashboardWrapper}>
+        <div className={S.dashboard}>
+          <section className={S.cardSection}>
+            <CountCard
+              label="오늘의 출석률"
+              value={summary?.attendanceRate ?? 0}
+              unit="%"
+              icon={<TrendingUp />}
+              variant="gray"
+            />
+            <CountCard
+              label="출석완료"
+              value={(summary?.presentCount ?? 0) + (summary?.lateCount ?? 0)}
+              unit="명"
+              icon={<UserCheck />}
+              variant="green"
+            />
+            <CountCard
+              label="지각인원"
+              value={summary?.lateCount ?? 0}
+              unit="명"
+              icon={<Clock />}
+              variant="yellow"
+            />
+            <CountCard
+              label="결석인원"
+              value={summary?.absentCount ?? 0}
+              unit="명"
+              icon={<UserX />}
+              variant="red"
+            />
+            <CountCard
+              label="휴가승인대기"
+              value={summary?.pendingLeaveCount ?? 0}
+              unit="명"
+              icon={<ScrollText />}
+              variant="orange"
+            />
           </section>
-
-          <section className={S.noticeSection}>
-            <div className={S.container}>
-              {isNoticeLoading ? (
-                <TableSkeleton rows={5} columns={2} />
+          <div className={S.topGrid}>
+            <section className={S.chartSection}>
+              <div className={S.container}>
+                {isLoading ? (
+                  <>
+                    <Skeleton width={180} height={24} borderRadius={8} />
+                    <div style={{ marginTop: '24px' }}>
+                      <Skeleton height={280} borderRadius={16} />
+                    </div>
+                  </>
+                ) : (
+                  <AttendanceStatusChart data={attendanceData} />
+                )}
+              </div>
+            </section>
+            <section className={S.noticeSection}>
+              <div className={S.container}>
+                {isNoticeLoading ? (
+                  <TableSkeleton rows={5} columns={2} />
+                ) : (
+                  <SystemNoticeList data={noticeData} />
+                )}
+              </div>
+            </section>
+          </div>
+          <section className={S.recentLeave}>
+            <div className={S.header}>
+              <h3>최근 휴가 신청 내역</h3>
+              <p className={S.description}>최근 등록된 5개 내역만 표시됩니다.</p>
+            </div>
+            <div className={S.tableBox}>
+              {isLeaveLoading ? (
+                <div className={S.tableSkeletonBox}>
+                  <TableSkeleton
+                    columns={[
+                      { header: '신청자', width: '15%' },
+                      { header: '학번', width: '13%' },
+                      { header: '휴가종류', width: '13%' },
+                      { header: '기간', width: '25%' },
+                      { header: '처리상태', width: '12%' },
+                      { header: '처리', width: '15%' },
+                    ]}
+                    rows={5}
+                  />
+                </div>
               ) : (
-                <SystemNoticeList data={noticeData} />
+                <Table
+                  columns={vacationColumns}
+                  data={vacationData.slice(0, 5)}
+                  totalCount={5}
+                  countLabel="명"
+                />
               )}
             </div>
           </section>
         </div>
-
-        <section className={S.recentLeave}>
-          <div className={S.header}>
-            <h3>최근 휴가 신청 내역</h3>
-            <p className={S.description}>최근 등록된 5개 내역만 표시됩니다.</p>
-          </div>
-
-          <div className={S.tableBox}>
-            {isLeaveLoading ? (
-              <div className={S.tableSkeletonBox}>
-                <TableSkeleton
-                  columns={[
-                    { header: '신청자', width: '15%' },
-                    { header: '학번', width: '13%' },
-                    { header: '휴가종류', width: '13%' },
-                    { header: '기간', width: '25%' },
-                    { header: '처리상태', width: '12%' },
-                    { header: '처리', width: '15%' },
-                  ]}
-                  rows={5}
-                />
-              </div>
-            ) : (
-              <Table
-                columns={vacationColumns}
-                data={vacationData.slice(0, 5)}
-                totalCount={5}
-                countLabel="명"
-              />
-            )}
-          </div>
-        </section>
       </div>
     </AdminLayout>
   )
