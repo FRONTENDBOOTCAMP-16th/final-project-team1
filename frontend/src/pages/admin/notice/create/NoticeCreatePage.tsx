@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { SquarePen } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { z } from 'zod'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 
@@ -15,6 +16,31 @@ import AdminLayout from '@/pages/sample/AdminLayout'
 // 페이지 내부 API / 스타일
 import { createNotice } from '../api/noticeApi'
 import S from '../styles/noticeEditor.module.css'
+
+/** 공지사항 입력값 유효성 검사 */
+const noticeSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, '제목을 입력해주세요.')
+    .max(30, '제목은 30자 이하로 입력해주세요.')
+    .regex(
+      /^(?![ㄱ-ㅎㅏ-ㅣ]+$).*/,
+      '자음 또는 모음만 입력할 수 없습니다.',
+    ),
+  
+
+  content: z.string().refine(
+    (value) => {
+      const div = document.createElement('div')
+      div.innerHTML = value
+      return div.textContent?.trim() !== ''
+    },
+    {
+      message: '내용을 입력해주세요.',
+    },
+  ),
+})
 
 export default function NoticeCreatePage() {
   /** 공지사항 제목 입력값 */
@@ -44,13 +70,6 @@ export default function NoticeCreatePage() {
     ],
   }
 
-  /** ReactQuill은 비어 있어도 <p><br></p>가 들어오므로 텍스트만 추출해서 빈 값 검사 */
-  const isEmptyContent = (html: string) => {
-    const div = document.createElement('div')
-    div.innerHTML = html
-    return div.textContent?.trim() === ''
-  }
-
   /** 모달 열기 */
   const showModal = (message: string, action?: () => void) => {
     setModalMessage(message)
@@ -60,21 +79,18 @@ export default function NoticeCreatePage() {
 
   /** 공지사항 등록 */
   const handleCreateNotice = async () => {
-    if (!title.trim()) {
-      showModal('제목을 입력해주세요.')
-      return
-    }
+    const result = noticeSchema.safeParse({
+      title,
+      content,
+    })
 
-    if (isEmptyContent(content)) {
-      showModal('내용을 입력해주세요.')
+    if (!result.success) {
+      showModal(result.error.issues[0].message)
       return
     }
 
     try {
-      await createNotice({
-        title,
-        content,
-      })
+      await createNotice(result.data)
 
       showModal('공지사항이 등록되었습니다.', () => {
         navigate('/admin/notice')
