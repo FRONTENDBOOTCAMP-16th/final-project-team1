@@ -60,11 +60,11 @@ const statusCodeMap: Record<TabType, string> = {
 }
 
 /** 상태 이름 매핑 */
-const statusNameMap: Record<TabType, string> = {
-  pending: '승인 대기',
-  approved: '승인 완료',
-  rejected: '반려',
-}
+// const statusNameMap: Record<TabType, string> = {
+//   pending: '승인 대기',
+//   approved: '승인 완료',
+//   rejected: '반려',
+// }
 
 export default function LeaveApprovePage() {
   /** 현재 선택된 탭 */
