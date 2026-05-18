@@ -1,6 +1,7 @@
 import AdminLayout from '@/pages/sample/AdminLayout'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Clock, ScrollText, TrendingUp, UserCheck, UserX, Check, X } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import CountCard from '@/components/common/countCard/CountCard'
 import {
@@ -9,9 +10,6 @@ import {
   getNoticeList,
   getLeaveRequestList,
   updateLeaveRequestStatus,
-  type AttendanceItem,
-  type AdminDashboardData,
-  type NoticeItem,
   type LeaveRequestItem,
 } from '@/pages/admin/dashboard/api/dashboardApi'
 import AttendanceStatusChart from '@/pages/admin/dashboard/components/AttendanceStatusChart'
@@ -43,76 +41,45 @@ const vacationTypeMap = {
 }
 
 export default function AdminDashboardPage() {
-  const [summary, setSummary] = useState<AdminDashboardData | null>(null)
-  const [attendanceData, setAttendanceData] = useState<AttendanceItem[]>([])
-
-  const [noticeData, setNoticeData] = useState<NoticeItem[]>([])
-
-  const [vacationData, setVacationData] = useState<LeaveRequestItem[]>([])
-
   const [processingId, setProcessingId] = useState<number | null>(null)
+  const queryClient = useQueryClient()
 
   //휴가 신청 현황
-  const [isLeaveLoading, setIsLeaveLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchLeaveRequestList = async () => {
-      try {
-        setIsLeaveLoading(true)
+  const { data: vacationData = [], isLoading: isLeaveLoading } = useQuery({
+    queryKey: ['admin-dashboard-leave-requests'],
+    queryFn: async () => {
+      const data = await getLeaveRequestList(1, 30)
 
-        const data = await getLeaveRequestList(1, 30)
-
-        setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
-      } catch (error) {
-      } finally {
-        setIsLeaveLoading(false)
-      }
-    }
-
-    fetchLeaveRequestList()
-  }, [])
+      return data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5)
+    },
+  })
 
   //공지사항 리스트
-  const [isNoticeLoading, setIsNoticeLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchNoticeData = async () => {
-      try {
-        setIsNoticeLoading(true)
-
-        const data = await getNoticeList()
-        setNoticeData(data)
-      } catch (error) {
-      } finally {
-        setIsNoticeLoading(false)
-      }
-    }
-
-    fetchNoticeData()
-  }, [])
+  const { data: noticeData = [], isLoading: isNoticeLoading } = useQuery({
+    queryKey: ['admin-dashboard-notices'],
+    queryFn: getNoticeList,
+  })
 
   //출결 현황 그래프
-  const [isLoading, setIsLoading] = useState(true)
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true)
+  const { data: dashboardData, isLoading } = useQuery({
+    queryKey: ['admin-dashboard-data'],
+    queryFn: async () => {
+      const [summaryData, attendanceData] = await Promise.all([
+        getAdminDashboardSummary(),
+        getAttendanceStatusByClass(),
+      ])
 
-        const [summaryData, attendanceData] = await Promise.all([
-          getAdminDashboardSummary(),
-          getAttendanceStatusByClass(),
-        ])
-
-        setSummary(summaryData)
-        setAttendanceData(attendanceData)
-      } catch (error) {
-      } finally {
-        setIsLoading(false)
+      return {
+        summary: summaryData,
+        attendanceData,
       }
-    }
+    },
+  })
 
-    fetchDashboardData()
-  }, [])
+  const summary = dashboardData?.summary
+  const attendanceData = dashboardData?.attendanceData ?? []
 
   //휴가 신청 승인/반려
   const handleApprove = async (row: LeaveRequestItem) => {
@@ -121,9 +88,9 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      const data = await getLeaveRequestList(1, 30)
-
-      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
+      queryClient.invalidateQueries({
+        queryKey: ['admin-dashboard-leave-requests'],
+      })
     } catch (error) {
       console.error(error)
     } finally {
@@ -137,9 +104,9 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      const data = await getLeaveRequestList(1, 30)
-
-      setVacationData(data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5))
+      queryClient.invalidateQueries({
+        queryKey: ['admin-dashboard-leave-requests'],
+      })
     } catch (error) {
       console.error(error)
     } finally {

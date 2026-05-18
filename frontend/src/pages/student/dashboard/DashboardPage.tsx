@@ -3,13 +3,11 @@ import AttendanceActionCard from '@/pages/student/dashboard/components/Attendanc
 import AttendanceCalendar from '@/pages/student/dashboard/components/AttendanceCalendar'
 import { Clock } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { getStudentDashboard } from '@/pages/student/dashboard/api/studentDashboardApi'
 import { api } from '@/api/axios'
-import {
-  getStudentNoticeList,
-  type StudentNoticeItem,
-} from '@/pages/student/dashboard/api/studentDashboardApi'
+import { getStudentNoticeList } from '@/pages/student/dashboard/api/studentDashboardApi'
 import Modal from '@/components/common/modal/Modal'
 import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
 import S from '@/pages/student/dashboard/styles/dashboard.module.css'
@@ -48,20 +46,13 @@ interface LeaveItem {
 function DashboardPage() {
   const [now, setNow] = useState(new Date())
 
-  const [checkInTime, setCheckInTime] = useState<string | null>(null)
-  const [checkOutTime, setCheckOutTime] = useState<string | null>(null)
-  const [attendanceRate, setAttendanceRate] = useState<number>(0)
-
   const today = new Date()
   const [calendarYear, setCalendarYear] = useState(today.getFullYear())
   const [calendarMonth, setCalendarMonth] = useState(today.getMonth() + 1)
 
-  const [attendanceItems, setAttendanceItems] = useState<AttendanceItem[]>([])
-  const [notices, setNotices] = useState<StudentNoticeItem[]>([])
-  const [isNoticeLoading, setIsNoticeLoading] = useState(true)
+  const queryClient = useQueryClient()
 
   const navigate = useNavigate()
-  const [isAttendanceLoading, setIsAttendanceLoading] = useState(true)
 
   const handlePrevMonth = () => {
     if (calendarMonth === 1) {
@@ -91,23 +82,6 @@ function DashboardPage() {
     })
   }
 
-  // 공지사항
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const data = await getStudentNoticeList()
-
-        setNotices(data)
-      } catch (error) {
-        console.error('공지사항 조회 실패:', error)
-      } finally {
-        setIsNoticeLoading(false)
-      }
-    }
-
-    fetchNotices()
-  }, [])
-
   const getWeekdayCount = (year: number, month: number) => {
     const lastDate = new Date(year, month, 0).getDate()
 
@@ -125,10 +99,15 @@ function DashboardPage() {
     return weekdayCount
   }
 
-  const fetchAttendanceItems = async () => {
-    try {
-      setIsAttendanceLoading(true)
+  const { data: notices = [], isLoading: isNoticeLoading } = useQuery({
+    queryKey: ['studentNotices'],
+    queryFn: getStudentNoticeList,
+  })
 
+  // 출결 캘린더
+  const { data: attendanceItems = [], isLoading: isAttendanceLoading } = useQuery({
+    queryKey: ['studentAttendanceCalendar', calendarYear, calendarMonth],
+    queryFn: async () => {
       const response = await api.get('/api/student/attendance-calendar', {
         params: {
           year: calendarYear,
@@ -137,29 +116,17 @@ function DashboardPage() {
       })
 
       if (!response.data.success) {
-        setAttendanceItems([])
-        return
+        return []
       }
 
-      const items: AttendanceItem[] = response.data.data.items ?? []
+      return response.data.data.items ?? []
+    },
+  })
 
-      const totalDays = getWeekdayCount(calendarYear, calendarMonth)
+  const totalDays = getWeekdayCount(calendarYear, calendarMonth)
 
-      const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
-
-      setAttendanceRate(rate)
-      setAttendanceItems(items)
-    } catch (error) {
-      console.error('출결 캘린더 조회 실패:', error)
-      setAttendanceItems([])
-    } finally {
-      setIsAttendanceLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchAttendanceItems()
-  }, [calendarYear, calendarMonth])
+  const attendanceRate =
+    attendanceItems.length === 0 ? 0 : Math.round((attendanceItems.length / totalDays) * 100)
 
   //중복 입/퇴실
   const [popupMessage, setPopupMessage] = useState('')
@@ -169,40 +136,54 @@ function DashboardPage() {
     setPopupMessage(message)
     setIsPopupOpen(true)
   }
-  const handleCheckIn = async () => {
-    if (checkInTime) {
+  const checkInMutation = useMutation({
+    mutationFn: () => axiosInstance.post('/api/student/attendance/check-in'),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['studentDashboard'],
+      })
+
+      await queryClient.invalidateQueries({
+        queryKey: ['studentAttendanceCalendar'],
+      })
+    },
+    onError: (error) => {
+      console.error('입실 처리 실패', error)
+    },
+  })
+
+  const checkOutMutation = useMutation({
+    mutationFn: () => axiosInstance.post('/api/student/attendance/check-out'),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['studentDashboard'],
+      })
+
+      await queryClient.invalidateQueries({
+        queryKey: ['studentAttendanceCalendar'],
+      })
+    },
+    onError: (error) => {
+      console.error('퇴실 처리 실패', error)
+    },
+  })
+
+  const handleCheckIn = () => {
+    if (todayAttendance?.checkInTime) {
       openPopup('이미 입실 처리되었습니다.')
       return
     }
 
-    try {
-      const response = await axiosInstance.post('/api/student/attendance/check-in')
-
-      const time = response.data.data.checkInTime
-
-      setCheckInTime(formatApiTime(time))
-      await fetchAttendanceItems()
-    } catch (error) {
-      console.error('입실 처리 실패', error)
-    }
+    checkInMutation.mutate()
   }
 
-  const handleCheckOut = async () => {
-    if (checkOutTime) {
+  const handleCheckOut = () => {
+    if (todayAttendance?.checkOutTime) {
       openPopup('이미 퇴실 처리되었습니다.')
       return
     }
 
-    try {
-      const response = await axiosInstance.post('/api/student/attendance/check-out')
-
-      const time = response.data.data.checkOutTime
-
-      setCheckOutTime(formatApiTime(time))
-      await fetchAttendanceItems()
-    } catch (error) {
-      console.error('퇴실 처리 실패', error)
-    }
+    checkOutMutation.mutate()
   }
 
   useEffect(() => {
@@ -215,22 +196,20 @@ function DashboardPage() {
     }
   }, [])
 
-  useEffect(() => {
-    const fetchTodayAttendance = async () => {
-      try {
-        const response = await getStudentDashboard()
+  const { data: studentDashboard } = useQuery({
+    queryKey: ['studentDashboard'],
+    queryFn: getStudentDashboard,
+  })
 
-        const todayAttendance = response.data.todayAttendance
+  const todayAttendance = studentDashboard?.data.todayAttendance
 
-        setCheckInTime(todayAttendance?.checkInTime ?? null)
-        setCheckOutTime(todayAttendance?.checkOutTime ?? null)
-      } catch (error) {
-        console.error('오늘 출석 정보 조회 실패:', error)
-      }
-    }
+  const displayCheckInTime = todayAttendance?.checkInTime
+    ? formatApiTime(todayAttendance.checkInTime)
+    : '--:--'
 
-    fetchTodayAttendance()
-  }, [])
+  const displayCheckOutTime = todayAttendance?.checkOutTime
+    ? formatApiTime(todayAttendance.checkOutTime)
+    : '--:--'
 
   const dateText = now.toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -245,20 +224,10 @@ function DashboardPage() {
     second: '2-digit',
   })
 
-  const calendarAttendanceList = attendanceItems.map((item) => ({
+  const calendarAttendanceList = attendanceItems.map((item: AttendanceItem) => ({
     attendanceDate: item.attendanceDate,
     attendanceStatus: item.checkInTime ? ('PRESENT' as const) : ('ABSENT' as const),
   }))
-
-  const formatTime = (time: string | null) => {
-    if (!time) return '--:--'
-
-    if (time.includes('T')) {
-      return time.split('T')[1].slice(0, 5)
-    }
-
-    return time.slice(0, 5)
-  }
 
   return (
     <StudentLayout>
@@ -282,12 +251,12 @@ function DashboardPage() {
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>입실 시간</span>
-              <strong className={S.checkInTime}>{formatTime(checkInTime)}</strong>
+              <strong className={S.checkInTime}>{displayCheckInTime}</strong>
             </div>
 
             <div className={S.statusBox}>
               <span className={S.statusLabel}>퇴실 시간</span>
-              <strong className={S.checkOutTime}>{formatTime(checkOutTime)}</strong>
+              <strong className={S.checkOutTime}>{displayCheckOutTime}</strong>
             </div>
           </div>
         </section>
