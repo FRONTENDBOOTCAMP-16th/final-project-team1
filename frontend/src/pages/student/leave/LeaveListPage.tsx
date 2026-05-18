@@ -12,6 +12,8 @@ import type { LeaveItem } from './api/leaveApi'
 import { useAuthStore } from '@/store'
 import S from './styles/leave.module.css'
 
+const PAGE_SIZE = 10
+
 const statusMap: Record<string, { className: string }> = {
   V001: { className: S.statusPending },
   V002: { className: S.statusApproved },
@@ -26,18 +28,16 @@ function LeaveListPage() {
   const [leaveList, setLeaveList] = useState<LeaveItem[]>([])
   const [totalCount, setTotalCount] = useState(0)
 
-  // 변경 전: localStorage.getItem('studentId') || ''
   const studentId = useAuthStore((state) => state.user?.userId) || ''
-  const totalPages = Math.ceil(totalCount / 10)
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   useEffect(() => {
     const fetchLeaveList = async () => {
       try {
         setIsLoading(true)
         const data = await getLeaveList({
-          // studentId,
           page: currentPage,
-          size: 10,
+          size: PAGE_SIZE,
           statusCode: statusFilter || undefined,
         })
         setLeaveList(data.items)
@@ -114,27 +114,27 @@ function LeaveListPage() {
         </div>
 
         {isLoading ? (
-          <TableSkeleton rows={10} columns={4} />
+          <TableSkeleton rows={PAGE_SIZE} columns={4} />
         ) : (
           <CommonTable
-              columns={historyColumns}
-              data={leaveList}
-              rowKey={(row) => row.leaveRequestId}
+            columns={historyColumns}
+            data={leaveList}
+            rowKey={(row) => row.leaveRequestId}
           />
         )}
 
         <div className={S.paginationBox}>
-    <span>
-        총 {totalCount}건 중{' '}
-        {totalCount === 0 ? 0 : (currentPage - 1) * 10 + 1} -{' '}
-        {Math.min(currentPage * 10, totalCount)}건 표시
-    </span>
-    <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-    />
-</div>
+          <span>
+            총 {totalCount}건 중{' '}
+            {totalCount === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1} -{' '}
+            {Math.min(currentPage * PAGE_SIZE, totalCount)}건 표시
+          </span>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </StudentLayout>
     </div>
   )
