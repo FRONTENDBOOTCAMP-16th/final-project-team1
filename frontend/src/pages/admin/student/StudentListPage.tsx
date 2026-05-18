@@ -1,169 +1,104 @@
-// React 기본 Hook import
-// useEffect: 화면이 뜨거나 조건이 바뀔 때 API 호출
-// useMemo: 컬럼 배열처럼 매번 새로 만들 필요 없는 값을 기억
-// useState: 검색어, 페이지, 학생 목록 같은 상태 관리
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-// 아이콘 라이브러리에서 Key 아이콘 import
+import { useQuery } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Key } from 'lucide-react'
 
-// 학생 목록 페이지 전용 CSS
 import './styles/student.css'
-
-// Sidebar + Header가 포함된 관리자 공통 레이아웃
 import AdminLayout from '@/pages/sample/AdminLayout'
-
-// 학생 검색 필터 컴포넌트
 import StudentFilterBar from './components/StudentFilterBar'
-
-// 공통 페이지네이션 컴포넌트
 import Pagination from '@/components/common/pagination/Pagination'
-
-// 공통 테이블 컴포넌트
 import Table from '@/components/common/table/Table'
-
-// 스켈레톤 로딩 컴포넌트
 import TableSkeleton from '@/components/common/skeleton/TableSkeleton'
-
-// 공통 버튼 컴포넌트
 import Button from '@/components/common/button/ui/button'
-
-// 테이블 컬럼 타입
 import type { TableColumn } from '@/components/common/table/table.types'
-
-// 관리자 학생 목록 데이터 타입
 import type { AdminStudent } from './api/student.types'
-
-// 학생 목록 조회 API 함수
 import { getAdminStudents } from './api/student.api'
-
-// 강의 목록 조회 API 함수
 import { getLectureList } from '../lecture/api/lecture.api'
 
-// 한 페이지에 보여줄 학생 수
 const PAGE_SIZE = 10
+
+// 검색 폼 스키마 — keyword만 관리 (강의 선택은 드롭다운 변경 시 즉시 적용)
+const filterSchema = z.object({
+  keyword: z.string(),
+})
+type FilterForm = z.infer<typeof filterSchema>
 
 export default function StudentListPage() {
   const navigate = useNavigate()
-  // 검색 input에 입력 중인 값
-  const [keyword, setKeyword] = useState('')
 
-  // 실제 검색 버튼을 눌렀을 때 적용되는 검색어
-  const [searchKeyword, setSearchKeyword] = useState('')
-
-  // 선택된 강의 ID
+  // API에 실제로 전달되는 적용된 값 (검색 버튼 눌렀을 때 반영)
+  const [appliedKeyword, setAppliedKeyword] = useState('')
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null)
-
-  // 현재 페이지 번호
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 로딩 상태
-  const [isLoading, setIsLoading] = useState(false)
+  // React Hook Form: 검색 input 상태 관리 + Zod 유효성 검사
+  const { watch, setValue, handleSubmit } = useForm<FilterForm>({
+    resolver: zodResolver(filterSchema),
+    defaultValues: { keyword: '' },
+  })
 
-  // API에서 받아온 학생 목록
-  const [students, setStudents] = useState<AdminStudent[]>([])
+  const keyword = watch('keyword')
 
-  // API에서 받아온 전체 학생 수
-  const [totalCount, setTotalCount] = useState(0)
+  // TanStack Query: 강의 목록 (드롭다운용 — 한 번 fetch 후 캐시)
+  const { data: coursesData } = useQuery({
+    queryKey: ['admin', 'courses'],
+    queryFn: () => getLectureList({ page: 1, size: 1000 }),
+  })
 
-  // 강의 목록
-  const [courses, setCourses] = useState<{ classId: number; className: string }[]>([])
+  const courses = useMemo(
+    () => (coursesData?.items ?? []).map(({ classId, className }) => ({ classId, className })),
+    [coursesData],
+  )
 
-  // 컴포넌트 마운트 시 강의 목록 조회
-  useEffect(() => {
-    async function fetchCourses() {
-      try {
-        const result = await getLectureList({ page: 1, size: 1000 })
-        setCourses(result.items.map(({ classId, className }) => ({ classId, className })))
-      } catch (error) {
-        console.error('강의 목록 조회 실패:', error)
-      }
-    }
-    fetchCourses()
-  }, [])
+  // TanStack Query: 학생 목록 (queryKey가 바뀌면 자동으로 재요청)
+  const { data: studentsData, isLoading } = useQuery({
+    queryKey: ['admin', 'students', appliedKeyword, selectedClassId, currentPage],
+    queryFn: () =>
+      getAdminStudents({
+        keyword: appliedKeyword,
+        classId: selectedClassId ?? undefined,
+        page: currentPage,
+        size: PAGE_SIZE,
+      }),
+  })
 
-  // 검색어, 강의명, 페이지가 바뀔 때마다 학생 목록 다시 조회
-  useEffect(() => {
-    async function fetchStudents() {
-      setIsLoading(true)
-      try {
-        // 백엔드 학생 목록 API 호출
-        const result = await getAdminStudents({
-          keyword: searchKeyword,
-          classId: selectedClassId ?? undefined,
-          page: currentPage,
-          size: PAGE_SIZE,
-        })
-
-        // 응답 데이터 중 실제 학생 목록 저장
-        setStudents(result.items)
-
-        // 전체 학생 수 저장
-        setTotalCount(result.totalCount)
-      } catch (error) {
-        // API 실패 시 콘솔에 에러 출력
-        console.error('학생 목록 조회 실패:', error)
-
-        // 화면이 깨지지 않도록 빈 데이터 처리
-        setStudents([])
-        setTotalCount(0)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    // 함수 실행
-    fetchStudents()
-  }, [searchKeyword, selectedClassId, currentPage])
-
-  // 전체 페이지 수 계산
+  const students = studentsData?.items ?? []
+  const totalCount = studentsData?.totalCount ?? 0
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-  // 검색 버튼 클릭 시 실행
-  const handleSearch = () => {
-    // 입력 중인 keyword를 실제 검색어로 반영
-    setSearchKeyword(keyword)
-
-    // 검색하면 첫 페이지로 이동
+  // 검색 버튼: 폼 값을 검증 후 API 쿼리에 반영
+  const onSubmit = ({ keyword }: FilterForm) => {
+    setAppliedKeyword(keyword)
     setCurrentPage(1)
   }
 
-  // 강의 select 변경 시 실행
-  const handleChangeCourse = (classId: number | null) => {
-    setSelectedClassId(classId)
+  // 강의 드롭다운: 변경 즉시 반영
+  const handleChangeCourse = (id: number | null) => {
+    setSelectedClassId(id)
     setCurrentPage(1)
   }
 
-  // 테이블 컬럼 정의
-  // useMemo를 쓰면 렌더링될 때마다 컬럼 배열을 새로 만들지 않음
   const studentColumns: TableColumn<AdminStudent>[] = useMemo(
     () => [
       {
         key: 'name',
         header: '이름',
-        render: (row: AdminStudent) => (
+        render: (row) => (
           <div className="name-box">
             <span className="tit">{row.name}</span>
           </div>
         ),
       },
-      {
-        key: 'studentId',
-        header: '학번',
-      },
-      {
-        key: 'className',
-        header: '강의명',
-      },
-      {
-        key: 'phoneNumber',
-        header: '연락처',
-      },
+      { key: 'studentId', header: '학번' },
+      { key: 'className', header: '강의명' },
+      { key: 'phoneNumber', header: '연락처' },
       {
         key: 'statusName',
         header: '상태',
-        render: (row: AdminStudent) => {
+        render: (row) => {
           const colorClass =
             row.statusCode === 'S001'
               ? 'status-gray'
@@ -176,7 +111,7 @@ export default function StudentListPage() {
       {
         key: 'detail',
         header: '관리',
-        render: (row: AdminStudent) => (
+        render: (row) => (
           <Button
             type="button"
             variant="detail"
@@ -193,17 +128,15 @@ export default function StudentListPage() {
 
   return (
     <AdminLayout>
-      {/* 검색어 + 강의명 필터 영역 */}
       <StudentFilterBar
         keyword={keyword}
         selectedCourse={selectedClassId}
         courses={courses}
-        onChangeKeyword={setKeyword}
+        onChangeKeyword={(val) => setValue('keyword', val)}
         onChangeCourse={handleChangeCourse}
-        onSearch={handleSearch}
+        onSearch={handleSubmit(onSubmit)}
       />
 
-      {/* 학생 목록 테이블 */}
       {isLoading ? (
         <TableSkeleton
           columns={[
@@ -220,13 +153,11 @@ export default function StudentListPage() {
         <Table columns={studentColumns} data={students} rowKey={(row) => row.studentId} />
       )}
 
-      {/* 하단 총 개수 + 페이지네이션 영역 */}
       <div className="table-footer">
         <span>
           총 {totalCount}명 중 {totalCount === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}-
           {Math.min(currentPage * PAGE_SIZE, totalCount)}명 표시
         </span>
-
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
