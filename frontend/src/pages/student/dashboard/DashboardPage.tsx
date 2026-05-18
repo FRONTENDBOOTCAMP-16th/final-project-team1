@@ -137,27 +137,15 @@ function DashboardPage() {
           },
         })
 
-        console.log('출결 캘린더 응답:', response.data)
-
         if (!response.data.success) {
           setAttendanceItems([])
           return
         }
 
         const items: AttendanceItem[] = response.data.data.items ?? []
-        console.log('캘린더 변환 데이터:', calendarAttendanceList)
 
         const totalDays = getWeekdayCount(calendarYear, calendarMonth)
         const rate = items.length === 0 ? 0 : Math.round((items.length / totalDays) * 100)
-
-        console.log('출석률 계산용 items:', items)
-        console.log('출석률 계산:', {
-          calendarYear,
-          calendarMonth,
-          totalDays,
-          attendanceCount: items.length,
-          rate,
-        })
 
         setAttendanceRate(rate)
         setAttendanceItems(items)
@@ -199,7 +187,6 @@ function DashboardPage() {
   }
 
   const handleCheckOut = async () => {
-    console.log('퇴실 함수 실행됨')
     if (checkOutTime) {
       openPopup('이미 퇴실 처리되었습니다.')
       return
@@ -207,8 +194,6 @@ function DashboardPage() {
 
     try {
       const response = await axiosInstance.post('/api/student/attendance/check-out')
-
-      console.log('퇴실 응답:', response.data)
 
       const time = response.data.data.checkOutTime
 
@@ -234,9 +219,6 @@ function DashboardPage() {
         const response = await getStudentDashboard()
 
         const todayAttendance = response.data.todayAttendance
-
-        console.log('입실 원본 시간:', todayAttendance?.checkInTime)
-        console.log('퇴실 원본 시간:', todayAttendance?.checkOutTime)
 
         setCheckInTime(todayAttendance?.checkInTime ?? null)
         setCheckOutTime(todayAttendance?.checkOutTime ?? null)
@@ -367,11 +349,6 @@ function LeaveStatus() {
             size: 10,
           },
         })
-
-        console.log('휴가 목록 응답 전체:', response.data)
-        console.log('휴가 items:', response.data.data?.items)
-
-        console.log('휴가 목록 응답:', response.data)
 
         if (!response.data.success) {
           setLeaveList([])
