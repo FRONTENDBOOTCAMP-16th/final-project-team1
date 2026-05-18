@@ -1,6 +1,7 @@
 // 외부 라이브러리
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TrendingUp, UserCheck, Clock, UserX } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
 // 공통 컴포넌트
 import { Button } from '@/components'
@@ -52,9 +53,6 @@ function formatDate(date: Date) {
 }
 
 export default function AttendanceListPage() {
-  /** 전체 출결 데이터 */
-  const [attendanceData, setAttendanceData] = useState<AttendanceApiItem[]>([])
-
   /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -67,37 +65,28 @@ export default function AttendanceListPage() {
   /** 선택된 출결 상태 */
   const [selectedStatus, setSelectedStatus] = useState<FilterStatus>('전체')
 
-  /** 테이블 로딩 상태 */
-  const [isLoading, setIsLoading] = useState(false)
-
+  /** API 요청에 사용할 시작 날짜 */
   const startDateValue = startDate ? formatDate(startDate) : undefined
+
+  /** API 요청에 사용할 종료 날짜 */
   const endDateValue = endDate ? formatDate(endDate) : undefined
 
   /** 출결 목록 조회 */
-  useEffect(() => {
-    const fetchAttendanceList = async () => {
-      setIsLoading(true)
-
-      try {
-        const data = await getAttendanceList({
-          startDate: startDateValue,
-          endDate: endDateValue,
-          page: 1,
-          size: 100,
-        })
-
-        setAttendanceData(data)
-        setCurrentPage(1)
-      } catch (error) {
-        console.error('출결 목록 API 실패:', error)
-        setAttendanceData([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchAttendanceList()
-  }, [startDateValue, endDateValue])
+  const {
+    data: attendanceData = [],
+    isLoading,
+    isFetching,
+    isError,
+  } = useQuery<AttendanceApiItem[]>({
+    queryKey: ['attendanceList', startDateValue, endDateValue],
+    queryFn: () =>
+      getAttendanceList({
+        startDate: startDateValue,
+        endDate: endDateValue,
+        page: 1,
+        size: 100,
+      }),
+  })
 
   /** 시작 날짜 변경 */
   const handleStartChange = (date: Date | null) => {
@@ -188,10 +177,17 @@ export default function AttendanceListPage() {
         const statusName = row.attendanceStatusName as AttendanceStatus
         const status = attendanceStatusMap[statusName]
 
+        if (!status) {
+          return <span className={S.statusBadge}>{row.attendanceStatusName}</span>
+        }
+
         return <span className={`${S.statusBadge} ${status.className}`}>{status.label}</span>
       },
     },
   ]
+
+  /** 로딩 표시 여부 */
+  const showLoading = isLoading || isFetching
 
   return (
     <AdminLayout>
@@ -275,7 +271,7 @@ export default function AttendanceListPage() {
       </section>
 
       <section className={S.tableBox}>
-        {isLoading ? (
+        {showLoading ? (
           <div className={S.skeletonWrapper}>
             <TableSkeleton
               columns={[
@@ -289,11 +285,13 @@ export default function AttendanceListPage() {
               rows={PAGE_SIZE}
             />
           </div>
+        ) : isError ? (
+          <div className={S.empty}>데이터를 불러오는데 실패했습니다.</div>
         ) : (
           <Table columns={attendanceColumns} data={pagedAttendances} />
         )}
 
-        {!isLoading && (
+        {!showLoading && !isError && (
           <div className={S.table_footer}>
             <span>
               총 {filteredAttendances.length}명 중{' '}

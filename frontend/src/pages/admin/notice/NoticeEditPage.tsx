@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { Button } from '@/components'
 import { SquarePen } from 'lucide-react'
@@ -37,6 +38,8 @@ const noticeSchema = z.object({
   isOpen: z.boolean(),
 })
 
+type NoticeFormData = z.infer<typeof noticeSchema>
+
 export default function NoticeEditPage() {
   /** 제목 상태 */
   const [title, setTitle] = useState('')
@@ -62,6 +65,37 @@ export default function NoticeEditPage() {
 
   /** 페이지 이동 */
   const navigate = useNavigate()
+
+  /** React Query 캐시 제어 */
+  const queryClient = useQueryClient()
+
+  /** 공지 수정 mutation */
+  const updateMutation = useMutation({
+    mutationFn: ({ noticeId, data }: { noticeId: number; data: NoticeFormData }) =>
+      updateNotice(noticeId, data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['notices'],
+      })
+
+      setModalMessage('수정되었습니다.')
+
+      setModalAction(() => () => {
+        navigate('/admin/notice')
+      })
+
+      setOpen(true)
+    },
+
+    onError: (error) => {
+      console.error('공지 수정 실패:', error)
+
+      setModalMessage('공지 수정에 실패했습니다.')
+      setModalAction(null)
+      setOpen(true)
+    },
+  })
 
   /** 공지 상세 조회 */
   useEffect(() => {
@@ -94,7 +128,7 @@ export default function NoticeEditPage() {
   }, [id])
 
   /** 공지 수정 */
-  const handleUpdateNotice = async () => {
+  const handleUpdateNotice = () => {
     const result = noticeSchema.safeParse({
       title,
       content,
@@ -108,26 +142,12 @@ export default function NoticeEditPage() {
       return
     }
 
-    try {
-      if (!id) return
+    if (!id) return
 
-      await updateNotice(Number(id), result.data)
-
-      setModalMessage('수정되었습니다.')
-
-      // 확인 버튼 클릭 시 목록 페이지로 이동
-      setModalAction(() => () => {
-        navigate('/admin/notice')
-      })
-
-      setOpen(true)
-    } catch (error) {
-      console.error('공지 수정 실패:', error)
-
-      setModalMessage('공지 수정에 실패했습니다.')
-      setModalAction(null)
-      setOpen(true)
-    }
+    updateMutation.mutate({
+      noticeId: Number(id),
+      data: result.data,
+    })
   }
 
   /** 팝업 닫기 */
@@ -188,7 +208,11 @@ export default function NoticeEditPage() {
 
         {/* 수정 버튼 */}
         <div className={S.btn}>
-          <Button variant="primary" onClick={handleUpdateNotice} disabled={isLoading}>
+          <Button
+            variant="primary"
+            onClick={handleUpdateNotice}
+            disabled={isLoading || updateMutation.isPending}
+          >
             <SquarePen size={16} />
             수정 하기
           </Button>

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { SquarePen } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
@@ -24,11 +25,7 @@ const noticeSchema = z.object({
     .trim()
     .min(1, '제목을 입력해주세요.')
     .max(30, '제목은 30자 이하로 입력해주세요.')
-    .regex(
-      /^(?![ㄱ-ㅎㅏ-ㅣ]+$).*/,
-      '자음 또는 모음만 입력할 수 없습니다.',
-    ),
-  
+    .regex(/^(?![ㄱ-ㅎㅏ-ㅣ]+$).*/, '자음 또는 모음만 입력할 수 없습니다.'),
 
   content: z.string().refine(
     (value) => {
@@ -41,6 +38,8 @@ const noticeSchema = z.object({
     },
   ),
 })
+
+type NoticeFormData = z.infer<typeof noticeSchema>
 
 export default function NoticeCreatePage() {
   /** 공지사항 제목 입력값 */
@@ -61,6 +60,29 @@ export default function NoticeCreatePage() {
   /** 페이지 이동 함수 */
   const navigate = useNavigate()
 
+  /** React Query 캐시 제어 */
+  const queryClient = useQueryClient()
+
+  /** 공지사항 등록 mutation */
+  const createMutation = useMutation({
+    mutationFn: (data: NoticeFormData) => createNotice(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['notices'],
+      })
+
+      showModal('공지사항이 등록되었습니다.', () => {
+        navigate('/admin/notice')
+      })
+    },
+
+    onError: (error) => {
+      console.error('공지 등록 실패:', error)
+      showModal('공지 등록에 실패했습니다.')
+    },
+  })
+
   /** ReactQuill 에디터 툴바 설정 */
   const modules = {
     toolbar: [
@@ -78,7 +100,7 @@ export default function NoticeCreatePage() {
   }
 
   /** 공지사항 등록 */
-  const handleCreateNotice = async () => {
+  const handleCreateNotice = () => {
     const result = noticeSchema.safeParse({
       title,
       content,
@@ -89,16 +111,7 @@ export default function NoticeCreatePage() {
       return
     }
 
-    try {
-      await createNotice(result.data)
-
-      showModal('공지사항이 등록되었습니다.', () => {
-        navigate('/admin/notice')
-      })
-    } catch (error) {
-      console.error('공지 등록 실패:', error)
-      showModal('공지 등록에 실패했습니다.')
-    }
+    createMutation.mutate(result.data)
   }
 
   /** 모달 닫기 */
@@ -138,7 +151,7 @@ export default function NoticeCreatePage() {
         </div>
 
         <div className={S.btn}>
-          <Button variant="primary" onClick={handleCreateNotice}>
+          <Button variant="primary" onClick={handleCreateNotice} disabled={createMutation.isPending}>
             <SquarePen size={16} />
             글쓰기
           </Button>
