@@ -1,4 +1,4 @@
-import { api } from '@/api/axios'
+import { axiosInstance } from '@/api/axios'
 
 export type AttendanceApiItem = {
   attendanceId: number
@@ -25,7 +25,7 @@ export async function getAttendanceList({
   page = 1,
   size = 12,
 }: GetAttendanceListParams = {}) {
-  const res = await api.get('/api/admin/attendances', {
+  const res = await axiosInstance.get('/api/admin/attendances', {
     params: {
       page,
       size,
