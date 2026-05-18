@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FileText, Check } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 
 // 공통 컴포넌트
 import { Button } from '@/components'
@@ -93,6 +94,16 @@ export default function NoticeListPage() {
       }),
   })
 
+  /** 검색어 유효성 검사 */
+  const searchSchema = z
+    .string({
+      required_error: '검색어를 입력해주세요.',
+    })
+    .trim()
+    .min(2, '검색어는 2글자 이상 입력해주세요.')
+    .max(15, '검색어는 15자 이하로 입력해주세요.')
+    .regex(/^[가-힣a-zA-Z0-9\s]+$/, '검색어에는 한글, 영문, 숫자만 입력할 수 있습니다.')
+
   /** 서버에서 받은 공지사항 목록 */
   const notices = noticeResponse?.items ?? []
 
@@ -169,7 +180,23 @@ export default function NoticeListPage() {
    * searchKeyword: 실제 API 검색에 사용하는 값
    */
   const handleSearch = () => {
-    setSearchKeyword(keyword)
+    const trimmed = keyword.trim()
+
+    // 검색어 비어있으면 전체조회
+    if (!trimmed) {
+      setSearchKeyword('')
+      setCurrentPage(1)
+      return
+    }
+    const result = searchSchema.safeParse(keyword)
+
+    if (!result.success) {
+      setModalMessage(result.error.issues[0].message)
+      setOpen(true)
+      return
+    }
+
+    setSearchKeyword(result.data)
     setCurrentPage(1)
     setSelectedIds([])
   }
