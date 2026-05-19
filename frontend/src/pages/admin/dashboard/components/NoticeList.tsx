@@ -17,23 +17,26 @@ export default function NoticeList({ data }: Props) {
       </div>
 
       <ul className={S.list}>
-        {data.slice(0, 5).map((item) => (
-          <li
-            key={item.noticeId}
-            className={S.item}
-            onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
-          >
-            <div className={S.noticeContent}>
-              <strong className={S.noticeTitle}>{item.title}</strong>
+        {[...data]
+          .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+          .slice(0, 5)
+          .map((item) => (
+            <li
+              key={item.noticeId}
+              className={S.item}
+              onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
+            >
+              <div className={S.noticeContent}>
+                <strong className={S.noticeTitle}>{item.title}</strong>
 
-              <span className={item.isOpen ? S.publicBadge : S.privateBadge}>
-                {item.isOpen ? '공개' : '비공개'}
-              </span>
-            </div>
+                <span className={item.isOpen ? S.publicBadge : S.privateBadge}>
+                  {item.isOpen ? '공개' : '비공개'}
+                </span>
+              </div>
 
-            <span className={S.noticeDate}>{item.createdDate}</span>
-          </li>
-        ))}
+              <span className={S.noticeDate}>{item.createdDate}</span>
+            </li>
+          ))}
       </ul>
     </>
   )

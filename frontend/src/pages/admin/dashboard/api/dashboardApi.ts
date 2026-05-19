@@ -40,7 +40,12 @@ export interface NoticeItem {
 }
 
 export async function getNoticeList() {
-  const response = await api.get('/api/admin/notices')
+  const response = await api.get('/api/admin/notices', {
+    params: {
+      page: 1,
+      size: 30,
+    },
+  })
 
   return response.data.data.items
 }

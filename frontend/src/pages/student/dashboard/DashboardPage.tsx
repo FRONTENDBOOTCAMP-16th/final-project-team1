@@ -391,16 +391,19 @@ function NoticeList({ notices, onNoticeClick }: NoticeListProps) {
     <section className={S.sideCard}>
       <h3 className={S.sectionTitle}>멋사 공지사항</h3>
 
-      {notices.slice(0, 2).map((notice, index) => (
-        <div
-          key={notice.noticeId}
-          className={`${S.listItem} ${index === 0 ? S.noticeImportant : S.noticeNormal}`}
-          onClick={() => onNoticeClick(notice.noticeId)}
-        >
-          <strong>{notice.title}</strong>
-          <span>{notice.createdDate}</span>
-        </div>
-      ))}
+      {[...notices]
+        .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+        .slice(0, 2)
+        .map((notice, index) => (
+          <div
+            key={notice.noticeId}
+            className={`${S.listItem} ${index === 0 ? S.noticeImportant : S.noticeNormal}`}
+            onClick={() => onNoticeClick(notice.noticeId)}
+          >
+            <strong>{notice.title}</strong>
+            <span>{notice.createdDate}</span>
+          </div>
+        ))}
     </section>
   )
 }
