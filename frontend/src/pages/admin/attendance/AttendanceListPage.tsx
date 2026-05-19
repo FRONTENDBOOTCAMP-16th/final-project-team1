@@ -1,6 +1,6 @@
 // 외부 라이브러리
 import { useMemo, useState } from 'react'
-import { TrendingUp, UserCheck, UserX } from 'lucide-react'
+import { TrendingUp, UserCheck, Clock, UserX } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 // 공통 컴포넌트
@@ -24,8 +24,7 @@ import S from './styles/attendance.module.css'
 /** 한 페이지에 보여줄 데이터 개수 */
 const PAGE_SIZE = 10
 
-// type AttendanceStatus = '출석완료' | '지각' | '결석'
-type AttendanceStatus = '출석완료' | '결석'
+type AttendanceStatus = '출석완료' | '지각' | '결석'
 type FilterStatus = AttendanceStatus | '전체'
 
 /** 출결 상태 스타일 */
@@ -34,10 +33,10 @@ const attendanceStatusMap: Record<AttendanceStatus, { label: string; className: 
     label: '출석완료',
     className: S.attendanceComplete,
   },
-  // 지각: {
-  //   label: '지각',
-  //   className: S.attendanceLate,
-  // },
+  지각: {
+    label: '지각',
+    className: S.attendanceLate,
+  },
   결석: {
     label: '결석',
     className: S.attendanceAbsent,
@@ -108,9 +107,9 @@ export default function AttendanceListPage() {
   }, [attendanceData])
 
   /** 지각 인원 수 */
-  // const lateCount = useMemo(() => {
-  //   return attendanceData.filter((item) => item.attendanceStatusName === '지각').length
-  // }, [attendanceData])
+  const lateCount = useMemo(() => {
+    return attendanceData.filter((item) => item.attendanceStatusName === '지각').length
+  }, [attendanceData])
 
   /** 결석 인원 수 */
   const absentCount = useMemo(() => {
@@ -121,8 +120,8 @@ export default function AttendanceListPage() {
   const attendanceRate = useMemo(() => {
     if (attendanceData.length === 0) return 0
 
-    return Math.round((presentCount / attendanceData.length) * 100)
-  }, [attendanceData.length, presentCount])
+    return Math.round(((presentCount + lateCount) / attendanceData.length) * 100)
+  }, [attendanceData.length, presentCount, lateCount])
 
   /** 상태 필터링된 출결 목록 */
   const filteredAttendances = useMemo(() => {
@@ -209,7 +208,7 @@ export default function AttendanceListPage() {
           variant="green"
         />
 
-        {/* <CountCard label="지각인원" value={lateCount} unit="명" icon={<Clock />} variant="yellow" /> */}
+        <CountCard label="지각인원" value={lateCount} unit="명" icon={<Clock />} variant="yellow" />
 
         <CountCard label="결석인원" value={absentCount} unit="명" icon={<UserX />} variant="red" />
       </section>
@@ -239,7 +238,7 @@ export default function AttendanceListPage() {
             출석
           </Button>
 
-          {/* <Button
+          <Button
             variant="warning"
             onClick={() => {
               setSelectedStatus('지각')
@@ -247,7 +246,7 @@ export default function AttendanceListPage() {
             }}
           >
             지각
-          </Button> */}
+          </Button>
 
           <Button
             variant="error"
