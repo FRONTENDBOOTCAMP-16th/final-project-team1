@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
   const { data: vacationData = [], isLoading: isLeaveLoading } = useQuery({
     queryKey: ['admin-dashboard-leave-requests'],
     queryFn: async () => {
-      const data = await getLeaveRequestList(1, 100)
+      const data = await getLeaveRequestList(1, 50)
 
       return [...data.items]
         .filter((item) => item.approvalStatusCode === 'V001')
@@ -91,11 +91,11 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V002')
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['admin-dashboard-leave-requests'],
       })
     } catch (error) {
-      console.error(error)
+      console.error('휴가 승인 처리 실패:', error)
     } finally {
       setProcessingId(null)
     }
@@ -107,16 +107,15 @@ export default function AdminDashboardPage() {
 
       await updateLeaveRequestStatus(row.leaveRequestId, 'V003')
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['admin-dashboard-leave-requests'],
       })
     } catch (error) {
-      console.error(error)
+      console.error('휴가 반려 처리 실패:', error)
     } finally {
       setProcessingId(null)
     }
   }
-
   const vacationColumns: TableColumn<LeaveRequestItem>[] = [
     {
       key: 'studentName',
