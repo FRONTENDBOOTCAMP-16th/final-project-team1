@@ -49,9 +49,12 @@ export default function AdminDashboardPage() {
   const { data: vacationData = [], isLoading: isLeaveLoading } = useQuery({
     queryKey: ['admin-dashboard-leave-requests'],
     queryFn: async () => {
-      const data = await getLeaveRequestList(1, 30)
+      const data = await getLeaveRequestList(1, 100)
 
-      return data.items.filter((item) => item.approvalStatusCode === 'V001').slice(0, 5)
+      return [...data.items]
+        .filter((item) => item.approvalStatusCode === 'V001')
+        .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+        .slice(0, 5)
     },
   })
 
