@@ -36,6 +36,23 @@ type LeaveApiItem = {
   endDate: string
   approvalStatusCode: string
   approvalStatusName: string
+
+  /**
+   * 프론트 임시 정렬용 값
+   *
+   * 서버에서 처리 시간을 내려주지 않기 때문에
+   * 프론트에서 승인/반려 버튼을 누른 시간을 임시로 저장.
+   *
+   * 임시방편.
+   * 백엔드에서 processedAt 또는 updatedAt을 내려줘야 함.
+   */
+  processedAt?: number
+}
+
+/** 승인/반려 처리 중인 버튼 정보 */
+type ProcessingInfo = {
+  id: number
+  status: TabType
 }
 
 /** 휴가 종류별 배지 스타일 */
@@ -60,11 +77,11 @@ const statusCodeMap: Record<TabType, string> = {
 }
 
 /** 상태 이름 매핑 */
-// const statusNameMap: Record<TabType, string> = {
-//   pending: '승인 대기',
-//   approved: '승인 완료',
-//   rejected: '반려',
-// }
+const statusNameMap: Record<TabType, string> = {
+  pending: '승인 대기',
+  approved: '승인 완료',
+  rejected: '반려',
+}
 
 export default function LeaveApprovePage() {
   /** 현재 선택된 탭 */
@@ -73,8 +90,8 @@ export default function LeaveApprovePage() {
   /** 현재 페이지 번호 */
   const [currentPage, setCurrentPage] = useState(1)
 
-  /** 승인/반려 처리 중인 행 ID */
-  const [processingId, setProcessingId] = useState<number | null>(null)
+  /** 승인/반려 처리 중인 버튼 정보 */
+  const [processingInfo, setProcessingInfo] = useState<ProcessingInfo | null>(null)
 
   /** 승인 및 반려 처리 팝업 */
   const [open, setOpen] = useState(false)
@@ -99,12 +116,64 @@ export default function LeaveApprovePage() {
       updateLeaveRequestStatus(leaveRequestId, statusCodeMap[nextStatus]),
 
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['leaveRequests'],
+      /**
+       * 서버 승인/반려 성공 후
+       * React Query 캐시를 즉시 수정
+       *
+       * 핵심:
+       * 1. 승인/반려된 행의 상태값 변경
+       * 2. processedAt에 현재 시간 저장
+       * 3. 해당 데이터를 배열 맨 앞으로 이동
+       *
+       * 이렇게 해야 승인/반려 탭에서 방금 처리한 데이터가 위에 보임.
+       */
+      queryClient.setQueryData<LeaveApiItem[]>(['leaveRequests'], (oldData = []) => {
+        const targetItem = oldData.find((item) => item.leaveRequestId === variables.leaveRequestId)
+
+        if (!targetItem) return oldData
+
+        const updatedItem: LeaveApiItem = {
+          ...targetItem,
+          approvalStatusCode: statusCodeMap[variables.nextStatus],
+          approvalStatusName: statusNameMap[variables.nextStatus],
+          processedAt: Date.now(),
+        }
+
+        const restItems = oldData.filter((item) => item.leaveRequestId !== variables.leaveRequestId)
+
+        /**
+         * 방금 처리한 데이터를 전체 배열 맨 앞으로 이동
+         *
+         * 이후 groupedData에서 approved/rejected로 나뉘기 때문에
+         * 승인 탭, 반려 탭에서도 방금 처리한 데이터가 가장 위에 보임.
+         */
+        return [updatedItem, ...restItems]
       })
 
+      /** 성공한 뒤에만 승인/반려 탭으로 이동 */
+      setActiveTab(variables.nextStatus)
+
+      /** 탭 이동 시 첫 페이지로 초기화 */
+      setCurrentPage(1)
+
+      /** 사용자에게 성공 메시지 표시 */
       setModalMessage(variables.nextStatus === 'approved' ? '승인 되었습니다.' : '반려 되었습니다.')
       setOpen(true)
+
+      /**
+       * 발표 전 임시방편:
+       *
+       * 서버에서 정렬된 데이터를 내려주지 않는 상태에서 invalidateQueries를 실행하면
+       * 프론트에서 방금 맨 위로 올린 순서가 서버 응답 순서로 다시 덮일 수 있음.
+       *
+       * 그래서 지금은 주석 처리.
+       *
+       * 나중에 백엔드에서 처리일시(processedAt / updatedAt)를 내려주고
+       * 최신순 정렬까지 해주면 이 코드를 다시 살려도 됨.
+       */
+      // queryClient.invalidateQueries({
+      //   queryKey: ['leaveRequests'],
+      // })
     },
 
     onError: (e) => {
@@ -114,7 +183,7 @@ export default function LeaveApprovePage() {
     },
 
     onSettled: () => {
-      setProcessingId(null)
+      setProcessingInfo(null)
     },
   })
 
@@ -127,16 +196,19 @@ export default function LeaveApprovePage() {
   /** 승인 / 반려 상태 변경 */
   const handleUpdateStatus = useCallback(
     (leaveRequestId: number, nextStatus: TabType) => {
-      if (processingId !== null) return
+      if (processingInfo !== null) return
 
-      setProcessingId(leaveRequestId)
+      setProcessingInfo({
+        id: leaveRequestId,
+        status: nextStatus,
+      })
 
       updateStatusMutation.mutate({
         leaveRequestId,
         nextStatus,
       })
     },
-    [processingId, updateStatusMutation],
+    [processingInfo, updateStatusMutation],
   )
 
   /**
@@ -161,6 +233,18 @@ export default function LeaveApprovePage() {
         result[tab].push(item)
       }
     })
+
+    /**
+     * 프론트 임시 정렬
+     *
+     * 승인 완료 / 반려 내역은 processedAt 기준으로 최신순 정렬.
+     * processedAt은 프론트에서 승인/반려 처리한 순간에만 생기는 값.
+     *
+     * 서버에서 처리 시간을 내려주지 않기 때문에
+     * 새로고침 후에는 이 값이 사라짐.
+     */
+    result.approved.sort((a, b) => (b.processedAt ?? 0) - (a.processedAt ?? 0))
+    result.rejected.sort((a, b) => (b.processedAt ?? 0) - (a.processedAt ?? 0))
 
     return result
   }, [data])
@@ -235,7 +319,11 @@ export default function LeaveApprovePage() {
         key: 'action',
         header: activeTab === 'pending' ? '처리' : '처리내역',
         render: (row) => {
-          const isProcessing = processingId === row.leaveRequestId
+          const isApproving =
+            processingInfo?.id === row.leaveRequestId && processingInfo.status === 'approved'
+
+          const isRejecting =
+            processingInfo?.id === row.leaveRequestId && processingInfo.status === 'rejected'
 
           if (activeTab === 'pending') {
             return (
@@ -243,19 +331,19 @@ export default function LeaveApprovePage() {
                 <Button
                   type="button"
                   variant="active"
-                  disabled={processingId !== null}
+                  disabled={processingInfo !== null}
                   onClick={() => handleUpdateStatus(row.leaveRequestId, 'approved')}
                 >
-                  <Check size={16} /> {isProcessing ? '처리중' : '승인'}
+                  <Check size={16} /> {isApproving ? '처리중' : '승인'}
                 </Button>
 
                 <Button
                   type="button"
                   variant="inactive"
-                  disabled={processingId !== null}
+                  disabled={processingInfo !== null}
                   onClick={() => handleUpdateStatus(row.leaveRequestId, 'rejected')}
                 >
-                  <X size={16} /> {isProcessing ? '처리중' : '반려'}
+                  <X size={16} /> {isRejecting ? '처리중' : '반려'}
                 </Button>
               </div>
             )
@@ -277,7 +365,7 @@ export default function LeaveApprovePage() {
         },
       },
     ],
-    [activeTab, processingId, handleUpdateStatus],
+    [activeTab, processingInfo, handleUpdateStatus],
   )
 
   return (
