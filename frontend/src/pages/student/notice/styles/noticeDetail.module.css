@@ -5,3 +5,10 @@
     inline-size: 100%;
     padding: 0px;
 }
+
+.skeletonWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px;
+}

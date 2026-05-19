@@ -139,6 +139,27 @@
   color: #111111;
 }
 
+.filterBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.searchWrap {
+  flex: 1;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.clickableRow {
+  cursor: pointer;
+}
+
 /* 하단 영역 */
 .table-footer {
   display: flex;
@@ -167,6 +188,7 @@
   th {
     font-weight: 700;
     font-size: 16px;
+    text-align: center;
     color: #111111;
   }
 
@@ -174,28 +196,11 @@
     height: 73px;
     font-size: 16px;
     line-height: 20px;
+    text-align: center;
     color: #666666;
 
     .tit {
       color: #111111;
     }
-  }
-}
-
-.searchBar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  block-size: 40px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  inline-size: 100%;
-
-  .searchInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 14px;
   }
 }

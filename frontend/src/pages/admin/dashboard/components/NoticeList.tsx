@@ -10,19 +10,33 @@ export default function NoticeList({ data }: Props) {
   const navigate = useNavigate()
   return (
     <>
-      <h3 className={S.title}>시스템 공지사항</h3>
+      <div className={S.header}>
+        <h3 className={S.title}>시스템 공지사항</h3>
+
+        <p className={S.description}>최근 등록된 공지사항 5개 내역만 표시됩니다.</p>
+      </div>
 
       <ul className={S.list}>
-        {data.slice(0, 5).map((item, index) => (
-          <li
-            key={item.noticeId}
-            className={`${S.item} ${index === 0 ? S.highlight : ''}`}
-            onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
-          >
-            <strong className={S.noticeTitle}>{item.title}</strong>
-            <span className={S.noticeDate}>{item.createdDate}</span>
-          </li>
-        ))}
+        {[...data]
+          .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+          .slice(0, 5)
+          .map((item) => (
+            <li
+              key={item.noticeId}
+              className={S.item}
+              onClick={() => navigate(`/admin/notice/${item.noticeId}`)}
+            >
+              <div className={S.noticeContent}>
+                <strong className={S.noticeTitle}>{item.title}</strong>
+
+                <span className={item.isOpen ? S.publicBadge : S.privateBadge}>
+                  {item.isOpen ? '공개' : '비공개'}
+                </span>
+              </div>
+
+              <span className={S.noticeDate}>{item.createdDate}</span>
+            </li>
+          ))}
       </ul>
     </>
   )

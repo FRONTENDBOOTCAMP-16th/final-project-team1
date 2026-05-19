@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLogin } from '../hooks/useLogin'
 import Modal from '@/components/common/modal/Modal'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import eyeIcon from '@/assets/eye.svg'
 import eyeOffIcon from '@/assets/eye-off.svg'
 
@@ -10,9 +12,9 @@ interface LoginFormProps {
 }
 
 function LoginForm({ onChangeView }: LoginFormProps) {
-  const [studentId, set_studentId] = useState('')
-  const [password, set_password] = useState('')
-  const [show_password, set_show_password] = useState(false)
+  const [studentId, setStudentId] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalConfig, setModalConfig] = useState<{
@@ -22,7 +24,7 @@ function LoginForm({ onChangeView }: LoginFormProps) {
   }>({ title: '', content: '' })
 
   const navigate = useNavigate()
-  const { login_user, is_loading, error_message } = useLogin()
+  const { loginUser, isLoading, errorMessage } = useLogin()
 
   const showAlert = (title: string, content: string, onConfirm?: () => void) => {
     setModalConfig({
@@ -32,10 +34,10 @@ function LoginForm({ onChangeView }: LoginFormProps) {
     })
     setIsModalOpen(true)
   }
-  const handle_login = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const result = await login_user(studentId, password)
+    const result = await loginUser(studentId, password)
 
     if (result.success) {
       if (result.role === 'ADMIN') {
@@ -63,56 +65,66 @@ function LoginForm({ onChangeView }: LoginFormProps) {
         return
       }
 
-      showAlert('로그인 성공', '환영합니다! 대시보드로 이동합니다.', () =>
-        navigate('/student/dashboard'),
-      )
+      navigate('/student/dashboard')
     }
   }
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handle_login}>
+      <form className="login_form" onSubmit={handleLogin}>
         <fieldset className="input_group">
           <label className="input_label">
             <span>학번</span>
-            <input
-              type="text"
-              placeholder="학번을 입력하세요"
-              className="input_field"
-              value={studentId}
-              onChange={(event) => set_studentId(event.target.value.replace(/\s/g, ''))}
-              required
-            />
+            {isLoading ? (
+              <div style={{ width: '100%', height: '50px', lineHeight: 0, display: 'block' }}>
+                <Skeleton width="100%" height="100%" borderRadius={12} />
+              </div>
+            ) : (
+              <input
+                type="text"
+                placeholder="학번을 입력하세요"
+                className="input_field"
+                value={studentId}
+                onChange={(event) => setStudentId(event.target.value.replace(/\s/g, ''))}
+                required
+              />
+            )}
           </label>
         </fieldset>
 
         <fieldset className="input_group">
           <label className="input_label">
             <span>비밀번호</span>
-            <div className="password_input_wrapper">
-              <input
-                type={show_password ? 'text' : 'password'}
-                placeholder="비밀번호를 입력하세요"
-                className="input_field"
-                value={password}
-                onChange={(event) => set_password(event.target.value.replace(/\s/g, ''))}
-                required
-              />
-              <button
-                type="button"
-                className="password_view_button"
-                onClick={() => set_show_password(!show_password)}
-                tabIndex={-1}
-              >
-                <img src={show_password ? eyeIcon : eyeOffIcon} alt="Toggle View" />
-              </button>
-            </div>
+            {isLoading ? (
+              <div style={{ width: '100%', height: '50px', lineHeight: 0, display: 'block' }}>
+                <Skeleton width="100%" height="100%" borderRadius={12} />
+              </div>
+            ) : (
+              <div className="password_input_wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="비밀번호를 입력하세요"
+                  className="input_field"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value.replace(/\s/g, ''))}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password_view_button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  <img src={showPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                </button>
+              </div>
+            )}
           </label>
         </fieldset>
 
-        {error_message && <p className="error_text">{error_message}</p>}
+        {errorMessage && <p className="error_text">{errorMessage}</p>}
 
-        <button type="submit" className="login_submit_button" disabled={is_loading}>
-          {is_loading ? '로그인 중...' : '로그인'}
+        <button type="submit" className="login_submit_button" disabled={isLoading}>
+          {isLoading ? '로그인 중...' : '로그인'}
         </button>
       </form>
 

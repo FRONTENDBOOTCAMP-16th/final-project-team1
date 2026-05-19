@@ -3,6 +3,7 @@
 /* 폰트 */
 :root{
   --font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  color-scheme: light only;
 
    /* text size */
   --big-title: 30px;
@@ -38,7 +39,6 @@
   --error-gray: #aaaaaa;
   --border-gray: #dddddd;
   --grad-orange: linear-gradient(135deg, #ff6000 0%, #FFBB28 100%);
-  
 
   /* 상태에 따른 버튼 색상 컬러 */
   --focus: #cccccc;
@@ -46,25 +46,22 @@
   --hover-black: #000000;
   --hover-gray: #777777;
   --hover-border: #555555;
-  --focus : #cccccc;
 }
 
 /* margin, padding*/
-
 :root{
   /* padding */
   --basic-pd: 30px;
-  --semi-pd: 15px
+  --semi-pd: 15px;
   --smail-pd: 8px;
-  --thin-pd: 4px
+  --thin-pd: 4px;
 
   /* margin */
   --basic-mg: 30px;
-  --semi-mg: 15px
+  --semi-mg: 15px;
   --smail-mg: 8px;
   --thin-mg: 4px;
 }
-
 
 /* 테두리 및 그림자 */
 :root {
@@ -74,24 +71,13 @@
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
   --border-radius-pill: 9999px;
-  
+
   --border-width-thin: 1px;
   --border-width-medium: 2px;
   --border-width-thick: 4px;
-  
-  --shadow-sm: light-dark(0 1px 3px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.4));
-  --shadow-md: light-dark(0 4px 6px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.5));
-  --shadow-lg: light-dark(0 10px 15px rgba(0,0,0,0.5), 0 10px 15px rgba(0,0,0,0.6));
-  --shadow-xl: light-dark(0 20px 25px rgba(0,0,0,0.15), 0 20px 25px rgba(0,0,0,0.7));
-}
 
-
-
-/* 시스템 설정 대응 - 다크모드 */
-@media (prefers-color-scheme: dark) {
-  img { 
-    opacity: 0.8; 
-    transition: opacity var(--transition-normal); 
-  }
-  img:hover { opacity: 1; }
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
 }

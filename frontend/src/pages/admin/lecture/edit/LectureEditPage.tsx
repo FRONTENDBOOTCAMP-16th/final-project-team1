@@ -8,7 +8,7 @@ import axios from 'axios'
 import AdminLayout from '@/pages/sample/AdminLayout'
 import Modal from '@/components/common/modal/Modal'
 import styles from '../create/LectureCreatePage.module.css'
-import { getLectureDetail, updateLecture } from '../api/lecture.api'
+import { getLectureDetail, updateLecture, deleteLecture } from '../api/lecture.api'
 
 const lectureSchema = z
   .object({
@@ -30,11 +30,13 @@ export default function LectureEditPage() {
   const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<LectureEditForm>({
     resolver: zodResolver(lectureSchema),
@@ -88,6 +90,24 @@ export default function LectureEditPage() {
     if (isSuccess) navigate('/admin/lecture')
   }
 
+  const handleDelete = async () => {
+    if (!id) return
+    setShowDeleteConfirm(false)
+    try {
+      const result = await deleteLecture(Number(id))
+      if (!result.success) {
+        openModal(result.message)
+        return
+      }
+      navigate('/admin/lecture')
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message ?? '강의 삭제 중 오류가 발생했습니다.'
+        : '강의 삭제 중 오류가 발생했습니다.'
+      openModal(message)
+    }
+  }
+
   return (
     <AdminLayout>
       <form className={styles.page} onSubmit={handleSubmit(onSubmit)}>
@@ -106,7 +126,7 @@ export default function LectureEditPage() {
 
           <div className={styles.formGroup}>
             <label>종료일자</label>
-            <input type="date" {...register('endDate')} />
+            <input type="date" {...register('endDate')} min={watch('startDate') || undefined} />
             {errors.endDate && <p className={styles.errorText}>{errors.endDate.message}</p>}
           </div>
         </div>
@@ -137,16 +157,35 @@ export default function LectureEditPage() {
         <div className={styles.buttonArea}>
           <button
             type="button"
-            className={styles.cancelButton}
-            onClick={() => navigate('/admin/lecture')}
+            className={styles.deleteButton}
+            onClick={() => setShowDeleteConfirm(true)}
           >
-            목록으로
+            삭제하기
           </button>
-          <button type="submit" className={styles.submitButton}>
-            수정하기
-          </button>
+          <div className={styles.rightButtons}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={() => navigate('/admin/lecture')}
+            >
+              목록으로
+            </button>
+            <button type="submit" className={styles.submitButton}>
+              수정하기
+            </button>
+          </div>
         </div>
       </form>
+
+      <Modal
+        isOpen={showDeleteConfirm}
+        title="강의 삭제"
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        buttonType="two"
+      >
+        소속 학생이 있는 경우 삭제할 수 없습니다. 정말 삭제하시겠습니까?
+      </Modal>
 
       <Modal isOpen={open} onClose={() => setOpen(false)} onConfirm={handleOk} buttonType="two">
         {modalMessage}

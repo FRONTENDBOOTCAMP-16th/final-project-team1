@@ -1,24 +1,26 @@
 import { useState } from 'react'
-import { post_admin_login_api } from '../api/adminLoginApi'
+import { postAdminLoginApi } from '../api/adminLoginApi'
 import { useAuthStore } from '@/store'
 
 export const useAdminLogin = () => {
-  const [is_loading, set_is_loading] = useState<boolean>(false)
-  const [error_message, set_error_message] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const setLogin = useAuthStore((state) => state.setLogin)
 
-  const login_admin = async (adminId: string, password: string) => {
-    set_is_loading(true)
-    set_error_message(null)
+  const loginAdmin = async (adminId: string, password: string) => {
+    setIsLoading(true)
+    setErrorMessage(null)
 
     try {
-      const data = await post_admin_login_api(adminId, password)
+      const data = await postAdminLoginApi(adminId, password)
 
       localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('adminId', data.adminId)
       localStorage.setItem('userName', data.name)
-      localStorage.setItem('role', data.role)
+      // 변경 전: userId/role을 localStorage에 직접 저장했으나 보안상 제거
+      // localStorage.setItem('adminId', data.adminId)
+      // localStorage.setItem('role', data.role)
+      // → 새로고침 시 store/index.ts에서 accessToken을 디코딩해 복원
 
       setLogin({
         userId: data.adminId,
@@ -34,16 +36,16 @@ export const useAdminLogin = () => {
       console.error('관리자 로그인 에러:', error)
 
       if (error instanceof Error) {
-        set_error_message(error.message)
+        setErrorMessage(error.message)
       } else {
-        set_error_message('서버와 연결할 수 없습니다.')
+        setErrorMessage('서버와 연결할 수 없습니다.')
       }
 
       return { success: false }
     } finally {
-      set_is_loading(false)
+      setIsLoading(false)
     }
   }
 
-  return { login_admin, is_loading, error_message }
+  return { loginAdmin, isLoading, errorMessage }
 }

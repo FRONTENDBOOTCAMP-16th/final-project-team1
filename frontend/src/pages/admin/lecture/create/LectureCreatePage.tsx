@@ -33,6 +33,7 @@ export default function LectureCreatePage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<LectureCreateForm>({
     resolver: zodResolver(lectureSchema),
@@ -86,7 +87,7 @@ export default function LectureCreatePage() {
 
           <div className={styles.formGroup}>
             <label>종료일자</label>
-            <input type="date" {...register('endDate')} />
+            <input type="date" {...register('endDate')} min={watch('startDate') || undefined} />
             {errors.endDate && <p className={styles.errorText}>{errors.endDate.message}</p>}
           </div>
         </div>

@@ -16,7 +16,7 @@ interface JwtPayload {
 }
 
 export default function LoginPage() {
-  const { view, set_view } = useAuthView()
+  const { view, setView } = useAuthView()
   const navigate = useNavigate()
 
   // Zustand 로그아웃 함수 가져오기
@@ -63,14 +63,14 @@ export default function LoginPage() {
             <button
               type="button"
               className={`tab_button ${view === 'LOGIN' ? 'active' : ''}`}
-              onClick={() => set_view('LOGIN')}
+              onClick={() => setView('LOGIN')}
             >
               학생 로그인
             </button>
             <button
               type="button"
               className={`tab_button ${view === 'ADMIN_LOGIN' ? 'active' : ''}`}
-              onClick={() => set_view('ADMIN_LOGIN')}
+              onClick={() => setView('ADMIN_LOGIN')}
             >
               관리자 로그인
             </button>
@@ -78,10 +78,10 @@ export default function LoginPage() {
         )}
 
         <section className="auth_form_content">
-          {view === 'LOGIN' && <LoginForm onChangeView={set_view} />}
-          {view === 'ADMIN_LOGIN' && <AdminLoginForm onChangeView={set_view} />}
-          {view === 'FIND_PASSWORD' && <FindPassword onChangeView={set_view} />}
-          {view === 'RESET_PASSWORD' && <ResetPassword onChangeView={set_view} />}
+          {view === 'LOGIN' && <LoginForm onChangeView={setView} />}
+          {view === 'ADMIN_LOGIN' && <AdminLoginForm onChangeView={setView} />}
+          {view === 'FIND_PASSWORD' && <FindPassword onChangeView={setView} />}
+          {view === 'RESET_PASSWORD' && <ResetPassword onChangeView={setView} />}
         </section>
       </article>
     </main>

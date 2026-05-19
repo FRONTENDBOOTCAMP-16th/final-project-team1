@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { SquarePen } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 
@@ -16,6 +18,29 @@ import AdminLayout from '@/pages/sample/AdminLayout'
 import { createNotice } from '../api/noticeApi'
 import S from '../styles/noticeEditor.module.css'
 
+/** 공지사항 입력값 유효성 검사 */
+const noticeSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, '제목을 입력해주세요.')
+    .max(30, '제목은 30자 이하로 입력해주세요.')
+    .regex(/^(?![ㄱ-ㅎㅏ-ㅣ]+$).*/, '자음 또는 모음만 입력할 수 없습니다.'),
+
+  content: z.string().refine(
+    (value) => {
+      const div = document.createElement('div')
+      div.innerHTML = value
+      return div.textContent?.trim() !== ''
+    },
+    {
+      message: '내용을 입력해주세요.',
+    },
+  ),
+})
+
+type NoticeFormData = z.infer<typeof noticeSchema>
+
 export default function NoticeCreatePage() {
   /** 공지사항 제목 입력값 */
   const [title, setTitle] = useState('')
@@ -29,8 +54,34 @@ export default function NoticeCreatePage() {
   /** 모달에 표시할 메시지 */
   const [modalMessage, setModalMessage] = useState('')
 
+  /** 모달 확인 후 실행할 동작 */
+  const [modalAction, setModalAction] = useState<(() => void) | null>(null)
+
   /** 페이지 이동 함수 */
   const navigate = useNavigate()
+
+  /** React Query 캐시 제어 */
+  const queryClient = useQueryClient()
+
+  /** 공지사항 등록 mutation */
+  const createMutation = useMutation({
+    mutationFn: (data: NoticeFormData) => createNotice(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['notices'],
+      })
+
+      showModal('공지사항이 등록되었습니다.', () => {
+        navigate('/admin/notice')
+      })
+    },
+
+    onError: (error) => {
+      console.error('공지 등록 실패:', error)
+      showModal('공지 등록에 실패했습니다.')
+    },
+  })
 
   /** ReactQuill 에디터 툴바 설정 */
   const modules = {
@@ -41,43 +92,36 @@ export default function NoticeCreatePage() {
     ],
   }
 
-  /** ReactQuill은 비어 있어도 <p><br></p>가 들어오므로 텍스트만 추출해서 빈 값 검사 */
-  const isEmptyContent = (html: string) => {
-    const div = document.createElement('div')
-    div.innerHTML = html
-    return div.textContent?.trim() === ''
+  /** 모달 열기 */
+  const showModal = (message: string, action?: () => void) => {
+    setModalMessage(message)
+    setModalAction(() => action ?? null)
+    setOpen(true)
   }
 
   /** 공지사항 등록 */
-  const handleCreateNotice = async () => {
-    if (!title.trim()) {
-      alert('제목을 입력해주세요.')
+  const handleCreateNotice = () => {
+    const result = noticeSchema.safeParse({
+      title,
+      content,
+    })
+
+    if (!result.success) {
+      showModal(result.error.issues[0].message)
       return
     }
 
-    if (isEmptyContent(content)) {
-      alert('내용을 입력해주세요.')
-      return
-    }
-
-    try {
-      await createNotice({
-        title,
-        content,
-      })
-
-      setModalMessage('공지사항이 등록되었습니다.')
-      setOpen(true)
-    } catch (error) {
-      console.error('공지 등록 실패:', error)
-      alert('공지 등록에 실패했습니다.')
-    }
+    createMutation.mutate(result.data)
   }
 
-  /** 공지사항 목록 페이지로 이동 */
+  /** 모달 닫기 */
   const handleCloseModal = () => {
     setOpen(false)
-    navigate('/admin/notice')
+
+    if (modalAction) {
+      modalAction()
+      setModalAction(null)
+    }
   }
 
   return (
@@ -107,7 +151,7 @@ export default function NoticeCreatePage() {
         </div>
 
         <div className={S.btn}>
-          <Button variant="primary" onClick={handleCreateNotice}>
+          <Button variant="primary" onClick={handleCreateNotice} disabled={createMutation.isPending}>
             <SquarePen size={16} />
             글쓰기
           </Button>

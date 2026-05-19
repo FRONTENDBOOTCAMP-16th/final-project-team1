@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/store'
+import { axiosInstance } from '@/api/axios'
 
 interface BasicResponse {
   success: boolean
@@ -7,6 +8,7 @@ interface BasicResponse {
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
+// 로그인 엔드포인트 호출 — 잘못된 비밀번호 시 401 반환 가능하므로 fetch 유지 (axiosInstance 인터셉터의 강제 리다이렉트 방지)
 export const verifyAdminPassword = async (password: string): Promise<boolean> => {
   const userId = useAuthStore.getState().user?.userId
 
@@ -16,9 +18,7 @@ export const verifyAdminPassword = async (password: string): Promise<boolean> =>
 
   const response = await fetch(`${BASE_URL}/api/admin/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ adminId: userId, password }),
   })
 
@@ -32,23 +32,12 @@ export const verifyAdminPassword = async (password: string): Promise<boolean> =>
 }
 
 export const resetAdminPassword = async (newPassword: string): Promise<boolean> => {
-  const token = localStorage.getItem('accessToken')
-  const API_URL = `${BASE_URL}/api/admin/reset-password`
-
-  const response = await fetch(API_URL, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ newPassword }),
+  const response = await axiosInstance.patch<BasicResponse>('/api/admin/reset-password', {
+    newPassword,
   })
 
-  const text = await response.text()
-  const result: BasicResponse = text ? JSON.parse(text) : {}
-
-  if (!result.success) {
-    throw new Error(result.message || '비밀번호 재설정에 실패했습니다.')
+  if (!response.data.success) {
+    throw new Error(response.data.message || '비밀번호 재설정에 실패했습니다.')
   }
 
   return true

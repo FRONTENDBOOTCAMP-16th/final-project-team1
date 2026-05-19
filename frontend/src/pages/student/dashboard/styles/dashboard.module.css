@@ -370,10 +370,6 @@
   background: #16a34a;
 }
 
-.orange {
-  background: #f59e0b;
-}
-
 .red {
   background: #dc2626;
 }
@@ -472,4 +468,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.pending {
+  border: 1px solid #e5e7eb;
+  background-color: #f3f4f6;
+  color: #374151;
 }
