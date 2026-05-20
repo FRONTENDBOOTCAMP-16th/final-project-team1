@@ -27,6 +27,17 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
 
   const handleVerify = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (!name) {
+      showAlert('입력 오류', '이름을 입력해 주세요.')
+      return
+    }
+
+    if (!phoneNumber) {
+      showAlert('입력 오류', '전화번호를 입력해 주세요.')
+      return
+    }
+
     try {
       const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/auth/find-password`
 
@@ -64,10 +75,10 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
 
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handleVerify}>
+      <form className="login_form" onSubmit={handleVerify} noValidate>
         <fieldset className="input_group">
+          <legend className="input_label">이름</legend>
           <label className="input_label">
-            <span>이름</span>
             <input
               type="text"
               placeholder="홍길동"
@@ -80,8 +91,8 @@ function FindPassword({ onChangeView }: FindPasswordProps) {
         </fieldset>
 
         <fieldset className="input_group">
+          <legend className="input_label">전화번호</legend>
           <label className="input_label">
-            <span>전화번호</span>
             <input
               type="tel"
               placeholder="010-1234-5678"

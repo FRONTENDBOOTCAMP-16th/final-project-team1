@@ -132,14 +132,11 @@ function AdminSettingPage() {
                   type="button"
                   className="viewIconBtn"
                   onClick={() => setShowCurrent(!showCurrent)}
-                  tabIndex={-1}
+                  aria-label={showCurrent ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showCurrent}
+                  title={showCurrent ? '비밀번호 숨기기' : '비밀번호 표시'}
                 >
-                  <img
-                    src={showCurrent ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
-                  />
+                  <img src={showCurrent ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" width="20" height="20" />
                 </button>
               </div>
               )}
@@ -163,14 +160,11 @@ function AdminSettingPage() {
                   type="button"
                   className="viewIconBtn"
                   onClick={() => setShowNew(!showNew)}
-                  tabIndex={-1}
+                  aria-label={showNew ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showNew}
+                  title={showNew ? '비밀번호 숨기기' : '비밀번호 표시'}
                 >
-                  <img
-                    src={showNew ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
-                  />
+                  <img src={showNew ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" width="20" height="20" />
                 </button>
               </div>
               )}
@@ -194,14 +188,11 @@ function AdminSettingPage() {
                   type="button"
                   className="viewIconBtn"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  tabIndex={-1}
+                  aria-label={showConfirm ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showConfirm}
+                  title={showConfirm ? '비밀번호 숨기기' : '비밀번호 표시'}
                 >
-                  <img
-                    src={showConfirm ? eyeIcon : eyeOffIcon}
-                    alt="Toggle View"
-                    width="20"
-                    height="20"
-                  />
+                  <img src={showConfirm ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" width="20" height="20" />
                 </button>
               </div>
               )}
