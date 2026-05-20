@@ -33,7 +33,3 @@ export const sidebarMenuByRole: Record<UserRole, SidebarMenuItem[]> = {
     { label: '환경설정', path: '/admin/settings', icon: settingIcon },
   ],
 }
-
-const menus = sidebarMenuByRole['student']
-console.log(menus)
-console.log(dashboardIcon)
