@@ -91,7 +91,7 @@ function Header() {
             </p>
           </div>
         </div>
-        <button className={S.logout_button} onClick={handleLogout}>
+        <button type="button" className={S.logout_button} onClick={handleLogout}>
           로그아웃
         </button>
       </div>

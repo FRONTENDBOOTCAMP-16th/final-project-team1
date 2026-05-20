@@ -32,6 +32,16 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
   const handleReset = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    if (!newPassword) {
+      showAlert('입력 오류', '새 비밀번호를 입력해 주세요.')
+      return
+    }
+
+    if (!confirmPassword) {
+      showAlert('입력 오류', '새 비밀번호 확인을 입력해 주세요.')
+      return
+    }
+
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/
 
     if (!passwordRegex.test(newPassword)) {
@@ -92,10 +102,10 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
 
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handleReset}>
+      <form className="login_form" onSubmit={handleReset} noValidate>
         <fieldset className="input_group">
+          <legend className="input_label">새 비밀번호</legend>
           <label className="input_label">
-            <span>새 비밀번호</span>
             <div className="password_input_wrapper">
               <input
                 type={showNewPassword ? 'text' : 'password'}
@@ -109,17 +119,19 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
                 type="button"
                 className="password_view_button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                tabIndex={-1}
+                aria-label={showNewPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                aria-pressed={showNewPassword}
+                title={showNewPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
               >
-                <img src={showNewPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showNewPassword ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" />
               </button>
             </div>
           </label>
         </fieldset>
 
         <fieldset className="input_group">
+          <legend className="input_label">새 비밀번호 확인</legend>
           <label className="input_label">
-            <span>새 비밀번호 확인</span>
             <div className="password_input_wrapper">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -133,9 +145,11 @@ function ResetPassword({ onChangeView }: ResetPasswordProps) {
                 type="button"
                 className="password_view_button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                tabIndex={-1}
+                aria-label={showConfirmPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                aria-pressed={showConfirmPassword}
+                title={showConfirmPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
               >
-                <img src={showConfirmPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showConfirmPassword ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" />
               </button>
             </div>
           </label>

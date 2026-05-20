@@ -51,16 +51,16 @@
   padding-block: 12px;
   background: none;
   border: none;
+  border-bottom: 2px solid transparent;
   color: var(--hover-gray);
   cursor: pointer;
-  font-weight: var(--Md);
+  font-weight: var(--Bd);
   font-size: var(--md-text);
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .tab_button.active {
   color: var(--default-orange);
-  font-weight: var(--Bd);
   border-bottom: 2px solid var(--default-orange);
 }
 
@@ -85,8 +85,12 @@
   cursor: pointer;
 }
 
-.input_label span {
+legend.input_label {
+  padding: 5px;
   padding-inline-start: 4px;
+  float: none;
+  inline-size: 100%;
+  cursor: default;
 }
 
 .input_field {

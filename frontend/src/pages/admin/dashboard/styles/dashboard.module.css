@@ -255,6 +255,8 @@
 
   max-height: 400px;
   overflow-y: auto;
+
+  padding-right: 30px;
 }
 
 .chartHeader {
@@ -272,6 +274,9 @@
 .totalCount {
   font-size: 14px;
   color: #666666;
+
+  padding-right: 10px;
+  text-align: right;
 }
 
 .presentBar,

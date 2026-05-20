@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@tanstack/react-query": "^5.100.11",
     "axios": "^1.15.2",
     "dompurify": "^3.4.2",
     "jwt-decode": "^4.0.0",
