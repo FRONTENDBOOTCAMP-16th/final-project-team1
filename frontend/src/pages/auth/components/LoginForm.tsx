@@ -37,6 +37,16 @@ function LoginForm({ onChangeView }: LoginFormProps) {
   const handleLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    if (!studentId) {
+      showAlert('입력 오류', '학번을 입력해 주세요.')
+      return
+    }
+
+    if (!password) {
+      showAlert('입력 오류', '비밀번호를 입력해 주세요.')
+      return
+    }
+
     const result = await loginUser(studentId, password)
 
     if (result.success) {
@@ -70,10 +80,10 @@ function LoginForm({ onChangeView }: LoginFormProps) {
   }
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handleLogin}>
+      <form className="login_form" onSubmit={handleLogin} noValidate>
         <fieldset className="input_group">
+          <legend className="input_label">학번</legend>
           <label className="input_label">
-            <span>학번</span>
             {isLoading ? (
               <div style={{ width: '100%', height: '50px', lineHeight: 0, display: 'block' }}>
                 <Skeleton width="100%" height="100%" borderRadius={12} />
@@ -92,8 +102,8 @@ function LoginForm({ onChangeView }: LoginFormProps) {
         </fieldset>
 
         <fieldset className="input_group">
+          <legend className="input_label">비밀번호</legend>
           <label className="input_label">
-            <span>비밀번호</span>
             {isLoading ? (
               <div style={{ width: '100%', height: '50px', lineHeight: 0, display: 'block' }}>
                 <Skeleton width="100%" height="100%" borderRadius={12} />
@@ -112,9 +122,11 @@ function LoginForm({ onChangeView }: LoginFormProps) {
                   type="button"
                   className="password_view_button"
                   onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
+                  aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showPassword}
+                  title={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
                 >
-                  <img src={showPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                  <img src={showPassword ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" />
                 </button>
               </div>
             )}

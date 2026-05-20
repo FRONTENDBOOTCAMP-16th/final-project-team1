@@ -12,7 +12,7 @@ function Sidebar({ role }: SidebarProps) {
   return (
     <aside className={S.sidebar}>
       <div className={S['sidebar_brand']}>
-        <h1 className={S['sidebar_title']}>멋쟁이사자처럼</h1>
+        <div className={S['sidebar_title']}>멋쟁이사자처럼</div>
         <p className={S['sidebar_subtitle']}>출결관리 시스템</p>
       </div>
 

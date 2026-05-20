@@ -36,6 +36,16 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
   const handleAdminLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    if (!adminId) {
+      showAlert('입력 오류', '관리자 아이디를 입력해 주세요.')
+      return
+    }
+
+    if (!password) {
+      showAlert('입력 오류', '비밀번호를 입력해 주세요.')
+      return
+    }
+
     const result = await loginAdmin(adminId, password)
 
     if (result.success) {
@@ -50,10 +60,10 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
 
   return (
     <section className="auth_content">
-      <form className="login_form" onSubmit={handleAdminLogin}>
+      <form className="login_form" onSubmit={handleAdminLogin} noValidate>
         <fieldset className="input_group">
+          <legend className="input_label">관리자 아이디</legend>
           <label className="input_label">
-            <span>관리자 아이디</span>
             <input
               type="text"
               placeholder="관리자 아이디를 입력하세요"
@@ -66,8 +76,8 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
         </fieldset>
 
         <fieldset className="input_group">
+          <legend className="input_label">비밀번호</legend>
           <label className="input_label">
-            <span>비밀번호</span>
             <div className="password_input_wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -81,9 +91,11 @@ function AdminLoginForm({ onChangeView }: AdminLoginFormProps) {
                 type="button"
                 className="password_view_button"
                 onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
+                aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                aria-pressed={showPassword}
+                title={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
               >
-                <img src={showPassword ? eyeIcon : eyeOffIcon} alt="Toggle View" />
+                <img src={showPassword ? eyeIcon : eyeOffIcon} alt="" aria-hidden="true" />
               </button>
             </div>
           </label>
